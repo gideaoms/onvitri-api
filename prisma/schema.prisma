@@ -1,0 +1,72 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model City {
+  id         String   @id @default(uuid()) @db.Uuid
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  name       String
+  initials   String   @db.Char(2)
+
+  stores Store[]
+
+  @@map("cities")
+}
+
+model User {
+  id         String   @id @default(uuid()) @db.Uuid
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  name       String
+  email      String   @unique
+  password   String
+  roles      String[]
+  status     String
+
+  stores Store[]
+
+  @@map("users")
+}
+
+model Store {
+  id           String   @id @default(uuid()) @db.Uuid
+  city_id      String   @db.Uuid
+  owner_id     String   @db.Uuid
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+  fantasy_name String
+  street       String
+  number       String
+  neighborhood String
+  phone        Json
+  zip_code     String
+  status       String
+
+  city     City      @relation(fields: [city_id], references: [id])
+  user     User      @relation(fields: [owner_id], references: [id])
+  products Product[]
+
+  @@map("stores")
+}
+
+model Product {
+  id          String   @id @default(uuid()) @db.Uuid
+  store_id    String   @db.Uuid
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+  title       String
+  description String
+  price       Int
+  photos      Json
+  status      String
+
+  store Store @relation(fields: [store_id], references: [id])
+
+  @@map("products")
+}
