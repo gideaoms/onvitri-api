@@ -1,3 +1,3 @@
-class UnauthorizedError extends Error {}
+class Unauthorized extends Error {}
 
-export { UnauthorizedError }
+export { Unauthorized }

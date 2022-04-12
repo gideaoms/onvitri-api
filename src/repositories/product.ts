@@ -4,10 +4,10 @@ import { prisma } from '@/libs/prisma'
 import { Mappers } from '@/mappers'
 import { Errors } from '@/errors'
 
-const productMapper = Mappers.Product()
-const storeMapper = Mappers.Store()
-
 function Product(): Types.Repositories.Product {
+  const productMapper = Mappers.Product()
+  const storeMapper = Mappers.Store()
+
   async function findMany(page: number) {
     const limit = 10
     const offset = limit * (page - 1)
@@ -47,7 +47,7 @@ function Product(): Types.Repositories.Product {
         store: true,
       },
     })
-    if (!product) return left(new Errors.NotFoundError('Product not found'))
+    if (!product) return left(new Errors.NotFound('Product not found'))
     return right({
       ...productMapper.fromRecord(product as any),
       store: storeMapper.fromRecord(product.store as any),

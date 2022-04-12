@@ -14,6 +14,10 @@ declare module Store {
     city: City
     products: Product[]
   }
+
+  type WithCity = Store & {
+    city: City
+  }
 }
 
 type Store = {

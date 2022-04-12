@@ -4,11 +4,11 @@ import { prisma } from '@/libs/prisma'
 import { Mappers } from '@/mappers'
 import { Errors } from '@/errors'
 
-const productMapper = Mappers.Product()
-const storeMapper = Mappers.Store()
-const cityMapper = Mappers.City()
-
 function Store(): Types.Repositories.Store {
+  const productMapper = Mappers.Product()
+  const storeMapper = Mappers.Store()
+  const cityMapper = Mappers.City()
+
   async function findOne(storeId: string) {
     const limit = 10
     const store = await prisma.store.findFirst({
@@ -28,7 +28,7 @@ function Store(): Types.Repositories.Store {
         },
       },
     })
-    if (!store) return left(new Errors.NotFoundError('Store not found'))
+    if (!store) return left(new Errors.NotFound('Store not found'))
     const page = 1
     const hasMore = await prisma.product.count({
       take: limit,

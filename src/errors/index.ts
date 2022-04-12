@@ -1,7 +1,7 @@
-import { BadRequestError } from './bad-request'
-import { NotFoundError } from './not-found'
-import { UnauthorizedError } from './unauthorized'
+import { BadRequest } from './bad-request'
+import { NotFound } from './not-found'
+import { Unauthorized } from './unauthorized'
 
-const Errors = { BadRequestError, NotFoundError, UnauthorizedError }
+const Errors = { BadRequest, NotFound, Unauthorized }
 
 export { Errors }

@@ -4,6 +4,7 @@ function Product() {
   function fromRecord(record: Types.Records.Product) {
     const model: Types.Models.Product = {
       id: record.id,
+      storeId: record.store_id,
       title: record.title,
       description: record.description,
       price: record.price,
@@ -16,6 +17,7 @@ function Product() {
   function toObject(model: Types.Models.Product) {
     const object: Types.Objects.Product = {
       id: model.id,
+      store_id: model.storeId,
       title: model.title,
       description: model.description,
       price: model.price,

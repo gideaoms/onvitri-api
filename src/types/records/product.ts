@@ -8,6 +8,7 @@ declare module Product {
 
 type Product = {
   id: string
+  store_id: string
   title: string
   description: string
   price: number

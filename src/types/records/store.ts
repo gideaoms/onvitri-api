@@ -1,10 +1,12 @@
-type StorePhone = {
-  country_code: string
-  area: string
-  number: string
-}
+declare module Store {
+  type Phone = {
+    country_code: string
+    area: string
+    number: string
+  }
 
-type StoreStatus = 'active' | 'inactive'
+  type Status = 'active' | 'inactive'
+}
 
 type Store = {
   id: string
@@ -12,8 +14,8 @@ type Store = {
   street: string
   number: string
   neighborhood: string
-  phone: StorePhone
-  status: StoreStatus
+  phone: Store.Phone
+  status: Store.Status
 }
 
 export { Store }
