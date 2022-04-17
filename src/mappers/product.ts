@@ -1,8 +1,10 @@
-import { Types } from '@/types'
+import { ProductRecord } from '@/types/records/product'
+import { ProductModel } from '@/types/models/product'
+import { ProductObject } from '@/types/objects/product'
 
-function Product() {
-  function fromRecord(record: Types.Records.Product) {
-    const model: Types.Models.Product = {
+function ProductMapper() {
+  function fromRecord(record: ProductRecord) {
+    const model: ProductModel = {
       id: record.id,
       storeId: record.store_id,
       title: record.title,
@@ -14,8 +16,8 @@ function Product() {
     return model
   }
 
-  function toObject(model: Types.Models.Product) {
-    const object: Types.Objects.Product = {
+  function toObject(model: ProductModel) {
+    const object: ProductObject = {
       id: model.id,
       store_id: model.storeId,
       title: model.title,
@@ -27,10 +29,24 @@ function Product() {
     return object
   }
 
+  function toRecord(model: ProductModel) {
+    const record: ProductRecord = {
+      id: model.id,
+      store_id: model.storeId,
+      title: model.title,
+      description: model.description,
+      price: model.price,
+      status: model.status,
+      photos: model.photos,
+    }
+    return record
+  }
+
   return {
     fromRecord,
     toObject,
+    toRecord,
   }
 }
 
-export { Product }
+export default ProductMapper

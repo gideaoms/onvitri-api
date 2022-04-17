@@ -1,16 +1,13 @@
-declare module User {
+export declare namespace UserObject {
   type Role = 'shopkeeper' | 'customer'
-
   type Status = 'active' | 'inactive'
 }
 
-type User = {
+export type UserObject = {
   id: string
   name: string
   email: string
-  roles: User.Role[]
-  status: User.Status
+  roles: UserObject.Role[]
+  status: UserObject.Status
   token: string
 }
-
-export { User }

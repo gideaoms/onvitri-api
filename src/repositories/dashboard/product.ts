@@ -1,11 +1,14 @@
-import { prisma } from '@/libs/prisma'
-import { Mappers } from '@/mappers'
-import { Product } from '@/types/repositories/dashboard/product'
+import prisma from '@/libs/prisma'
+import { ProductRepository } from '@/types/repositories/dashboard/product'
+import { ProductModel } from '@/types/models/product'
+import ProductMapper from '@/mappers/product'
+import StoreMapper from '@/mappers/store'
+import CityMapper from '@/mappers/city'
 
-export function Product(): Product {
-  const productMapper = Mappers.Product()
-  const storeMapper = Mappers.Store()
-  const cityMapper = Mappers.City()
+function ProductRepository(): ProductRepository {
+  const productMapper = ProductMapper()
+  const storeMapper = StoreMapper()
+  const cityMapper = CityMapper()
 
   async function findMany(ownerId: string, page: number) {
     const limit = 10
@@ -45,7 +48,17 @@ export function Product(): Product {
     }
   }
 
+  async function create(product: ProductModel) {
+    const createdProduct = await prisma.product.create({
+      data: productMapper.toRecord(product),
+    })
+    return productMapper.fromRecord(createdProduct as any)
+  }
+
   return {
     findMany,
+    create,
   }
 }
+
+export default ProductRepository

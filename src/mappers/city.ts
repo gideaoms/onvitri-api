@@ -1,8 +1,10 @@
-import { Types } from '@/types'
+import { CityObject } from '@/types/objects/city'
+import { CityModel } from '@/types/models/city'
+import { CityRecord } from '@/types/records/city'
 
-function City() {
-  function fromRecord(record: Types.Records.City) {
-    const model: Types.Models.City = {
+function CityMapper() {
+  function fromRecord(record: CityRecord) {
+    const model: CityModel = {
       id: record.id,
       name: record.name,
       initials: record.initials,
@@ -10,8 +12,8 @@ function City() {
     return model
   }
 
-  function toObject(model: Types.Models.City) {
-    const object: Types.Objects.City = {
+  function toObject(model: CityModel) {
+    const object: CityObject = {
       id: model.id,
       name: model.name,
       initials: model.initials,
@@ -25,4 +27,4 @@ function City() {
   }
 }
 
-export { City }
+export default CityMapper

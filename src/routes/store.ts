@@ -1,16 +1,17 @@
 import { FastifyInstance } from 'fastify'
 import { isLeft } from 'fp-either'
-import { Services } from '@/services'
-import { Repositories } from '@/repositories'
-import { Mappers } from '@/mappers'
-import { Exception } from '@/utils/exception'
+import { findHttpStatusByError } from '@/utils/exception'
+import StoreRepository from '@/repositories/store'
+import StoreService from '@/services/store'
+import StoreMapper from '@/mappers/store'
+import ProductMapper from '@/mappers/product'
+import CityMapper from '@/mappers/city'
 
-const storeRepository = Repositories.Store()
-const storeService = Services.Store(storeRepository)
-const storeMapper = Mappers.Store()
-const productMapper = Mappers.Product()
-const cityMapper = Mappers.City()
-const exception = Exception()
+const storeRepository = StoreRepository()
+const storeService = StoreService(storeRepository)
+const storeMapper = StoreMapper()
+const productMapper = ProductMapper()
+const cityMapper = CityMapper()
 
 async function Product(fastify: FastifyInstance) {
   fastify.route({
@@ -122,8 +123,8 @@ async function Product(fastify: FastifyInstance) {
       const storeId = (request.params as any).store_id
       const store = await storeService.findOne(storeId)
       if (isLeft(store)) {
-        const code = exception.findCodeByError(store.left)
-        return replay.code(code).send({ message: store.left.message })
+        const httpStatus = findHttpStatusByError(store.left)
+        return replay.code(httpStatus).send({ message: store.left.message })
       }
       const object = {
         ...storeMapper.toObject(store.right.data),

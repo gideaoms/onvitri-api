@@ -1,7 +1,5 @@
-type City = {
+export type CityRecord = {
   id: string
   name: string
   initials: string
 }
-
-export { City }

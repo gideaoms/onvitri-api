@@ -1,7 +1,7 @@
 import bcryptjs from 'bcryptjs'
-import { Types } from '@/types'
+import { CryptoProvider } from '@/types/providers/crypto'
 
-function Crypto(): Types.Providers.Crypto {
+function CryptoProvider(): CryptoProvider {
   function compare(plain: string, hashed: string) {
     return bcryptjs.compare(plain, hashed)
   }
@@ -16,4 +16,4 @@ function Crypto(): Types.Providers.Crypto {
   }
 }
 
-export { Crypto }
+export default CryptoProvider

@@ -1,8 +1,8 @@
-import { Types } from '@/types'
+import { ProductModel } from '@/types/models/product'
 
-function Product() {
-  function addPhoto(product: Types.Models.Product, photo: Types.Models.Product.Photo) {
-    const newProduct: Types.Models.Product = {
+function ProductModel() {
+  function addPhoto(product: ProductModel, photo: ProductModel.Photo) {
+    const newProduct: ProductModel = {
       ...product,
       photos: [...product.photos, photo],
     }
@@ -14,4 +14,4 @@ function Product() {
   }
 }
 
-export { Product }
+export default ProductModel

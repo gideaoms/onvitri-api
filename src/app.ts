@@ -16,4 +16,4 @@ app.register(autoload, {
   options: { prefix: '/v1' },
 })
 
-export { app }
+export default app

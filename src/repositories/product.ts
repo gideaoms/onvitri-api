@@ -1,12 +1,13 @@
 import { left, right } from 'fp-either'
-import { Types } from '@/types'
-import { prisma } from '@/libs/prisma'
-import { Mappers } from '@/mappers'
-import { Errors } from '@/errors'
+import { ProductRepository } from '@/types/repositories/product'
+import ProductMapper from '@/mappers/product'
+import StoreMapper from '@/mappers/store'
+import prisma from '@/libs/prisma'
+import NotFoundError from '@/errors/not-found'
 
-function Product(): Types.Repositories.Product {
-  const productMapper = Mappers.Product()
-  const storeMapper = Mappers.Store()
+function ProductRepository(): ProductRepository {
+  const productMapper = ProductMapper()
+  const storeMapper = StoreMapper()
 
   async function findMany(page: number) {
     const limit = 10
@@ -47,7 +48,7 @@ function Product(): Types.Repositories.Product {
         store: true,
       },
     })
-    if (!product) return left(new Errors.NotFound('Product not found'))
+    if (!product) return left(new NotFoundError('Product not found'))
     return right({
       ...productMapper.fromRecord(product as any),
       store: storeMapper.fromRecord(product.store as any),
@@ -85,4 +86,4 @@ function Product(): Types.Repositories.Product {
   }
 }
 
-export { Product }
+export default ProductRepository

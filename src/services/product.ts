@@ -1,10 +1,8 @@
 import { isLeft, left, right } from 'fp-either'
-import { Types } from '@/types'
+import { ProductRepository } from '@/types/repositories/product'
+import { StoreRepository } from '@/types/repositories/store'
 
-function Product(
-  productRepository: Types.Repositories.Product,
-  storeRepository: Types.Repositories.Store,
-) {
+function ProductService(productRepository: ProductRepository, storeRepository: StoreRepository) {
   async function findMany(page: number) {
     const products = await productRepository.findMany(page)
     return products
@@ -29,4 +27,4 @@ function Product(
   }
 }
 
-export { Product }
+export default ProductService

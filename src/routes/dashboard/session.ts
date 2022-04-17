@@ -1,23 +1,24 @@
 import { FastifyInstance } from 'fastify'
 import { isLeft } from 'fp-either'
-import { Services } from '@/services'
-import { Repositories } from '@/repositories'
-import { Mappers } from '@/mappers'
-import { Exception } from '@/utils/exception'
-import { Providers } from '@/providers'
+import { findHttpStatusByError } from '@/utils/exception'
+import UserRepository from '@/repositories/user'
+import CryptoProvider from '@/providers/crypto'
+import TokenProvider from '@/providers/token'
+import GuardianProvider from '@/providers/guardian'
+import UserMapper from '@/mappers/user'
+import SessionService from '@/services/dashboard/session'
 
-const userRepository = Repositories.User()
-const cryptoProvider = Providers.Crypto()
-const tokenProvider = Providers.Token()
-const guardianProvider = Providers.Guardian(tokenProvider, userRepository, cryptoProvider)
-const userMapper = Mappers.User()
-const sessionService = Services.Dashboard.Session(
+const userRepository = UserRepository()
+const cryptoProvider = CryptoProvider()
+const tokenProvider = TokenProvider()
+const guardianProvider = GuardianProvider(tokenProvider, userRepository, cryptoProvider)
+const userMapper = UserMapper()
+const sessionService = SessionService(
   userRepository,
   cryptoProvider,
   tokenProvider,
   guardianProvider,
 )
-const exception = Exception()
 
 async function Session(fastify: FastifyInstance) {
   fastify.route({
@@ -68,8 +69,8 @@ async function Session(fastify: FastifyInstance) {
       const password = (request.body as any).password
       const session = await sessionService.create(email, password)
       if (isLeft(session)) {
-        const code = exception.findCodeByError(session.left)
-        return replay.code(code).send({ message: session.left.message })
+        const httpStatus = findHttpStatusByError(session.left)
+        return replay.code(httpStatus).send({ message: session.left.message })
       }
       const object = userMapper.toObject(session.right)
       return replay.send(object)
@@ -111,8 +112,8 @@ async function Session(fastify: FastifyInstance) {
       const token = request.headers.authorization
       const session = await sessionService.findOne(token)
       if (isLeft(session)) {
-        const code = exception.findCodeByError(session.left)
-        return replay.code(code).send({ message: session.left.message })
+        const httpStatus = findHttpStatusByError(session.left)
+        return replay.code(httpStatus).send({ message: session.left.message })
       }
       const object = userMapper.toObject(session.right)
       return replay.send(object)

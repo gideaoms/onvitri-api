@@ -1,21 +1,18 @@
-declare module Store {
+export declare namespace StoreObject {
   type Phone = {
     country_code: string
-    area: string
+    area_code: string
     number: string
   }
-
   type Status = 'active' | 'inactive'
 }
 
-type Store = {
+export type StoreObject = {
   id: string
   fantasy_name: string
   street: string
   number: string
   neighborhood: string
-  phone: Store.Phone
-  status: Store.Status
+  phone: StoreObject.Phone
+  status: StoreObject.Status
 }
-
-export { Store }

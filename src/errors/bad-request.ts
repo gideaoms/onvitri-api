@@ -1,3 +1,3 @@
-class BadRequest extends Error {}
+class BadRequestError extends Error {}
 
-export { BadRequest }
+export default BadRequestError

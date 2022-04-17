@@ -1,26 +1,29 @@
 import { isLeft, left, right } from 'fp-either'
-import { Types } from '@/types'
-import { Models } from '@/models'
-import { Errors } from '@/errors'
+import { TokenProvider } from '@/types/providers/token'
+import { UserRepository } from '@/types/repositories/user'
+import { CryptoProvider } from '@/types/providers/crypto'
+import { UserModel as UserModelType } from '@/types/models/user'
+import UserModel from '@/models/user'
+import UnauthorizedError from '@/errors/unauthorized'
 
-function Guardian(
-  tokenProvider: Types.Providers.Token,
-  userRepository: Types.Repositories.User,
-  cryptoProvider: Types.Providers.Crypto,
+function GuardianProvider(
+  tokenProvider: TokenProvider,
+  userRepository: UserRepository,
+  cryptoProvider: CryptoProvider,
 ) {
-  const userModel = Models.User(cryptoProvider)
+  const userModel = UserModel(cryptoProvider)
 
-  async function passThrough(role: Types.Models.User.Role, token?: string) {
-    if (!token) return left(new Errors.Unauthorized('Unauthorized'))
+  async function passThrough(role: UserModelType.Role, token?: string) {
+    if (!token) return left(new UnauthorizedError('Unauthorized'))
     const [, rawToken] = token.split(' ')
-    if (!rawToken) return left(new Errors.Unauthorized('Unauthorized'))
+    if (!rawToken) return left(new UnauthorizedError('Unauthorized'))
     const sub = tokenProvider.verify(rawToken)
-    if (isLeft(sub)) return left(new Errors.Unauthorized('Unauthorized'))
+    if (isLeft(sub)) return left(new UnauthorizedError('Unauthorized'))
     const user = await userRepository.findOneById(sub.right)
-    if (isLeft(user)) return left(new Errors.Unauthorized('Unauthorized'))
+    if (isLeft(user)) return left(new UnauthorizedError('Unauthorized'))
     if (!userModel.isActive(user.right))
-      return left(new Errors.Unauthorized('O seu perfil não está ativo na plataforma'))
-    if (!userModel.hasRole(user.right, role)) return left(new Errors.Unauthorized('Unauthorized'))
+      return left(new UnauthorizedError('O seu perfil não está ativo na plataforma'))
+    if (!userModel.hasRole(user.right, role)) return left(new UnauthorizedError('Unauthorized'))
     return right({ ...user.right, token: rawToken })
   }
 
@@ -29,4 +32,4 @@ function Guardian(
   }
 }
 
-export { Guardian }
+export default GuardianProvider

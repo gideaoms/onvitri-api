@@ -1,16 +1,17 @@
 import { FastifyInstance } from 'fastify'
 import { isLeft } from 'fp-either'
-import { Services } from '@/services'
-import { Repositories } from '@/repositories'
-import { Mappers } from '@/mappers'
-import { Exception } from '@/utils/exception'
+import { findHttpStatusByError } from '@/utils/exception'
+import ProductRepository from '@/repositories/product'
+import StoreRepository from '@/repositories/store'
+import ProductService from '@/services/product'
+import ProductMapper from '@/mappers/product'
+import StoreMapper from '@/mappers/store'
 
-const productRepository = Repositories.Product()
-const storeRepository = Repositories.Store()
-const productService = Services.Product(productRepository, storeRepository)
-const productMapper = Mappers.Product()
-const storeMapper = Mappers.Store()
-const exception = Exception()
+const productRepository = ProductRepository()
+const storeRepository = StoreRepository()
+const productService = ProductService(productRepository, storeRepository)
+const productMapper = ProductMapper()
+const storeMapper = StoreMapper()
 
 async function Product(fastify: FastifyInstance) {
   fastify.route({
@@ -84,8 +85,8 @@ async function Product(fastify: FastifyInstance) {
       if (storeId) {
         const products = await productService.findManyByStore(storeId, page)
         if (isLeft(products)) {
-          const code = exception.findCodeByError(products.left)
-          return replay.code(code).send({ message: products.left.message })
+          const httpStatus = findHttpStatusByError(products.left)
+          return replay.code(httpStatus).send({ message: products.left.message })
         }
         const object = products.right.data.map(productMapper.toObject)
         return replay.header('x-has-more', products.right.hasMore).send(object)
@@ -188,8 +189,8 @@ async function Product(fastify: FastifyInstance) {
       const productId = (request.params as any).product_id
       const product = await productService.findOne(productId)
       if (isLeft(product)) {
-        const code = exception.findCodeByError(product.left)
-        return replay.code(code).send({ message: product.left.message })
+        const httpStatus = findHttpStatusByError(product.left)
+        return replay.code(httpStatus).send({ message: product.left.message })
       }
       const object = {
         ...productMapper.toObject(product.right),

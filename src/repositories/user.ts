@@ -1,11 +1,11 @@
 import { left, right } from 'fp-either'
-import { prisma } from '@/libs/prisma'
-import { Types } from '@/types'
-import { Errors } from '@/errors'
-import { Mappers } from '@/mappers'
+import { UserRepository } from '@/types/repositories/user'
+import UserMapper from '@/mappers/user'
+import prisma from '@/libs/prisma'
+import NotFoundError from '@/errors/not-found'
 
-function User(): Types.Repositories.User {
-  const userMapper = Mappers.User()
+function UserRepository(): UserRepository {
+  const userMapper = UserMapper()
 
   async function findOneByEmail(email: string) {
     const user = await prisma.user.findFirst({
@@ -13,7 +13,7 @@ function User(): Types.Repositories.User {
         email: email,
       },
     })
-    if (!user) return left(new Errors.NotFound('User not found'))
+    if (!user) return left(new NotFoundError('User not found'))
     return right(userMapper.fromRecord(user as any))
   }
 
@@ -23,7 +23,7 @@ function User(): Types.Repositories.User {
         id: userId,
       },
     })
-    if (!user) return left(new Errors.NotFound('User not found'))
+    if (!user) return left(new NotFoundError('User not found'))
     return right(userMapper.fromRecord(user as any))
   }
 
@@ -33,4 +33,4 @@ function User(): Types.Repositories.User {
   }
 }
 
-export { User }
+export default UserRepository

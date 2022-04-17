@@ -1,10 +1,10 @@
 import jsonwebtoken from 'jsonwebtoken'
 import { left, right } from 'fp-either'
+import { TokenProvider } from '@/types/providers/token'
+import UnauthorizedError from '@/errors/unauthorized'
 import { TOKEN_EXPIRES_IN, TOKEN_SECRET } from '@/settings/token'
-import { Types } from '@/types'
-import { Errors } from '@/errors'
 
-function Token(): Types.Providers.Token {
+function TokenProvider(): TokenProvider {
   function generate(sub: string) {
     return jsonwebtoken.sign({ sub }, TOKEN_SECRET, {
       expiresIn: TOKEN_EXPIRES_IN,
@@ -16,7 +16,7 @@ function Token(): Types.Providers.Token {
       const decoded = jsonwebtoken.verify(token, TOKEN_SECRET)
       return right(String(decoded.sub))
     } catch (err) {
-      return left(new Errors.Unauthorized('Invalid token'))
+      return left(new UnauthorizedError('Invalid token'))
     }
   }
 
@@ -26,4 +26,4 @@ function Token(): Types.Providers.Token {
   }
 }
 
-export { Token }
+export default TokenProvider

@@ -1,7 +1,7 @@
-import { Types } from '@/types'
+import { StoreModel } from '@/types/models/store'
 
-function Store() {
-  function isActive(store: Types.Models.Store) {
+function StoreModel() {
+  function isActive(store: StoreModel) {
     return store.status === 'active'
   }
 
@@ -10,4 +10,4 @@ function Store() {
   }
 }
 
-export { Store }
+export default StoreModel

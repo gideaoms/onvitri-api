@@ -1,8 +1,10 @@
-import { Types } from '@/types'
+import { StoreRecord } from '@/types/records/store'
+import { StoreModel } from '@/types/models/store'
+import { StoreObject } from '@/types/objects/store'
 
-function Store() {
-  function fromRecord(record: Types.Records.Store) {
-    const model: Types.Models.Store = {
+function StoreMapper() {
+  function fromRecord(record: StoreRecord) {
+    const model: StoreModel = {
       id: record.id,
       fantasyName: record.fantasy_name,
       street: record.street,
@@ -10,7 +12,7 @@ function Store() {
       neighborhood: record.neighborhood,
       phone: {
         countryCode: record.phone.country_code,
-        area: record.phone.area,
+        areaCode: record.phone.area_code,
         number: record.phone.number,
       },
       status: record.status,
@@ -18,8 +20,8 @@ function Store() {
     return model
   }
 
-  function toObject(model: Types.Models.Store) {
-    const object: Types.Objects.Store = {
+  function toObject(model: StoreModel) {
+    const object: StoreObject = {
       id: model.id,
       fantasy_name: model.fantasyName,
       street: model.street,
@@ -27,7 +29,7 @@ function Store() {
       neighborhood: model.neighborhood,
       phone: {
         country_code: model.phone.countryCode,
-        area: model.phone.area,
+        area_code: model.phone.areaCode,
         number: model.phone.number,
       },
       status: model.status,
@@ -41,4 +43,4 @@ function Store() {
   }
 }
 
-export { Store }
+export default StoreMapper

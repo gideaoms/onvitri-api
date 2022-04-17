@@ -1,6 +1,6 @@
-import { Types } from '@/types'
+import { StoreRepository } from '@/types/repositories/store'
 
-function Store(storeRepository: Types.Repositories.Store) {
+function StoreService(storeRepository: StoreRepository) {
   async function findOne(storeId: string) {
     const store = await storeRepository.findOne(storeId)
     return store
@@ -11,4 +11,4 @@ function Store(storeRepository: Types.Repositories.Store) {
   }
 }
 
-export { Store }
+export default StoreService

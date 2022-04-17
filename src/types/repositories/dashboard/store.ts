@@ -1,8 +1,7 @@
 import { Either } from 'fp-either'
-import { NotFound } from '@/errors/not-found'
-import { Models } from '@/types/models'
+import { StoreModel } from '@/types/models/store'
+import NotFoundError from '@/errors/not-found'
 
-export type Store = {
-  findOne(storeId: string, ownerId: string): Promise<Either<NotFound, Models.Store>>
-  findMany(ownerId: string, page: number): Promise<Models.Store.WithCity[]>
+export type StoreRepository = {
+  exists(storeId: string, ownerId: string): Promise<Either<NotFoundError, StoreModel>>
 }

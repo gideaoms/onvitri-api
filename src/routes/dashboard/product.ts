@@ -1,26 +1,27 @@
 import { FastifyInstance } from 'fastify'
 import { isLeft } from 'fp-either'
-import { Services } from '@/services'
-import { Repositories } from '@/repositories'
-import { Mappers } from '@/mappers'
-import { Exception } from '@/utils/exception'
-import { Providers } from '@/providers'
+import { findHttpStatusByError } from '@/utils/exception'
+import UserRepository from '@/repositories/user'
+import ProductRepository from '@/repositories/dashboard/product'
+import CryptoProvider from '@/providers/crypto'
+import TokenProvider from '@/providers/token'
+import GuardianProvider from '@/providers/guardian'
+import ProductMapper from '@/mappers/product'
+import StoreMapper from '@/mappers/store'
+import CityMapper from '@/mappers/city'
+import ProductService from '@/services/dashboard/product'
+import StoreRepository from '@/repositories/dashboard/store'
 
-const userRepository = Repositories.User()
-const storeRepository = Repositories.Dashboard.Store()
-const productRepository = Repositories.Dashboard.Product()
-const cryptoProvider = Providers.Crypto()
-const tokenProvider = Providers.Token()
-const guardianProvider = Providers.Guardian(tokenProvider, userRepository, cryptoProvider)
-const productMapper = Mappers.Product()
-const storeMapper = Mappers.Store()
-const cityMapper = Mappers.City()
-const productService = Services.Dashboard.Product(
-  guardianProvider,
-  storeRepository,
-  productRepository,
-)
-const exception = Exception()
+const userRepository = UserRepository()
+const productRepository = ProductRepository()
+const storeRepository = StoreRepository()
+const cryptoProvider = CryptoProvider()
+const tokenProvider = TokenProvider()
+const guardianProvider = GuardianProvider(tokenProvider, userRepository, cryptoProvider)
+const productMapper = ProductMapper()
+const storeMapper = StoreMapper()
+const cityMapper = CityMapper()
+const productService = ProductService(guardianProvider, productRepository, storeRepository)
 
 async function Product(fastify: FastifyInstance) {
   fastify.route({
@@ -46,6 +47,9 @@ async function Product(fastify: FastifyInstance) {
                 type: 'string',
               },
               store_id: {
+                type: 'string',
+              },
+              title: {
                 type: 'string',
               },
               description: {
@@ -129,8 +133,8 @@ async function Product(fastify: FastifyInstance) {
       const token = request.headers.authorization
       const products = await productService.findMany(page, token)
       if (isLeft(products)) {
-        const code = exception.findCodeByError(products.left)
-        return replay.code(code).send({ message: products.left.message })
+        const httpStatus = findHttpStatusByError(products.left)
+        return replay.code(httpStatus).send({ message: products.left.message })
       }
       const object = products.right.data.map((product) => ({
         ...productMapper.toObject(product),
@@ -139,7 +143,7 @@ async function Product(fastify: FastifyInstance) {
           city: cityMapper.toObject(product.store.city),
         },
       }))
-      return replay.send(object)
+      return replay.header('x-has-more', products.right.hasMore).send(object)
     },
   })
 }

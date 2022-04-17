@@ -1,8 +1,10 @@
-import { Types } from '@/types'
+import { UserModel } from '@/types/models/user'
+import { UserObject } from '@/types/objects/user'
+import { UserRecord } from '@/types/records/user'
 
-function User() {
-  function fromRecord(record: Types.Records.User) {
-    const model: Types.Models.User = {
+function UserMapper() {
+  function fromRecord(record: UserRecord) {
+    const model: UserModel = {
       id: record.id,
       name: record.name,
       email: record.email,
@@ -14,8 +16,8 @@ function User() {
     return model
   }
 
-  function toObject(model: Types.Models.User) {
-    const object: Types.Objects.User = {
+  function toObject(model: UserModel) {
+    const object: UserObject = {
       id: model.id,
       name: model.name,
       email: model.email,
@@ -32,4 +34,4 @@ function User() {
   }
 }
 
-export { User }
+export default UserMapper

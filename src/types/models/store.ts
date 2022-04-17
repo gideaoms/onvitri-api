@@ -1,33 +1,18 @@
-import { Product } from '@/types/models/product'
-import { City } from '@/types/models/city'
-
-declare module Store {
+export declare namespace StoreModel {
   type Phone = {
     countryCode: string
-    area: string
+    areaCode: string
     number: string
   }
-
   type Status = 'active' | 'inactive'
-
-  type WithCityAndProducts = Store & {
-    city: City
-    products: Product[]
-  }
-
-  type WithCity = Store & {
-    city: City
-  }
 }
 
-type Store = {
+export type StoreModel = {
   id: string
   fantasyName: string
   street: string
   number: string
   neighborhood: string
-  phone: Store.Phone
-  status: Store.Status
+  phone: StoreModel.Phone
+  status: StoreModel.Status
 }
-
-export { Store }

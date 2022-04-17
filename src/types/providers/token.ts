@@ -1,9 +1,7 @@
 import { Either } from 'fp-either'
-import { Unauthorized } from '@/errors/unauthorized'
+import UnauthorizedError from '@/errors/unauthorized'
 
-type Token = {
+export type TokenProvider = {
   generate(sub: string): string
-  verify(token: string): Either<Unauthorized, string>
+  verify(token: string): Either<UnauthorizedError, string>
 }
-
-export { Token }

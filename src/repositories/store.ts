@@ -1,13 +1,15 @@
 import { left, right } from 'fp-either'
-import { Types } from '@/types'
-import { prisma } from '@/libs/prisma'
-import { Mappers } from '@/mappers'
-import { Errors } from '@/errors'
+import { StoreRepository } from '@/types/repositories/store'
+import ProductMapper from '@/mappers/product'
+import StoreMapper from '@/mappers/store'
+import CityMapper from '@/mappers/city'
+import prisma from '@/libs/prisma'
+import NotFoundError from '@/errors/not-found'
 
-function Store(): Types.Repositories.Store {
-  const productMapper = Mappers.Product()
-  const storeMapper = Mappers.Store()
-  const cityMapper = Mappers.City()
+function StoreRepository(): StoreRepository {
+  const productMapper = ProductMapper()
+  const storeMapper = StoreMapper()
+  const cityMapper = CityMapper()
 
   async function findOne(storeId: string) {
     const limit = 10
@@ -28,7 +30,7 @@ function Store(): Types.Repositories.Store {
         },
       },
     })
-    if (!store) return left(new Errors.NotFound('Store not found'))
+    if (!store) return left(new NotFoundError('Store not found'))
     const page = 1
     const hasMore = await prisma.product.count({
       take: limit,
@@ -49,4 +51,4 @@ function Store(): Types.Repositories.Store {
   }
 }
 
-export { Store }
+export default StoreRepository

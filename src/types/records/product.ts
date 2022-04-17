@@ -1,19 +1,16 @@
-declare module Product {
+export declare namespace ProductRecord {
+  type Status = 'active' | 'inactive'
   type Photo = {
     url: string
   }
-
-  type Status = 'active' | 'inactive'
 }
 
-type Product = {
+export type ProductRecord = {
   id: string
   store_id: string
   title: string
   description: string
   price: number
-  photos: Product.Photo[]
-  status: Product.Status
+  status: ProductRecord.Status
+  photos: ProductRecord.Photo[]
 }
-
-export { Product }
