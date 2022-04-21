@@ -1,10 +1,10 @@
 import { StoreRecord } from '@/types/records/store'
-import { StoreModel } from '@/types/models/store'
+import { Store } from '@/types/store'
 import { StoreObject } from '@/types/objects/store'
 
 function StoreMapper() {
   function fromRecord(record: StoreRecord) {
-    const model: StoreModel = {
+    const model: Store = {
       id: record.id,
       fantasyName: record.fantasy_name,
       street: record.street,
@@ -20,7 +20,7 @@ function StoreMapper() {
     return model
   }
 
-  function toObject(model: StoreModel) {
+  function toObject(model: Store) {
     const object: StoreObject = {
       id: model.id,
       fantasy_name: model.fantasyName,

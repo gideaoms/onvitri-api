@@ -1,4 +1,4 @@
-import { UserModel } from '@/types/models/user'
+import { User } from '@/types/user'
 import { CryptoProvider } from '@/types/providers/crypto'
 
 function UserModel(cryptoProvider: CryptoProvider) {
@@ -6,11 +6,11 @@ function UserModel(cryptoProvider: CryptoProvider) {
     return cryptoProvider.compare(plainPassword, hashedPassword)
   }
 
-  function isActive(user: UserModel) {
+  function isActive(user: User) {
     return user.status === 'active'
   }
 
-  function hasRole(user: UserModel, role: UserModel.Role) {
+  function hasRole(user: User, role: User.Role) {
     return user.roles.includes(role)
   }
 

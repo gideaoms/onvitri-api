@@ -1,14 +1,14 @@
-export declare namespace UserModel {
+export declare namespace User {
   type Role = 'shopkeeper' | 'customer'
   type Status = 'active' | 'inactive'
 }
 
-export type UserModel = {
+export type User = {
   id: string
   name: string
   email: string
   password: string
-  roles: UserModel.Role[]
-  status: UserModel.Status
+  roles: User.Role[]
+  status: User.Status
   token: string
 }

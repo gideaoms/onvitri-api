@@ -1,4 +1,4 @@
-export declare namespace StoreModel {
+export declare namespace Store {
   type Phone = {
     countryCode: string
     areaCode: string
@@ -7,12 +7,12 @@ export declare namespace StoreModel {
   type Status = 'active' | 'inactive'
 }
 
-export type StoreModel = {
+export type Store = {
   id: string
   fantasyName: string
   street: string
   number: string
   neighborhood: string
-  phone: StoreModel.Phone
-  status: StoreModel.Status
+  phone: Store.Phone
+  status: Store.Status
 }

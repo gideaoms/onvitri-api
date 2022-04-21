@@ -67,6 +67,19 @@ model Product {
   status      String
 
   store Store @relation(fields: [store_id], references: [id])
+  temporaries Temporary[]
 
   @@map("products")
+}
+
+model Temporary {
+  id         String   @id @default(uuid()) @db.Uuid
+  product_id String @db.Uuid
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  url        String
+
+  product Product @relation(fields: [product_id], references: [id])
+
+  @@map("temporaries")
 }

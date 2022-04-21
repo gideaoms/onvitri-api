@@ -1,6 +1,6 @@
 import { FastifyInstance } from 'fastify'
 import { isLeft } from 'fp-either'
-import { findHttpStatusByError } from '@/utils/exception'
+import { findCodeByError, getBy } from '@/utils'
 import UserRepository from '@/repositories/user'
 import ProductRepository from '@/repositories/dashboard/product'
 import CryptoProvider from '@/providers/crypto'
@@ -11,17 +11,26 @@ import StoreMapper from '@/mappers/store'
 import CityMapper from '@/mappers/city'
 import ProductService from '@/services/dashboard/product'
 import StoreRepository from '@/repositories/dashboard/store'
+import { Product } from '@/types/product'
 
 const userRepository = UserRepository()
 const productRepository = ProductRepository()
 const storeRepository = StoreRepository()
 const cryptoProvider = CryptoProvider()
 const tokenProvider = TokenProvider()
-const guardianProvider = GuardianProvider(tokenProvider, userRepository, cryptoProvider)
+const guardianProvider = GuardianProvider(
+  tokenProvider,
+  userRepository,
+  cryptoProvider,
+)
 const productMapper = ProductMapper()
 const storeMapper = StoreMapper()
 const cityMapper = CityMapper()
-const productService = ProductService(guardianProvider, productRepository, storeRepository)
+const productService = ProductService(
+  guardianProvider,
+  productRepository,
+  storeRepository,
+)
 
 async function Product(fastify: FastifyInstance) {
   fastify.route({
@@ -56,7 +65,7 @@ async function Product(fastify: FastifyInstance) {
                 type: 'string',
               },
               price: {
-                type: 'number',
+                type: 'integer',
               },
               status: {
                 type: 'string',
@@ -133,7 +142,7 @@ async function Product(fastify: FastifyInstance) {
       const token = request.headers.authorization
       const products = await productService.findMany(page, token)
       if (isLeft(products)) {
-        const httpStatus = findHttpStatusByError(products.left)
+        const httpStatus = findCodeByError(products.left)
         return replay.code(httpStatus).send({ message: products.left.message })
       }
       const object = products.right.data.map((product) => ({
@@ -144,6 +153,194 @@ async function Product(fastify: FastifyInstance) {
         },
       }))
       return replay.header('x-has-more', products.right.hasMore).send(object)
+    },
+  })
+
+  fastify.route({
+    url: '/products',
+    method: 'POST',
+    schema: {
+      body: {
+        type: 'object',
+        properties: {
+          store_id: {
+            type: 'string',
+            format: 'uuid',
+          },
+          title: {
+            type: 'string',
+          },
+          description: {
+            type: 'string',
+          },
+          price: {
+            type: 'integer',
+          },
+        },
+        required: ['store_id', 'title', 'description', 'price'],
+      },
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            id: {
+              type: 'string',
+            },
+          },
+        },
+      },
+    },
+    async handler(request, replay) {
+      const token = request.headers.authorization
+      const {
+        store_id: storeId,
+        title,
+        description,
+        price,
+      } = request.body as any
+      const product = await productService.create(
+        storeId,
+        title,
+        description,
+        price,
+        token,
+      )
+      if (isLeft(product)) {
+        const httpStatus = findCodeByError(product.left)
+        return replay.code(httpStatus).send({ message: product.left.message })
+      }
+      const object = productMapper.toObject(product.right)
+      return replay.send(object)
+    },
+  })
+
+  fastify.route({
+    url: '/products/:product_id',
+    method: 'GET',
+    schema: {
+      params: {
+        type: 'object',
+        properties: {
+          product_id: {
+            type: 'string',
+            format: 'uuid',
+          },
+        },
+      },
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            id: {
+              type: 'string',
+            },
+            store_id: {
+              type: 'string',
+            },
+            title: {
+              type: 'string',
+            },
+            description: {
+              type: 'string',
+            },
+            price: {
+              type: 'integer',
+            },
+            status: {
+              type: 'string',
+            },
+            photos: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  url: {
+                    type: 'string',
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    async handler(request, replay) {
+      const productId = (request.params as any).product_id
+      const token = request.headers.authorization
+      const product = await productService.findOne(productId, token)
+      if (isLeft(product)) {
+        const httpStatus = findCodeByError(product.left)
+        return replay.code(httpStatus).send({ message: product.left.message })
+      }
+      const object = productMapper.toObject(product.right)
+      return replay.send(object)
+    },
+  })
+
+  fastify.route({
+    url: '/products/:product_id',
+    method: 'PUT',
+    schema: {
+      params: {
+        type: 'object',
+        properties: {
+          product_id: {
+            type: 'string',
+            format: 'uuid',
+          },
+        },
+        required: ['product_id'],
+      },
+      body: {
+        type: 'object',
+        properties: {
+          title: {
+            type: 'string',
+          },
+          description: {
+            type: 'string',
+          },
+          price: {
+            type: 'integer',
+          },
+          photos: {
+            type: 'array',
+            items: {
+              type: 'string',
+              format: 'uuid',
+            },
+          },
+          status: {
+            type: 'string',
+            enum: ['active', 'inactive'],
+          },
+        },
+        required: ['title', 'description', 'price', 'photos', 'status'],
+      },
+    },
+    async handler(request, replay) {
+      const productId = getBy(request.params, 'product_id')
+      const title = getBy(request.body, 'title')
+      const description = getBy(request.body, 'description')
+      const price = getBy(request.body, 'price')
+      const photos = getBy(request.body, 'photos')
+      const status = getBy(request.body, 'status')
+      const token = request.headers.authorization
+      const updated = await productService.update(
+        productId,
+        title,
+        description,
+        price,
+        photos,
+        status,
+        token,
+      )
+      if (isLeft(updated)) {
+        const code = findCodeByError(updated.left)
+        return replay.code(code).send({ message: updated.left.message })
+      }
+      const object = productMapper.toObject(updated.right)
+      return replay.send(object)
     },
   })
 }

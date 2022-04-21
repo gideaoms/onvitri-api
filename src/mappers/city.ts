@@ -1,10 +1,10 @@
 import { CityObject } from '@/types/objects/city'
-import { CityModel } from '@/types/models/city'
+import { City } from '@/types/city'
 import { CityRecord } from '@/types/records/city'
 
 function CityMapper() {
   function fromRecord(record: CityRecord) {
-    const model: CityModel = {
+    const model: City = {
       id: record.id,
       name: record.name,
       initials: record.initials,
@@ -12,7 +12,7 @@ function CityMapper() {
     return model
   }
 
-  function toObject(model: CityModel) {
+  function toObject(model: City) {
     const object: CityObject = {
       id: model.id,
       name: model.name,

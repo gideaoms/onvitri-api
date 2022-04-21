@@ -1,10 +1,10 @@
 import { ProductRecord } from '@/types/records/product'
-import { ProductModel } from '@/types/models/product'
+import { Product } from '@/types/product'
 import { ProductObject } from '@/types/objects/product'
 
 function ProductMapper() {
   function fromRecord(record: ProductRecord) {
-    const model: ProductModel = {
+    const model: Product = {
       id: record.id,
       storeId: record.store_id,
       title: record.title,
@@ -16,7 +16,7 @@ function ProductMapper() {
     return model
   }
 
-  function toObject(model: ProductModel) {
+  function toObject(model: Product) {
     const object: ProductObject = {
       id: model.id,
       store_id: model.storeId,
@@ -29,7 +29,7 @@ function ProductMapper() {
     return object
   }
 
-  function toRecord(model: ProductModel) {
+  function toRecord(model: Product) {
     const record: ProductRecord = {
       id: model.id,
       store_id: model.storeId,

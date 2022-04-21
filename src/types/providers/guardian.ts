@@ -1,7 +1,10 @@
 import { Either } from 'fp-either'
-import { UserModel } from '@/types/models/user'
+import { User } from '@/types/user'
 import UnauthorizedError from '@/errors/unauthorized'
 
 export type GuardianProvider = {
-  passThrough(role: UserModel.Role, token?: string): Promise<Either<UnauthorizedError, UserModel>>
+  passThrough(
+    role: User.Role,
+    token?: string,
+  ): Promise<Either<UnauthorizedError, User>>
 }

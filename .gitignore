@@ -5,5 +5,3 @@ node_modules
 dist
 coverage
 .env
-
-src-BKP-back

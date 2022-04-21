@@ -1,6 +1,6 @@
 import { FastifyInstance } from 'fastify'
 import { isLeft } from 'fp-either'
-import { findHttpStatusByError } from '@/utils/exception'
+import { findCodeByError } from '@/utils'
 import UserRepository from '@/repositories/user'
 import CryptoProvider from '@/providers/crypto'
 import TokenProvider from '@/providers/token'
@@ -11,7 +11,11 @@ import SessionService from '@/services/dashboard/session'
 const userRepository = UserRepository()
 const cryptoProvider = CryptoProvider()
 const tokenProvider = TokenProvider()
-const guardianProvider = GuardianProvider(tokenProvider, userRepository, cryptoProvider)
+const guardianProvider = GuardianProvider(
+  tokenProvider,
+  userRepository,
+  cryptoProvider,
+)
 const userMapper = UserMapper()
 const sessionService = SessionService(
   userRepository,
@@ -69,7 +73,7 @@ async function Session(fastify: FastifyInstance) {
       const password = (request.body as any).password
       const session = await sessionService.create(email, password)
       if (isLeft(session)) {
-        const httpStatus = findHttpStatusByError(session.left)
+        const httpStatus = findCodeByError(session.left)
         return replay.code(httpStatus).send({ message: session.left.message })
       }
       const object = userMapper.toObject(session.right)
@@ -112,7 +116,7 @@ async function Session(fastify: FastifyInstance) {
       const token = request.headers.authorization
       const session = await sessionService.findOne(token)
       if (isLeft(session)) {
-        const httpStatus = findHttpStatusByError(session.left)
+        const httpStatus = findCodeByError(session.left)
         return replay.code(httpStatus).send({ message: session.left.message })
       }
       const object = userMapper.toObject(session.right)

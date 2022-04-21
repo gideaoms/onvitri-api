@@ -1,6 +1,6 @@
 import { FastifyInstance } from 'fastify'
 import { isLeft } from 'fp-either'
-import { findHttpStatusByError } from '@/utils/exception'
+import { findCodeByError } from '@/utils'
 import StoreRepository from '@/repositories/store'
 import StoreService from '@/services/store'
 import StoreMapper from '@/mappers/store'
@@ -96,7 +96,7 @@ async function Product(fastify: FastifyInstance) {
                     type: 'string',
                   },
                   price: {
-                    type: 'number',
+                    type: 'integer',
                   },
                   status: {
                     type: 'string',
@@ -123,7 +123,7 @@ async function Product(fastify: FastifyInstance) {
       const storeId = (request.params as any).store_id
       const store = await storeService.findOne(storeId)
       if (isLeft(store)) {
-        const httpStatus = findHttpStatusByError(store.left)
+        const httpStatus = findCodeByError(store.left)
         return replay.code(httpStatus).send({ message: store.left.message })
       }
       const object = {

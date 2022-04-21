@@ -1,6 +1,6 @@
 import { FastifyInstance } from 'fastify'
 import { isLeft } from 'fp-either'
-import { findHttpStatusByError } from '@/utils/exception'
+import { findCodeByError } from '@/utils'
 import ProductRepository from '@/repositories/product'
 import StoreRepository from '@/repositories/store'
 import ProductService from '@/services/product'
@@ -47,7 +47,7 @@ async function Product(fastify: FastifyInstance) {
                 type: 'string',
               },
               price: {
-                type: 'number',
+                type: 'integer',
               },
               status: {
                 type: 'string',
@@ -85,8 +85,10 @@ async function Product(fastify: FastifyInstance) {
       if (storeId) {
         const products = await productService.findManyByStore(storeId, page)
         if (isLeft(products)) {
-          const httpStatus = findHttpStatusByError(products.left)
-          return replay.code(httpStatus).send({ message: products.left.message })
+          const httpStatus = findCodeByError(products.left)
+          return replay
+            .code(httpStatus)
+            .send({ message: products.left.message })
         }
         const object = products.right.data.map(productMapper.toObject)
         return replay.header('x-has-more', products.right.hasMore).send(object)
@@ -128,7 +130,7 @@ async function Product(fastify: FastifyInstance) {
               type: 'string',
             },
             price: {
-              type: 'number',
+              type: 'integer',
             },
             status: {
               type: 'string',
@@ -189,7 +191,7 @@ async function Product(fastify: FastifyInstance) {
       const productId = (request.params as any).product_id
       const product = await productService.findOne(productId)
       if (isLeft(product)) {
-        const httpStatus = findHttpStatusByError(product.left)
+        const httpStatus = findCodeByError(product.left)
         return replay.code(httpStatus).send({ message: product.left.message })
       }
       const object = {

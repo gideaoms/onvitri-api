@@ -1,7 +1,7 @@
-import { StoreModel } from '@/types/models/store'
+import { Store } from '@/types/store'
 
 function StoreModel() {
-  function isActive(store: StoreModel) {
+  function isActive(store: Store) {
     return store.status === 'active'
   }
 
