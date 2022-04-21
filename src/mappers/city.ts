@@ -12,11 +12,11 @@ function CityMapper() {
     return model
   }
 
-  function toObject(model: City) {
+  function toObject(city: City) {
     const object: CityObject = {
-      id: model.id,
-      name: model.name,
-      initials: model.initials,
+      id: city.id,
+      name: city.name,
+      initials: city.initials,
     }
     return object
   }

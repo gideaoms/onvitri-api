@@ -75,6 +75,9 @@ async function Product(fastify: FastifyInstance) {
                 items: {
                   type: 'object',
                   properties: {
+                    id: {
+                      type: 'string',
+                    },
                     url: {
                       type: 'string',
                     },
@@ -105,7 +108,7 @@ async function Product(fastify: FastifyInstance) {
                       country_code: {
                         type: 'string',
                       },
-                      area: {
+                      area_code: {
                         type: 'string',
                       },
                       number: {
@@ -138,7 +141,7 @@ async function Product(fastify: FastifyInstance) {
       },
     },
     async handler(request, replay) {
-      const page = (request.query as any).page
+      const page = getBy(request.query, 'page')
       const token = request.headers.authorization
       const products = await productService.findMany(page, token)
       if (isLeft(products)) {
@@ -186,6 +189,35 @@ async function Product(fastify: FastifyInstance) {
             id: {
               type: 'string',
             },
+            store_id: {
+              type: 'string',
+            },
+            title: {
+              type: 'string',
+            },
+            description: {
+              type: 'string',
+            },
+            price: {
+              type: 'integer',
+            },
+            status: {
+              type: 'string',
+            },
+            photos: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  id: {
+                    type: 'string',
+                  },
+                  url: {
+                    type: 'string',
+                  },
+                },
+              },
+            },
           },
         },
       },
@@ -226,6 +258,7 @@ async function Product(fastify: FastifyInstance) {
             format: 'uuid',
           },
         },
+        required: ['product_id'],
       },
       response: {
         200: {
@@ -265,7 +298,7 @@ async function Product(fastify: FastifyInstance) {
       },
     },
     async handler(request, replay) {
-      const productId = (request.params as any).product_id
+      const productId = getBy(request.params, 'product_id')
       const token = request.headers.authorization
       const product = await productService.findOne(productId, token)
       if (isLeft(product)) {
@@ -306,8 +339,16 @@ async function Product(fastify: FastifyInstance) {
           photos: {
             type: 'array',
             items: {
-              type: 'string',
-              format: 'uuid',
+              type: 'object',
+              properties: {
+                id: {
+                  type: 'string',
+                  format: 'uuid',
+                },
+                url: {
+                  type: 'string',
+                },
+              },
             },
           },
           status: {
@@ -341,6 +382,33 @@ async function Product(fastify: FastifyInstance) {
       }
       const object = productMapper.toObject(updated.right)
       return replay.send(object)
+    },
+  })
+
+  fastify.route({
+    url: '/products/:product_id',
+    method: 'DELETE',
+    schema: {
+      params: {
+        type: 'object',
+        properties: {
+          product_id: {
+            type: 'string',
+            format: 'uuid',
+          },
+        },
+        required: ['product_id'],
+      },
+    },
+    async handler(request, replay) {
+      const productId = getBy(request.params, 'product_id')
+      const token = request.headers.authorization
+      const destroyed = await productService.destroy(productId, token)
+      if (isLeft(destroyed)) {
+        const code = findCodeByError(destroyed.left)
+        return replay.code(code).send({ message: destroyed.left.message })
+      }
+      return replay.send()
     },
   })
 }

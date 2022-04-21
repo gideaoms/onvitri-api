@@ -1,8 +1,7 @@
+import { PhotoRecord } from './photo'
+
 export declare namespace ProductRecord {
   type Status = 'active' | 'inactive'
-  type Photo = {
-    url: string
-  }
 }
 
 export type ProductRecord = {
@@ -12,5 +11,5 @@ export type ProductRecord = {
   description: string
   price: number
   status: ProductRecord.Status
-  photos: ProductRecord.Photo[]
+  photos: PhotoRecord[]
 }

@@ -40,7 +40,9 @@ function StoreRepository(): StoreRepository {
       data: {
         ...storeMapper.fromRecord(store as any),
         city: cityMapper.fromRecord(store.city),
-        products: store.products.map((product) => productMapper.fromRecord(product as any)),
+        products: store.products.map((product) =>
+          productMapper.fromRecord(product as any),
+        ),
       },
       hasMore: Boolean(hasMore),
     })

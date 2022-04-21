@@ -4,7 +4,7 @@ import { UserRecord } from '@/types/records/user'
 
 function UserMapper() {
   function fromRecord(record: UserRecord) {
-    const model: User = {
+    const user: User = {
       id: record.id,
       name: record.name,
       email: record.email,
@@ -13,17 +13,17 @@ function UserMapper() {
       status: record.status,
       token: record.token,
     }
-    return model
+    return user
   }
 
-  function toObject(model: User) {
+  function toObject(user: User) {
     const object: UserObject = {
-      id: model.id,
-      name: model.name,
-      email: model.email,
-      roles: model.roles,
-      status: model.status,
-      token: model.token,
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      roles: user.roles,
+      status: user.status,
+      token: user.token,
     }
     return object
   }

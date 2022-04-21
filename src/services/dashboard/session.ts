@@ -19,7 +19,10 @@ function SessionService(
     const foundUser = await userRepository.findOneByEmail(email)
     if (isLeft(foundUser)) return left(new BadRequestError(message))
     const hashedPassword = foundUser.right.password
-    const isPasswordCorrect = await userModel.isPasswordCorrect(plainPassword, hashedPassword)
+    const isPasswordCorrect = await userModel.isPasswordCorrect(
+      plainPassword,
+      hashedPassword,
+    )
     if (!isPasswordCorrect) return left(new BadRequestError(message))
     const sub = foundUser.right.id
     const token = tokenProvider.generate(sub)

@@ -4,7 +4,7 @@ import { StoreObject } from '@/types/objects/store'
 
 function StoreMapper() {
   function fromRecord(record: StoreRecord) {
-    const model: Store = {
+    const store: Store = {
       id: record.id,
       fantasyName: record.fantasy_name,
       street: record.street,
@@ -17,22 +17,22 @@ function StoreMapper() {
       },
       status: record.status,
     }
-    return model
+    return store
   }
 
-  function toObject(model: Store) {
+  function toObject(store: Store) {
     const object: StoreObject = {
-      id: model.id,
-      fantasy_name: model.fantasyName,
-      street: model.street,
-      number: model.number,
-      neighborhood: model.neighborhood,
+      id: store.id,
+      fantasy_name: store.fantasyName,
+      street: store.street,
+      number: store.number,
+      neighborhood: store.neighborhood,
       phone: {
-        country_code: model.phone.countryCode,
-        area_code: model.phone.areaCode,
-        number: model.phone.number,
+        country_code: store.phone.countryCode,
+        area_code: store.phone.areaCode,
+        number: store.phone.number,
       },
-      status: model.status,
+      status: store.status,
     }
     return object
   }

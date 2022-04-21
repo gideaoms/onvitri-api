@@ -3,7 +3,7 @@ import { GuardianProvider } from '@/types/providers/guardian'
 import { ProductRepository } from '@/types/repositories/dashboard/product'
 import { StoreRepository } from '@/types/repositories/dashboard/store'
 import { Product } from '@/types/product'
-import { TemporaryRepository } from '@/types/repositories/temporary'
+import { Photo } from '@/types/photo'
 import ProductModel from '@/models/product'
 import BadRequestError from '@/errors/bad-request'
 
@@ -11,7 +11,6 @@ function ProductService(
   guardianProvider: GuardianProvider,
   productRepository: ProductRepository,
   storeRepository: StoreRepository,
-  temporaryRepository: TemporaryRepository,
 ) {
   const productModel = ProductModel()
 
@@ -61,7 +60,7 @@ function ProductService(
     title: string,
     description: string,
     price: number,
-    photos: string[],
+    photos: Photo[],
     status: Product.Status,
     token?: string,
   ) {
@@ -70,7 +69,6 @@ function ProductService(
     const userId = user.right.id
     const foundProduct = await productRepository.exists(productId, userId)
     if (isLeft(foundProduct)) return left(foundProduct.left)
-    
     const product: Product = {
       id: productId,
       storeId: foundProduct.right.storeId,
@@ -82,11 +80,19 @@ function ProductService(
     }
     if (productModel.isActive(product) && !productModel.hasPhotos(product))
       return left(
-        new BadRequestError('You can not publish a product without a photo'),
+        new BadRequestError('Você não pode publicar um produto sem foto'),
       )
-    const photosToRemove = productModel.findPhotosToRemove(product, photos)
-    console.log({ photosToRemove })
     return right(await productRepository.update(product))
+  }
+
+  async function destroy(productId: string, token?: string) {
+    const user = await guardianProvider.passThrough('shopkeeper', token)
+    if (isLeft(user)) return left(user.left)
+    const ownerId = user.right.id
+    const found = await productRepository.exists(productId, ownerId)
+    if (isLeft(found)) return left(found.left)
+    await productRepository.destroy(productId)
+    return right(null)
   }
 
   return {
@@ -94,6 +100,7 @@ function ProductService(
     create,
     findOne,
     update,
+    destroy,
   }
 }
 

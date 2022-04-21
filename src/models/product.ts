@@ -26,23 +26,11 @@ function ProductModel() {
     return product.photos.length > 0
   }
 
-  function findPhotosToRemove(product: Product, uploaded: Photo[]) {
-    return product.photos.filter((photo) => {
-      return !uploaded.find((uploaded) => uploaded.id === photo.id)
-    })
-  }
-
-  function findPhotosToAdd(product: Product, uploaded: Photo[]) {
-    return product
-  }
-
   return {
     addPhotos,
     updateStatus,
     isActive,
     hasPhotos,
-    findPhotosToRemove,
-    findPhotosToAdd,
   }
 }
 

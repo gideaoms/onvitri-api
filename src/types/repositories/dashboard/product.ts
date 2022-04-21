@@ -24,4 +24,5 @@ export type ProductRepository = {
     productId: string,
     ownerId: string,
   ): Promise<Either<NotFoundError, Product>>
+  destroy(productId: string): Promise<void>
 }

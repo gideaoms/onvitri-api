@@ -110,12 +110,21 @@ function ProductRepository(): ProductRepository {
     )
   }
 
+  async function destroy(productId: string) {
+    await prisma.product.delete({
+      where: {
+        id: productId,
+      },
+    })
+  }
+
   return {
     findMany,
     create,
     exists,
     update,
     findOne,
+    destroy,
   }
 }
 
