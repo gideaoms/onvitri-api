@@ -179,6 +179,26 @@ async function Product(fastify: FastifyInstance) {
           price: {
             type: 'integer',
           },
+          photos: {
+            type: 'array',
+            maxItems: 6,
+            items: {
+              type: 'object',
+              properties: {
+                id: {
+                  type: 'string',
+                  format: 'uuid',
+                },
+                url: {
+                  type: 'string',
+                },
+              },
+            },
+          },
+          status: {
+            type: 'string',
+            enum: ['active', 'inactive'],
+          },
         },
         required: ['store_id', 'title', 'description', 'price'],
       },
@@ -229,12 +249,16 @@ async function Product(fastify: FastifyInstance) {
         title,
         description,
         price,
+        photos,
+        status,
       } = request.body as any
       const product = await productService.create(
         storeId,
         title,
         description,
         price,
+        photos,
+        status,
         token,
       )
       if (isLeft(product)) {
@@ -287,6 +311,9 @@ async function Product(fastify: FastifyInstance) {
               items: {
                 type: 'object',
                 properties: {
+                  id: {
+                    type: 'string',
+                  },
                   url: {
                     type: 'string',
                   },
@@ -338,6 +365,7 @@ async function Product(fastify: FastifyInstance) {
           },
           photos: {
             type: 'array',
+            maxItems: 6,
             items: {
               type: 'object',
               properties: {

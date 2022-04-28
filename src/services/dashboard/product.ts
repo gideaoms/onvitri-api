@@ -27,6 +27,8 @@ function ProductService(
     title: string,
     description: string,
     price: number,
+    photos: Photo[],
+    status: Product.Status,
     token?: string,
   ) {
     const user = await guardianProvider.passThrough('shopkeeper', token)
@@ -40,9 +42,13 @@ function ProductService(
       title: title,
       description: description,
       price: price,
-      photos: [],
-      status: 'inactive',
+      photos: photos,
+      status: status,
     }
+    if (productModel.isActive(product) && !productModel.hasPhotos(product))
+      return left(
+        new BadRequestError('Você não pode publicar um produto sem foto'),
+      )
     return right(await productRepository.create(product))
   }
 
