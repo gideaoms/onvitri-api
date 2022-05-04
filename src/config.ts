@@ -1,5 +1,7 @@
+import { isNil } from '@/utils'
+
 function pick(key: string) {
-  if (!process.env[key]) throw new Error(`Env ${key} is not defined`)
+  if (isNil(process.env[key])) throw new Error(`Env ${key} is not defined`)
   return process.env[key] as string
 }
 

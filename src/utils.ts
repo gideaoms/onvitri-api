@@ -13,3 +13,7 @@ export function findCodeByError(error: Error) {
 export function getBy(source: any, key: string) {
   return source[key]
 }
+
+export function isNil(value: unknown) {
+  return value === undefined || value === null
+}
