@@ -18,19 +18,11 @@ const productRepository = ProductRepository()
 const storeRepository = StoreRepository()
 const cryptoProvider = CryptoProvider()
 const tokenProvider = TokenProvider()
-const guardianProvider = GuardianProvider(
-  tokenProvider,
-  userRepository,
-  cryptoProvider,
-)
+const guardianProvider = GuardianProvider(tokenProvider, userRepository, cryptoProvider)
 const productMapper = ProductMapper()
 const storeMapper = StoreMapper()
 const cityMapper = CityMapper()
-const productService = ProductService(
-  guardianProvider,
-  productRepository,
-  storeRepository,
-)
+const productService = ProductService(guardianProvider, productRepository, storeRepository)
 
 async function Product(fastify: FastifyInstance) {
   fastify.route({
@@ -244,23 +236,8 @@ async function Product(fastify: FastifyInstance) {
     },
     async handler(request, replay) {
       const token = request.headers.authorization
-      const {
-        store_id: storeId,
-        title,
-        description,
-        price,
-        photos,
-        status,
-      } = request.body as any
-      const product = await productService.create(
-        storeId,
-        title,
-        description,
-        price,
-        photos,
-        status,
-        token,
-      )
+      const { store_id: storeId, title, description, price, photos, status } = request.body as any
+      const product = await productService.create(storeId, title, description, price, photos, status, token)
       if (isLeft(product)) {
         const httpStatus = findCodeByError(product.left)
         return replay.code(httpStatus).send({ message: product.left.message })
@@ -320,6 +297,57 @@ async function Product(fastify: FastifyInstance) {
                 },
               },
             },
+            store: {
+              type: 'object',
+              properties: {
+                id: {
+                  type: 'string',
+                },
+                fantasy_name: {
+                  type: 'string',
+                },
+                street: {
+                  type: 'string',
+                },
+                number: {
+                  type: 'string',
+                },
+                neighborhood: {
+                  type: 'string',
+                },
+                phone: {
+                  type: 'object',
+                  properties: {
+                    country_code: {
+                      type: 'string',
+                    },
+                    area_code: {
+                      type: 'string',
+                    },
+                    number: {
+                      type: 'string',
+                    },
+                  },
+                },
+                status: {
+                  type: 'string',
+                },
+                city: {
+                  type: 'object',
+                  properties: {
+                    id: {
+                      type: 'string',
+                    },
+                    name: {
+                      type: 'string',
+                    },
+                    initials: {
+                      type: 'string',
+                    },
+                  },
+                },
+              },
+            },
           },
         },
       },
@@ -332,7 +360,13 @@ async function Product(fastify: FastifyInstance) {
         const httpStatus = findCodeByError(product.left)
         return replay.code(httpStatus).send({ message: product.left.message })
       }
-      const object = productMapper.toObject(product.right)
+      const object = {
+        ...productMapper.toObject(product.right),
+        store: {
+          ...storeMapper.toObject(product.right.store),
+          city: cityMapper.toObject(product.right.store.city),
+        },
+      }
       return replay.send(object)
     },
   })
@@ -395,15 +429,7 @@ async function Product(fastify: FastifyInstance) {
       const photos = getBy(request.body, 'photos')
       const status = getBy(request.body, 'status')
       const token = request.headers.authorization
-      const updated = await productService.update(
-        productId,
-        title,
-        description,
-        price,
-        photos,
-        status,
-        token,
-      )
+      const updated = await productService.update(productId, title, description, price, photos, status, token)
       if (isLeft(updated)) {
         const code = findCodeByError(updated.left)
         return replay.code(code).send({ message: updated.left.message })

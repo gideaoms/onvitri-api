@@ -46,9 +46,7 @@ function ProductService(
       status: status,
     }
     if (productModel.isActive(product) && !productModel.hasPhotos(product))
-      return left(
-        new BadRequestError('Você não pode publicar um produto sem foto'),
-      )
+      return left(new BadRequestError('Você não pode publicar um produto sem foto'))
     return right(await productRepository.create(product))
   }
 
@@ -85,9 +83,7 @@ function ProductService(
       status: status,
     }
     if (productModel.isActive(product) && !productModel.hasPhotos(product))
-      return left(
-        new BadRequestError('Você não pode publicar um produto sem foto'),
-      )
+      return left(new BadRequestError('Você não pode publicar um produto sem foto'))
     return right(await productRepository.update(product))
   }
 

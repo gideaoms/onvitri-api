@@ -2,11 +2,13 @@ import { left, right } from 'fp-either'
 import prisma from '@/libs/prisma'
 import { ProductRepository } from '@/types/repositories/dashboard/product'
 import { Product } from '@/types/product'
-import { Photo } from '@/types/photo'
 import ProductMapper from '@/mappers/product'
 import StoreMapper from '@/mappers/store'
 import CityMapper from '@/mappers/city'
 import NotFoundError from '@/errors/not-found'
+import { StoreRecord } from '@/types/records/store'
+import { ProductRecord } from '@/types/records/product'
+import { PhotoRecord } from '@/types/records/photo'
 
 function ProductRepository(): ProductRepository {
   const productMapper = ProductMapper()
@@ -40,11 +42,19 @@ function ProductRepository(): ProductRepository {
       skip: limit * page,
     })
     return {
-      data: products.map((record) => ({
-        ...productMapper.fromRecord(record as any),
+      data: products.map((product) => ({
+        ...productMapper.fromRecord({
+          ...product,
+          status: product.status as ProductRecord.Status,
+          photos: product.photos as PhotoRecord[],
+        }),
         store: {
-          ...storeMapper.fromRecord(record.store as any),
-          city: cityMapper.fromRecord(record.store.city),
+          ...storeMapper.fromRecord({
+            ...product.store,
+            phone: product.store.phone as StoreRecord.Phone,
+            status: product.store.status as StoreRecord.Status,
+          }),
+          city: cityMapper.fromRecord(product.store.city),
         },
       })),
       hasMore: Boolean(hasMore),
@@ -52,10 +62,14 @@ function ProductRepository(): ProductRepository {
   }
 
   async function create(product: Product) {
-    const createdProduct = await prisma.product.create({
+    const created = await prisma.product.create({
       data: productMapper.toRecord(product),
     })
-    return productMapper.fromRecord(createdProduct as any)
+    return productMapper.fromRecord({
+      ...created,
+      status: created.status as ProductRecord.Status,
+      photos: created.photos as PhotoRecord[],
+    })
   }
 
   async function exists(productId: string, ownerId: string) {
@@ -71,8 +85,8 @@ function ProductRepository(): ProductRepository {
     return right(
       productMapper.fromRecord({
         ...product,
-        status: product.status as Product.Status,
-        photos: product.photos as Photo[],
+        status: product.status as ProductRecord.Status,
+        photos: product.photos as PhotoRecord[],
       }),
     )
   }
@@ -86,8 +100,8 @@ function ProductRepository(): ProductRepository {
     })
     return productMapper.fromRecord({
       ...updated,
-      status: updated.status as Product.Status,
-      photos: updated.photos as Photo[],
+      status: updated.status as ProductRecord.Status,
+      photos: updated.photos as PhotoRecord[],
     })
   }
 
@@ -99,15 +113,30 @@ function ProductRepository(): ProductRepository {
           owner_id: ownerId,
         },
       },
+      include: {
+        store: {
+          include: {
+            city: true,
+          },
+        },
+      },
     })
     if (!product) return left(new NotFoundError('Product not found'))
-    return right(
-      productMapper.fromRecord({
+    return right({
+      ...productMapper.fromRecord({
         ...product,
-        status: product.status as Product.Status,
-        photos: product.photos as Photo[],
+        status: product.status as ProductRecord.Status,
+        photos: product.photos as PhotoRecord[],
       }),
-    )
+      store: {
+        ...storeMapper.fromRecord({
+          ...product.store,
+          phone: product.store.phone as StoreRecord.Phone,
+          status: product.store.status as StoreRecord.Status,
+        }),
+        city: cityMapper.fromRecord(product.store.city),
+      },
+    })
   }
 
   async function destroy(productId: string) {
