@@ -3,5 +3,5 @@ WORKDIR /usr/app/
 COPY package*.json ./
 RUN npm install --silent --progress=false
 COPY . .
-EXPOSE ${API_PORT}
+EXPOSE ${APP_PORT}
 CMD ["npm", "run", "start"]
