@@ -57,6 +57,9 @@ async function Product(fastify: FastifyInstance) {
                 items: {
                   type: 'object',
                   properties: {
+                    id: {
+                      type: 'string',
+                    },
                     url: {
                       type: 'string',
                     },
@@ -140,6 +143,9 @@ async function Product(fastify: FastifyInstance) {
               items: {
                 type: 'object',
                 properties: {
+                  id: {
+                    url: 'string',
+                  },
                   url: {
                     type: 'string',
                   },
@@ -170,7 +176,7 @@ async function Product(fastify: FastifyInstance) {
                     country_code: {
                       type: 'string',
                     },
-                    area: {
+                    area_code: {
                       type: 'string',
                     },
                     number: {

@@ -4,10 +4,10 @@ import autoload from 'fastify-autoload'
 import cors from 'fastify-cors'
 import multipart from 'fastify-multipart'
 import staticy from 'fastify-static'
-import { APP_ENV } from '@/settings/app'
+import config from '@/config'
 
 const app = fastify({
-  logger: APP_ENV === 'development',
+  logger: config.APP_ENV === 'development',
 })
 
 app.register(cors, {
