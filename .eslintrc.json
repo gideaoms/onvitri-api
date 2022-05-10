@@ -41,7 +41,8 @@
       "error",
       {
         "allow": [
-          "info"
+          "info",
+          "error"
         ]
       }
     ],
