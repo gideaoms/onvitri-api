@@ -1,5 +1,5 @@
-import prisma from '@/libs/prisma'
-import CryptoProvider from '@/providers/crypto'
+import prisma from '../src/libs/prisma'
+import CryptoProvider from '../src/providers/crypto'
 
 async function main() {
   const cryptoProvider = CryptoProvider()
