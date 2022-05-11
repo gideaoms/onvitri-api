@@ -27,7 +27,7 @@ async function main() {
       city_id: city.id,
       fantasy_name: 'Loja Vende Bem',
       phone: {
-        country_area: '55',
+        country_code: '55',
         area_code: '44',
         number: '984999999',
       },
