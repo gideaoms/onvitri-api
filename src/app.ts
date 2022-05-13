@@ -5,9 +5,15 @@ import cors from 'fastify-cors'
 import multipart from 'fastify-multipart'
 import staticy from 'fastify-static'
 import config from '@/config'
+import sentry from '@/libs/sentry'
 
 const app = fastify({
   logger: config.APP_ENV === 'development',
+})
+
+app.setErrorHandler((err, _request, replay) => {
+  sentry.captureException(err)
+  replay.code(500).send({ statusCode: 500, message: 'Internal server error' })
 })
 
 app.register(cors, {

@@ -89,9 +89,7 @@ async function Product(fastify: FastifyInstance) {
         const products = await productService.findManyByStore(storeId, page)
         if (isLeft(products)) {
           const httpStatus = findCodeByError(products.left)
-          return replay
-            .code(httpStatus)
-            .send({ message: products.left.message })
+          return replay.code(httpStatus).send({ message: products.left.message })
         }
         const object = products.right.data.map(productMapper.toObject)
         return replay.header('x-has-more', products.right.hasMore).send(object)

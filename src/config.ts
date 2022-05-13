@@ -14,6 +14,7 @@ const config = {
   AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID as string,
   AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY as string,
   AWS_S3_ENDPOINT: process.env.AWS_S3_ENDPOINT,
+  SENTRY_DSN: process.env.SENTRY_DSN,
 }
 
 Object.entries(config).forEach(([key, value]) => {
