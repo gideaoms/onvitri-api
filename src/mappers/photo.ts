@@ -6,6 +6,7 @@ function PhotoMapper() {
     const object: PhotoObject = {
       id: photo.id,
       url: photo.url,
+      thumbnail_url: photo.thumbnailUrl,
     }
     return object
   }

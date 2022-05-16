@@ -11,7 +11,11 @@ function ProductMapper() {
       description: record.description,
       price: record.price,
       status: record.status,
-      photos: record.photos,
+      photos: record.photos.map((photo) => ({
+        id: photo.id,
+        url: photo.url,
+        thumbnailUrl: photo.thumbnail_url,
+      })),
     }
     return product
   }
@@ -24,7 +28,11 @@ function ProductMapper() {
       description: product.description,
       price: product.price,
       status: product.status,
-      photos: product.photos,
+      photos: product.photos.map((photo) => ({
+        id: photo.id,
+        url: photo.url,
+        thumbnail_url: photo.thumbnailUrl,
+      })),
     }
     return object
   }
@@ -37,7 +45,11 @@ function ProductMapper() {
       description: product.description,
       price: product.price,
       status: product.status,
-      photos: product.photos,
+      photos: product.photos.map((photo) => ({
+        id: photo.id,
+        url: photo.url,
+        thumbnail_url: photo.thumbnailUrl,
+      })),
     }
     return record
   }

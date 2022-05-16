@@ -5,6 +5,7 @@ import crypto from 'crypto'
 import { S3 } from 'aws-sdk'
 import format from 'date-fns/format'
 import mimeTypes from 'mime-types'
+import sharp from 'sharp'
 import { MultipartProvider } from '@/types/providers/multipart'
 import { Photo } from '@/types/photo'
 import config from '@/config'
@@ -33,12 +34,24 @@ function MultipartS3Provider(): MultipartProvider {
         ContentType: contextType,
       })
       .promise()
+    const resizeToThumbnail = sharp({ failOnError: false }).resize({
+      width: 200,
+      withoutEnlargement: true,
+    })
+    await s3
+      .putObject({
+        Bucket: `onvitri/${folder}/thumbnail`,
+        Key: filename,
+        ACL: 'public-read',
+        Body: stream.pipe(resizeToThumbnail),
+        ContentType: contextType,
+      })
+      .promise()
     await fs.promises.unlink(from)
-    // https://onvitri.sfo3.digitaloceanspaces.com/2022-05-04/7a21b83b36523dc1c796549da106fba120e2336a219b03970b18d472e012.jpeg
-    // https://onvitri.sfo3.digitaloceanspaces.com/2022-05-04/a2b557e9e85b8b4f6158025c650ea89676c28b1584d66ea7af971d9dc315.jpeg
     const photo: Photo = {
       id: crypto.randomUUID(),
       url: `https://onvitri.${config.AWS_S3_ENDPOINT}/${folder}/${filename}`,
+      thumbnailUrl: `https://onvitri.${config.AWS_S3_ENDPOINT}/${folder}/thumbnail/${filename}`,
     }
     return photo
   }

@@ -8,11 +8,6 @@ export type ProductRepository = {
     data: (Product & { store: Store })[]
     hasMore: boolean
   }>
-  findOne(
-    productId: string,
-  ): Promise<Either<NotFoundError, Product & { store: Store }>>
-  findManyByStore(
-    storeId: string,
-    page: number,
-  ): Promise<{ data: Product[]; hasMore: boolean }>
+  findOne(productId: string): Promise<Either<NotFoundError, Product & { store: Store }>>
+  findManyByStore(storeId: string, page: number): Promise<{ data: Product[]; hasMore: boolean }>
 }

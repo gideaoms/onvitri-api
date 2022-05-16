@@ -192,7 +192,7 @@ async function Product(fastify: FastifyInstance) {
             enum: ['active', 'inactive'],
           },
         },
-        required: ['store_id', 'title', 'description', 'price'],
+        required: ['store_id', 'title', 'description', 'price', 'photos'],
       },
       response: {
         200: {

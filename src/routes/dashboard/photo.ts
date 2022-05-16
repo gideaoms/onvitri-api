@@ -32,7 +32,7 @@ async function Photo(fastify: FastifyInstance) {
     method: 'POST',
     async handler(request, replay) {
       const token = request.headers.authorization
-      const allowed = ['image/png', 'image/jpg', 'image/jpeg']
+      const allowed = ['image/png', 'image/jpg', 'image/jpeg', 'image/webp']
       const maxPhotoWidth = 1000
       const resizePhoto = sharp({ failOnError: false }).resize({
         width: maxPhotoWidth,

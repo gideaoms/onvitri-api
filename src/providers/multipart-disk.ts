@@ -11,12 +11,12 @@ function MultipartDiskProvider(): MultipartProvider {
 
   async function create(filename: string) {
     const from = path.resolve(os.tmpdir(), filename)
-    const to = path.resolve(tmp, filename)
-    await fse.move(from, to)
-    const url = `http://localhost:${config.APP_PORT}/photos/${filename}`
+    await fse.copy(from, path.resolve(tmp, filename))
+    await fse.move(from, path.resolve(tmp, 'thumbnail', filename))
     const photo: Photo = {
       id: crypto.randomUUID(),
-      url: url,
+      url: `http://localhost:${config.APP_PORT}/photos/${filename}`,
+      thumbnailUrl: `http://localhost:${config.APP_PORT}/photos/thumbnail/${filename}`,
     }
     return photo
   }
