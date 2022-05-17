@@ -5,7 +5,6 @@ import os from 'os'
 import stream from 'stream/promises'
 import sharp from 'sharp'
 import crypto from 'crypto'
-import mimeTypes from 'mime-types'
 import { isLeft } from 'fp-either'
 import { findCodeByError } from '@/utils'
 import TokenProvider from '@/providers/token'
@@ -33,19 +32,18 @@ async function Photo(fastify: FastifyInstance) {
     async handler(request, replay) {
       const token = request.headers.authorization
       const allowed = ['image/png', 'image/jpg', 'image/jpeg', 'image/webp']
-      const maxPhotoWidth = 1000
-      const resizePhoto = sharp({ failOnError: false }).resize({
-        width: maxPhotoWidth,
-        withoutEnlargement: true,
-      })
-      const file = await request.file()
-      if (!allowed.includes(file.mimetype)) return replay.code(400).send({ message: 'Tipo de imagem inválido' })
-      const randomized = crypto.randomBytes(30).toString('hex')
-      const ext = mimeTypes.extension(file.mimetype) || 'jpeg'
-      const filename = `${randomized}.${ext}`
-      const filepath = path.join(os.tmpdir(), filename)
-      await stream.pipeline(file.file.pipe(resizePhoto), fs.createWriteStream(filepath))
-      const photo = await photoService.create(filename, token)
+      const data = await request.file()
+      if (!allowed.includes(data.mimetype)) return replay.code(400).send({ message: 'Tipo de image não permitido.' })
+      const photoName = `${crypto.randomBytes(30).toString('hex')}.webp`
+      const tmpDir = os.tmpdir()
+      const tmpPhotoSrc = path.join(tmpDir, photoName)
+      const tmpThumbsDir = path.join(tmpDir, 'thumbs')
+      if (!fs.existsSync(tmpThumbsDir)) await fs.promises.mkdir(tmpThumbsDir)
+      const thumbPhotoSrc = path.join(tmpThumbsDir, photoName)
+      const transformer = sharp({ failOnError: false }).resize({ width: 1000, withoutEnlargement: true }).webp()
+      await stream.pipeline(data.file, transformer, fs.createWriteStream(tmpPhotoSrc))
+      await sharp(tmpPhotoSrc, { failOnError: false }).resize({ width: 200, height: 200 }).webp().toFile(thumbPhotoSrc)
+      const photo = await photoService.create(photoName, token)
       if (isLeft(photo)) {
         const code = findCodeByError(photo.left)
         return replay.code(code).send({ message: photo.left.message })

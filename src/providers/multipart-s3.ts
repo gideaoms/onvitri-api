@@ -4,8 +4,6 @@ import fs from 'fs'
 import crypto from 'crypto'
 import { S3 } from 'aws-sdk'
 import format from 'date-fns/format'
-import mimeTypes from 'mime-types'
-import sharp from 'sharp'
 import { MultipartProvider } from '@/types/providers/multipart'
 import { Photo } from '@/types/photo'
 import config from '@/config'
@@ -20,38 +18,34 @@ function MultipartS3Provider(): MultipartProvider {
     },
   })
 
-  async function create(filename: string) {
-    const from = path.resolve(os.tmpdir(), filename)
-    const stream = fs.createReadStream(from)
-    const contextType = mimeTypes.contentType(filename) as string
+  async function create(photoName: string) {
+    const tmpPhotoSrc = path.join(os.tmpdir(), photoName)
+    const thumbPhotoSrc = path.join(os.tmpdir(), 'thumbs', photoName)
     const folder = format(new Date(), 'yyyy-MM-dd')
     await s3
       .putObject({
         Bucket: `onvitri/${folder}`,
-        Key: filename,
+        Key: photoName,
         ACL: 'public-read',
-        Body: stream,
-        ContentType: contextType,
+        Body: fs.createReadStream(tmpPhotoSrc),
+        ContentType: 'image/webp',
       })
       .promise()
-    const resizeToThumbnail = sharp({ failOnError: false }).resize({
-      width: 200,
-      withoutEnlargement: true,
-    })
     await s3
       .putObject({
-        Bucket: `onvitri/${folder}/thumbnail`,
-        Key: filename,
+        Bucket: `onvitri/${folder}/thumbs`,
+        Key: photoName,
         ACL: 'public-read',
-        Body: stream.pipe(resizeToThumbnail),
-        ContentType: contextType,
+        Body: fs.createReadStream(thumbPhotoSrc),
+        ContentType: 'image/webp',
       })
       .promise()
-    await fs.promises.unlink(from)
+    await fs.promises.unlink(tmpPhotoSrc)
+    await fs.promises.unlink(thumbPhotoSrc)
     const photo: Photo = {
       id: crypto.randomUUID(),
-      url: `https://onvitri.${config.AWS_S3_ENDPOINT}/${folder}/${filename}`,
-      thumbnailUrl: `https://onvitri.${config.AWS_S3_ENDPOINT}/${folder}/thumbnail/${filename}`,
+      url: `https://onvitri.${config.AWS_S3_ENDPOINT}/${folder}/${photoName}`,
+      thumbnailUrl: `https://onvitri.${config.AWS_S3_ENDPOINT}/${folder}/thumbs/${photoName}`,
     }
     return photo
   }

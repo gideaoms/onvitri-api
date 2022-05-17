@@ -7,16 +7,18 @@ import { Photo } from '@/types/photo'
 import config from '@/config'
 
 function MultipartDiskProvider(): MultipartProvider {
-  const tmp = path.resolve(__dirname, '..', '..', 'tmp')
+  const appTmpSrc = path.resolve(__dirname, '..', '..', 'tmp')
 
-  async function create(filename: string) {
-    const from = path.resolve(os.tmpdir(), filename)
-    await fse.copy(from, path.resolve(tmp, filename))
-    await fse.move(from, path.resolve(tmp, 'thumbnail', filename))
+  async function create(photoName: string) {
+    const osTmpSrc = os.tmpdir()
+    const tmpPhotoSrc = path.join(osTmpSrc, photoName)
+    const thumbPhotoSrc = path.join(osTmpSrc, 'thumbs', photoName)
+    await fse.move(tmpPhotoSrc, path.join(appTmpSrc, photoName))
+    await fse.move(thumbPhotoSrc, path.join(appTmpSrc, 'thumbs', photoName))
     const photo: Photo = {
       id: crypto.randomUUID(),
-      url: `http://localhost:${config.APP_PORT}/photos/${filename}`,
-      thumbnailUrl: `http://localhost:${config.APP_PORT}/photos/thumbnail/${filename}`,
+      url: `http://localhost:${config.APP_PORT}/photos/${photoName}`,
+      thumbnailUrl: `http://localhost:${config.APP_PORT}/photos/thumbs/${photoName}`,
     }
     return photo
   }
