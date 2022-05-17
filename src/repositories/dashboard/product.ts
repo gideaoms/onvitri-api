@@ -1,23 +1,23 @@
-import { left, right } from 'fp-either'
-import prisma from '@/libs/prisma'
-import { ProductRepository } from '@/types/repositories/dashboard/product'
-import { Product } from '@/types/product'
-import ProductMapper from '@/mappers/product'
-import StoreMapper from '@/mappers/store'
-import CityMapper from '@/mappers/city'
-import NotFoundError from '@/errors/not-found'
-import { StoreRecord } from '@/types/records/store'
-import { ProductRecord } from '@/types/records/product'
-import { PhotoRecord } from '@/types/records/photo'
+import { left, right } from 'fp-either';
+import prisma from '@/libs/prisma';
+import { ProductRepository } from '@/types/repositories/dashboard/product';
+import { Product } from '@/types/product';
+import ProductMapper from '@/mappers/product';
+import StoreMapper from '@/mappers/store';
+import CityMapper from '@/mappers/city';
+import NotFoundError from '@/errors/not-found';
+import { StoreRecord } from '@/types/records/store';
+import { ProductRecord } from '@/types/records/product';
+import { PhotoRecord } from '@/types/records/photo';
 
 function ProductRepository(): ProductRepository {
-  const productMapper = ProductMapper()
-  const storeMapper = StoreMapper()
-  const cityMapper = CityMapper()
+  const productMapper = ProductMapper();
+  const storeMapper = StoreMapper();
+  const cityMapper = CityMapper();
 
   async function findMany(ownerId: string, page: number) {
-    const limit = 10
-    const offset = limit * (page - 1)
+    const limit = 10;
+    const offset = limit * (page - 1);
     const products = await prisma.product.findMany({
       where: {
         store: {
@@ -36,11 +36,11 @@ function ProductRepository(): ProductRepository {
           },
         },
       },
-    })
+    });
     const hasMore = await prisma.product.count({
       take: limit,
       skip: limit * page,
-    })
+    });
     return {
       data: products.map((product) => ({
         ...productMapper.fromRecord({
@@ -58,18 +58,18 @@ function ProductRepository(): ProductRepository {
         },
       })),
       hasMore: Boolean(hasMore),
-    }
+    };
   }
 
   async function create(product: Product) {
     const created = await prisma.product.create({
       data: productMapper.toRecord(product),
-    })
+    });
     return productMapper.fromRecord({
       ...created,
       status: created.status as ProductRecord.Status,
       photos: created.photos as PhotoRecord[],
-    })
+    });
   }
 
   async function exists(productId: string, ownerId: string) {
@@ -80,15 +80,15 @@ function ProductRepository(): ProductRepository {
           owner_id: ownerId,
         },
       },
-    })
-    if (!product) return left(new NotFoundError('Product not found'))
+    });
+    if (!product) return left(new NotFoundError('Product not found'));
     return right(
       productMapper.fromRecord({
         ...product,
         status: product.status as ProductRecord.Status,
         photos: product.photos as PhotoRecord[],
       }),
-    )
+    );
   }
 
   async function update(product: Product) {
@@ -97,12 +97,12 @@ function ProductRepository(): ProductRepository {
       where: {
         id: product.id,
       },
-    })
+    });
     return productMapper.fromRecord({
       ...updated,
       status: updated.status as ProductRecord.Status,
       photos: updated.photos as PhotoRecord[],
-    })
+    });
   }
 
   async function findOne(productId: string, ownerId: string) {
@@ -120,8 +120,8 @@ function ProductRepository(): ProductRepository {
           },
         },
       },
-    })
-    if (!product) return left(new NotFoundError('Product not found'))
+    });
+    if (!product) return left(new NotFoundError('Product not found'));
     return right({
       ...productMapper.fromRecord({
         ...product,
@@ -136,7 +136,7 @@ function ProductRepository(): ProductRepository {
         }),
         city: cityMapper.fromRecord(product.store.city),
       },
-    })
+    });
   }
 
   async function destroy(productId: string) {
@@ -144,7 +144,7 @@ function ProductRepository(): ProductRepository {
       where: {
         id: productId,
       },
-    })
+    });
   }
 
   return {
@@ -154,7 +154,7 @@ function ProductRepository(): ProductRepository {
     update,
     findOne,
     destroy,
-  }
+  };
 }
 
-export default ProductRepository
+export default ProductRepository;

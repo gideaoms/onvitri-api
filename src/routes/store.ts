@@ -1,17 +1,17 @@
-import { FastifyInstance } from 'fastify'
-import { isLeft } from 'fp-either'
-import { findCodeByError } from '@/utils'
-import StoreRepository from '@/repositories/store'
-import StoreService from '@/services/store'
-import StoreMapper from '@/mappers/store'
-import ProductMapper from '@/mappers/product'
-import CityMapper from '@/mappers/city'
+import { FastifyInstance } from 'fastify';
+import { isLeft } from 'fp-either';
+import { findCodeByError } from '@/utils';
+import StoreRepository from '@/repositories/store';
+import StoreService from '@/services/store';
+import StoreMapper from '@/mappers/store';
+import ProductMapper from '@/mappers/product';
+import CityMapper from '@/mappers/city';
 
-const storeRepository = StoreRepository()
-const storeService = StoreService(storeRepository)
-const storeMapper = StoreMapper()
-const productMapper = ProductMapper()
-const cityMapper = CityMapper()
+const storeRepository = StoreRepository();
+const storeService = StoreService(storeRepository);
+const storeMapper = StoreMapper();
+const productMapper = ProductMapper();
+const cityMapper = CityMapper();
 
 async function Product(fastify: FastifyInstance) {
   fastify.route({
@@ -126,20 +126,20 @@ async function Product(fastify: FastifyInstance) {
       },
     },
     async handler(request, replay) {
-      const storeId = (request.params as any).store_id
-      const store = await storeService.findOne(storeId)
+      const storeId = (request.params as any).store_id;
+      const store = await storeService.findOne(storeId);
       if (isLeft(store)) {
-        const httpStatus = findCodeByError(store.left)
-        return replay.code(httpStatus).send({ message: store.left.message })
+        const httpStatus = findCodeByError(store.left);
+        return replay.code(httpStatus).send({ message: store.left.message });
       }
       const object = {
         ...storeMapper.toObject(store.right.data),
         city: cityMapper.toObject(store.right.data.city),
         products: store.right.data.products.map(productMapper.toObject),
-      }
-      return replay.header('x-has-more', store.right.hasMore).send(object)
+      };
+      return replay.header('x-has-more', store.right.hasMore).send(object);
     },
-  })
+  });
 }
 
-export default Product
+export default Product;

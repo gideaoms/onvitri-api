@@ -1,6 +1,6 @@
-import { ProductRecord } from '@/types/records/product'
-import { Product } from '@/types/product'
-import { ProductObject } from '@/types/objects/product'
+import { ProductRecord } from '@/types/records/product';
+import { Product } from '@/types/product';
+import { ProductObject } from '@/types/objects/product';
 
 function ProductMapper() {
   function fromRecord(record: ProductRecord) {
@@ -16,8 +16,8 @@ function ProductMapper() {
         url: photo.url,
         thumbnailUrl: photo.thumbnail_url,
       })),
-    }
-    return product
+    };
+    return product;
   }
 
   function toObject(product: Product) {
@@ -33,8 +33,8 @@ function ProductMapper() {
         url: photo.url,
         thumbnail_url: photo.thumbnailUrl,
       })),
-    }
-    return object
+    };
+    return object;
   }
 
   function toRecord(product: Product) {
@@ -50,15 +50,15 @@ function ProductMapper() {
         url: photo.url,
         thumbnail_url: photo.thumbnailUrl,
       })),
-    }
-    return record
+    };
+    return record;
   }
 
   return {
     fromRecord,
     toObject,
     toRecord,
-  }
+  };
 }
 
-export default ProductMapper
+export default ProductMapper;

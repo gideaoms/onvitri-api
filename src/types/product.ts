@@ -1,15 +1,15 @@
-import { Photo } from './photo'
+import { Photo } from './photo';
 
 export declare namespace Product {
-  type Status = 'active' | 'inactive'
+  type Status = 'active' | 'inactive';
 }
 
 export type Product = {
-  id: string
-  storeId: string
-  title: string
-  description: string
-  price: number
-  photos: Photo[]
-  status: Product.Status
-}
+  id: string;
+  storeId: string;
+  title: string;
+  description: string;
+  price: number;
+  photos: Photo[];
+  status: Product.Status;
+};

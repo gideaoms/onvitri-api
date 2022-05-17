@@ -1,29 +1,29 @@
-import { Product } from '@/types/product'
-import { Photo } from '@/types/photo'
+import { Product } from '@/types/product';
+import { Photo } from '@/types/photo';
 
 function ProductModel() {
   function addPhotos(product: Product, photos: Photo[]) {
     const newProduct: Product = {
       ...product,
       photos: [...product.photos, ...photos],
-    }
-    return newProduct
+    };
+    return newProduct;
   }
 
   function updateStatus(product: Product, status: Product.Status) {
     const newProduct: Product = {
       ...product,
       status: status,
-    }
-    return newProduct
+    };
+    return newProduct;
   }
 
   function isActive(product: Product) {
-    return product.status === 'active'
+    return product.status === 'active';
   }
 
   function hasPhotos(product: Product) {
-    return product.photos.length > 0
+    return product.photos.length > 0;
   }
 
   return {
@@ -31,7 +31,7 @@ function ProductModel() {
     updateStatus,
     isActive,
     hasPhotos,
-  }
+  };
 }
 
-export default ProductModel
+export default ProductModel;

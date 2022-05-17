@@ -1,17 +1,17 @@
-import { FastifyInstance } from 'fastify'
-import { isLeft } from 'fp-either'
-import { findCodeByError } from '@/utils'
-import ProductRepository from '@/repositories/product'
-import StoreRepository from '@/repositories/store'
-import ProductService from '@/services/product'
-import ProductMapper from '@/mappers/product'
-import StoreMapper from '@/mappers/store'
+import { FastifyInstance } from 'fastify';
+import { isLeft } from 'fp-either';
+import { findCodeByError } from '@/utils';
+import ProductRepository from '@/repositories/product';
+import StoreRepository from '@/repositories/store';
+import ProductService from '@/services/product';
+import ProductMapper from '@/mappers/product';
+import StoreMapper from '@/mappers/store';
 
-const productRepository = ProductRepository()
-const storeRepository = StoreRepository()
-const productService = ProductService(productRepository, storeRepository)
-const productMapper = ProductMapper()
-const storeMapper = StoreMapper()
+const productRepository = ProductRepository();
+const storeRepository = StoreRepository();
+const productService = ProductService(productRepository, storeRepository);
+const productMapper = ProductMapper();
+const storeMapper = StoreMapper();
 
 async function Product(fastify: FastifyInstance) {
   fastify.route({
@@ -86,25 +86,25 @@ async function Product(fastify: FastifyInstance) {
       },
     },
     async handler(request, replay) {
-      const page = (request.query as any).page
-      const storeId = (request.query as any).store_id
+      const page = (request.query as any).page;
+      const storeId = (request.query as any).store_id;
       if (storeId) {
-        const products = await productService.findManyByStore(storeId, page)
+        const products = await productService.findManyByStore(storeId, page);
         if (isLeft(products)) {
-          const httpStatus = findCodeByError(products.left)
-          return replay.code(httpStatus).send({ message: products.left.message })
+          const httpStatus = findCodeByError(products.left);
+          return replay.code(httpStatus).send({ message: products.left.message });
         }
-        const object = products.right.data.map(productMapper.toObject)
-        return replay.header('x-has-more', products.right.hasMore).send(object)
+        const object = products.right.data.map(productMapper.toObject);
+        return replay.header('x-has-more', products.right.hasMore).send(object);
       }
-      const { data: products, hasMore } = await productService.findMany(page)
+      const { data: products, hasMore } = await productService.findMany(page);
       const object = products.map((product) => ({
         ...productMapper.toObject(product),
         store: storeMapper.toObject(product.store),
-      }))
-      return replay.header('x-has-more', hasMore).send(object)
+      }));
+      return replay.header('x-has-more', hasMore).send(object);
     },
-  })
+  });
 
   fastify.route({
     url: '/products/:product_id',
@@ -198,19 +198,19 @@ async function Product(fastify: FastifyInstance) {
       },
     },
     async handler(request, replay) {
-      const productId = (request.params as any).product_id
-      const product = await productService.findOne(productId)
+      const productId = (request.params as any).product_id;
+      const product = await productService.findOne(productId);
       if (isLeft(product)) {
-        const httpStatus = findCodeByError(product.left)
-        return replay.code(httpStatus).send({ message: product.left.message })
+        const httpStatus = findCodeByError(product.left);
+        return replay.code(httpStatus).send({ message: product.left.message });
       }
       const object = {
         ...productMapper.toObject(product.right),
         store: storeMapper.toObject(product.right.store),
-      }
-      return replay.send(object)
+      };
+      return replay.send(object);
     },
-  })
+  });
 }
 
-export default Product
+export default Product;

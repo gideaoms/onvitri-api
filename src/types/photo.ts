@@ -1,5 +1,5 @@
 export type Photo = {
-  id: string
-  url: string
-  thumbnailUrl: string
-}
+  id: string;
+  url: string;
+  thumbnailUrl: string;
+};

@@ -1,4 +1,4 @@
-import { isNil } from '@/utils'
+import { isNil } from '@/utils';
 
 const config = {
   APP_ENV: process.env.APP_ENV,
@@ -15,10 +15,10 @@ const config = {
   AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY as string,
   AWS_S3_ENDPOINT: process.env.AWS_S3_ENDPOINT,
   SENTRY_DSN: process.env.SENTRY_DSN,
-}
+};
 
 Object.entries(config).forEach(([key, value]) => {
-  if (isNil(value)) throw new Error(`Env ${key} is not defined`)
-})
+  if (isNil(value)) throw new Error(`Env ${key} is not defined`);
+});
 
-export default config
+export default config;

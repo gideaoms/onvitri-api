@@ -1,6 +1,6 @@
-import { CityObject } from '@/types/objects/city'
-import { City } from '@/types/city'
-import { CityRecord } from '@/types/records/city'
+import { CityObject } from '@/types/objects/city';
+import { City } from '@/types/city';
+import { CityRecord } from '@/types/records/city';
 
 function CityMapper() {
   function fromRecord(record: CityRecord) {
@@ -8,8 +8,8 @@ function CityMapper() {
       id: record.id,
       name: record.name,
       initials: record.initials,
-    }
-    return model
+    };
+    return model;
   }
 
   function toObject(city: City) {
@@ -17,14 +17,14 @@ function CityMapper() {
       id: city.id,
       name: city.name,
       initials: city.initials,
-    }
-    return object
+    };
+    return object;
   }
 
   return {
     fromRecord,
     toObject,
-  }
+  };
 }
 
-export default CityMapper
+export default CityMapper;

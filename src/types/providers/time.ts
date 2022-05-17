@@ -1,3 +1,3 @@
 export type TimeProvider = {
-  subtractDays(days: number): Date
-}
+  subtractDays(days: number): Date;
+};

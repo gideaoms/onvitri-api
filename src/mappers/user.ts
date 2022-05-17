@@ -1,6 +1,6 @@
-import { User } from '@/types/user'
-import { UserObject } from '@/types/objects/user'
-import { UserRecord } from '@/types/records/user'
+import { User } from '@/types/user';
+import { UserObject } from '@/types/objects/user';
+import { UserRecord } from '@/types/records/user';
 
 function UserMapper() {
   function fromRecord(record: UserRecord) {
@@ -12,8 +12,8 @@ function UserMapper() {
       roles: record.roles,
       status: record.status,
       token: record.token,
-    }
-    return user
+    };
+    return user;
   }
 
   function toObject(user: User) {
@@ -24,14 +24,14 @@ function UserMapper() {
       roles: user.roles,
       status: user.status,
       token: user.token,
-    }
-    return object
+    };
+    return object;
   }
 
   return {
     fromRecord,
     toObject,
-  }
+  };
 }
 
-export default UserMapper
+export default UserMapper;

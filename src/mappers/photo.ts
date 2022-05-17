@@ -1,5 +1,5 @@
-import { Photo } from '@/types/photo'
-import { PhotoObject } from '@/types/objects/photo'
+import { Photo } from '@/types/photo';
+import { PhotoObject } from '@/types/objects/photo';
 
 function PhotoMapper() {
   function toObject(photo: Photo) {
@@ -7,13 +7,23 @@ function PhotoMapper() {
       id: photo.id,
       url: photo.url,
       thumbnail_url: photo.thumbnailUrl,
-    }
-    return object
+    };
+    return object;
+  }
+
+  function fromObject(object: PhotoObject) {
+    const photo: Photo = {
+      id: object.id,
+      url: object.url,
+      thumbnailUrl: object.thumbnail_url,
+    };
+    return photo;
   }
 
   return {
     toObject,
-  }
+    fromObject,
+  };
 }
 
-export default PhotoMapper
+export default PhotoMapper;

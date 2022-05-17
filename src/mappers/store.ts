@@ -1,6 +1,6 @@
-import { StoreRecord } from '@/types/records/store'
-import { Store } from '@/types/store'
-import { StoreObject } from '@/types/objects/store'
+import { StoreRecord } from '@/types/records/store';
+import { Store } from '@/types/store';
+import { StoreObject } from '@/types/objects/store';
 
 function StoreMapper() {
   function fromRecord(record: StoreRecord) {
@@ -16,8 +16,8 @@ function StoreMapper() {
         number: record.phone.number,
       },
       status: record.status,
-    }
-    return store
+    };
+    return store;
   }
 
   function toObject(store: Store) {
@@ -33,14 +33,14 @@ function StoreMapper() {
         number: store.phone.number,
       },
       status: store.status,
-    }
-    return object
+    };
+    return object;
   }
 
   return {
     fromRecord,
     toObject,
-  }
+  };
 }
 
-export default StoreMapper
+export default StoreMapper;

@@ -1,3 +1,3 @@
 class UnauthorizedError extends Error {}
 
-export default UnauthorizedError
+export default UnauthorizedError;

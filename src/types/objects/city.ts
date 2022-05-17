@@ -1,5 +1,5 @@
 export type CityObject = {
-  id: string
-  name: string
-  initials: string
-}
+  id: string;
+  name: string;
+  initials: string;
+};
