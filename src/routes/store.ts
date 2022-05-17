@@ -112,6 +112,9 @@ async function Product(fastify: FastifyInstance) {
                         url: {
                           type: 'string',
                         },
+                        thumbnail_url: {
+                          type: 'string',
+                        },
                       },
                     },
                   },

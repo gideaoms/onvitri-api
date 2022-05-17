@@ -73,6 +73,9 @@ async function Product(fastify: FastifyInstance) {
                     url: {
                       type: 'string',
                     },
+                    thumbnail_url: {
+                      type: 'string',
+                    },
                   },
                 },
               },
@@ -184,6 +187,9 @@ async function Product(fastify: FastifyInstance) {
                 url: {
                   type: 'string',
                 },
+                thumbnail_url: {
+                  type: 'string',
+                },
               },
             },
           },
@@ -225,6 +231,9 @@ async function Product(fastify: FastifyInstance) {
                     type: 'string',
                   },
                   url: {
+                    type: 'string',
+                  },
+                  thumbnail_url: {
                     type: 'string',
                   },
                 },
@@ -292,6 +301,9 @@ async function Product(fastify: FastifyInstance) {
                     type: 'string',
                   },
                   url: {
+                    type: 'string',
+                  },
+                  thumbnail_url: {
                     type: 'string',
                   },
                 },
@@ -408,6 +420,9 @@ async function Product(fastify: FastifyInstance) {
                   format: 'uuid',
                 },
                 url: {
+                  type: 'string',
+                },
+                thumbnail_url: {
                   type: 'string',
                 },
               },
