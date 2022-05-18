@@ -33,6 +33,9 @@ function StoreRepository(): StoreRepository {
     if (!store) return left(new NotFoundError('Store not found'));
     const page = 1;
     const hasMore = await prisma.product.count({
+      where: {
+        status: 'active',
+      },
       take: limit,
       skip: limit * page,
     });

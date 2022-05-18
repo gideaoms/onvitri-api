@@ -26,6 +26,9 @@ function ProductRepository(): ProductRepository {
       },
     });
     const hasMore = await prisma.product.count({
+      where: {
+        status: 'active',
+      },
       take: limit,
       skip: limit * page,
     });
@@ -70,6 +73,10 @@ function ProductRepository(): ProductRepository {
       skip: offset,
     });
     const hasMore = await prisma.product.count({
+      where: {
+        status: 'active',
+        store_id: storeId,
+      },
       take: limit,
       skip: limit * page,
     });

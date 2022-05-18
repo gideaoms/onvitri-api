@@ -38,6 +38,11 @@ function ProductRepository(): ProductRepository {
       },
     });
     const hasMore = await prisma.product.count({
+      where: {
+        store: {
+          owner_id: ownerId,
+        },
+      },
       take: limit,
       skip: limit * page,
     });
