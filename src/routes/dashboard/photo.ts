@@ -42,7 +42,7 @@ async function Photo(fastify: FastifyInstance) {
       const thumbPhotoSrc = path.join(tmpThumbsDir, photoName);
       const transformer = sharp({ failOnError: false }).resize({ width: 1000, withoutEnlargement: true }).webp();
       await stream.pipeline(data.file, transformer, fs.createWriteStream(tmpPhotoSrc));
-      await sharp(tmpPhotoSrc, { failOnError: false }).resize({ width: 200, height: 200 }).webp().toFile(thumbPhotoSrc);
+      await sharp(tmpPhotoSrc, { failOnError: false }).resize({ width: 250, height: 250 }).webp().toFile(thumbPhotoSrc);
       const photo = await photoService.create(photoName, token);
       if (isLeft(photo)) {
         const code = findCodeByError(photo.left);
