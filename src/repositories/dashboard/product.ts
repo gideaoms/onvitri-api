@@ -16,7 +16,7 @@ function ProductRepository(): ProductRepository {
   const cityMapper = CityMapper();
 
   async function findMany(ownerId: string, page: number) {
-    const limit = 10;
+    const limit = 12;
     const offset = limit * (page - 1);
     const products = await prisma.product.findMany({
       where: {

@@ -248,8 +248,22 @@ async function Product(fastify: FastifyInstance) {
     },
     async handler(request, replay) {
       const token = request.headers.authorization;
-      const { store_id: storeId, title, description, price, photos, status } = request.body as any;
-      const product = await productService.create(storeId, title, description, price, photos, status, token);
+      const storeId = getBy(request.body, 'store_id');
+      const title = getBy(request.body, 'title');
+      const description = getBy(request.body, 'description');
+      const price = getBy(request.body, 'price');
+      const photos: PhotoObject[] = getBy(request.body, 'photos');
+      const status = getBy(request.body, 'status');
+      const product = await productService.create(
+        storeId,
+        title,
+        description,
+        price,
+        photos.map(photoMapper.fromObject),
+        status,
+        token,
+      );
+
       if (isLeft(product)) {
         const httpStatus = findCodeByError(product.left);
         return replay.code(httpStatus).send({ message: product.left.message });

@@ -12,7 +12,7 @@ function StoreRepository(): StoreRepository {
   const cityMapper = CityMapper();
 
   async function findOne(storeId: string) {
-    const limit = 10;
+    const limit = 12;
     const store = await prisma.store.findFirst({
       where: {
         id: storeId,

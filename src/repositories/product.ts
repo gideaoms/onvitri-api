@@ -10,7 +10,7 @@ function ProductRepository(): ProductRepository {
   const storeMapper = StoreMapper();
 
   async function findMany(page: number) {
-    const limit = 10;
+    const limit = 12;
     const offset = limit * (page - 1);
     const products = await prisma.product.findMany({
       where: {
@@ -56,7 +56,7 @@ function ProductRepository(): ProductRepository {
   }
 
   async function findManyByStore(storeId: string, page: number) {
-    const limit = 10;
+    const limit = 12;
     const offset = limit * (page - 1);
     const products = await prisma.product.findMany({
       where: {
