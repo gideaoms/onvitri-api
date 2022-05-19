@@ -78,6 +78,35 @@ async function Product(fastify: FastifyInstance) {
                   fantasy_name: {
                     type: 'string',
                   },
+                  street: {
+                    type: 'string',
+                  },
+                  number: {
+                    type: 'number',
+                  },
+                  neighborhood: {
+                    type: 'string',
+                  },
+                  phone: {
+                    type: 'object',
+                    properties: {
+                      country_code: {
+                        type: 'string',
+                      },
+                      area_code: {
+                        type: 'string',
+                      },
+                      number: {
+                        type: 'string',
+                      },
+                    },
+                  },
+                  zip_code: {
+                    type: 'string',
+                  },
+                  status: {
+                    type: 'string',
+                  },
                 },
               },
             },
