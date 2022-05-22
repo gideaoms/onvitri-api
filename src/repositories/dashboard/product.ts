@@ -152,6 +152,17 @@ function ProductRepository(): ProductRepository {
     });
   }
 
+  async function activeProductsCount(ownerId: string) {
+    return prisma.product.count({
+      where: {
+        store: {
+          owner_id: ownerId,
+        },
+        status: 'active',
+      },
+    });
+  }
+
   return {
     findMany,
     create,
@@ -159,6 +170,7 @@ function ProductRepository(): ProductRepository {
     update,
     findOne,
     destroy,
+    activeProductsCount,
   };
 }
 

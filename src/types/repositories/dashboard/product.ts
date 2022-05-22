@@ -22,4 +22,5 @@ export type ProductRepository = {
     ownerId: string,
   ): Promise<Either<NotFoundError, Product & { store: Store & { city: City } }>>;
   destroy(productId: string): Promise<void>;
+  activeProductsCount(ownerId: string): Promise<number>;
 };
