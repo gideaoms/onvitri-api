@@ -27,7 +27,7 @@ function StoreRepository(): StoreRepository {
     );
   }
 
-  async function findMany(ownerId: string) {
+  async function findAll(ownerId: string) {
     const stores = await prisma.store.findMany({
       where: {
         owner_id: ownerId,
@@ -48,7 +48,7 @@ function StoreRepository(): StoreRepository {
 
   return {
     exists,
-    findMany,
+    findAll,
   };
 }
 

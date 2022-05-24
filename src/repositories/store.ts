@@ -1,5 +1,6 @@
 import { left, right } from 'fp-either';
 import { StoreRepository } from '@/types/repositories/store';
+import StoreModel from '@/models/store';
 import ProductMapper from '@/mappers/product';
 import StoreMapper from '@/mappers/store';
 import CityMapper from '@/mappers/city';
@@ -12,7 +13,7 @@ function StoreRepository(): StoreRepository {
   const cityMapper = CityMapper();
 
   async function findOne(storeId: string) {
-    const limit = 12;
+    const limit = StoreModel.itemsLimit;
     const store = await prisma.store.findFirst({
       where: {
         id: storeId,

@@ -2,13 +2,14 @@ import { left, right } from 'fp-either';
 import prisma from '@/libs/prisma';
 import { ProductRepository } from '@/types/repositories/dashboard/product';
 import { Product } from '@/types/product';
+import { StoreRecord } from '@/types/records/store';
+import { ProductRecord } from '@/types/records/product';
+import { PhotoRecord } from '@/types/records/photo';
+import ProductModel from '@/models/product';
 import ProductMapper from '@/mappers/product';
 import StoreMapper from '@/mappers/store';
 import CityMapper from '@/mappers/city';
 import NotFoundError from '@/errors/not-found';
-import { StoreRecord } from '@/types/records/store';
-import { ProductRecord } from '@/types/records/product';
-import { PhotoRecord } from '@/types/records/photo';
 
 function ProductRepository(): ProductRepository {
   const productMapper = ProductMapper();
@@ -16,7 +17,7 @@ function ProductRepository(): ProductRepository {
   const cityMapper = CityMapper();
 
   async function findMany(ownerId: string, page: number) {
-    const limit = 12;
+    const limit = ProductModel.itemsLimit;
     const offset = limit * (page - 1);
     const products = await prisma.product.findMany({
       where: {

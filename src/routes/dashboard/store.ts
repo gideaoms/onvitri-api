@@ -21,7 +21,7 @@ const cityMapper = CityMapper();
 
 async function Store(fastify: FastifyInstance) {
   fastify.route({
-    url: '/stores',
+    url: '/stores/all',
     method: 'GET',
     schema: {
       response: {
@@ -83,7 +83,7 @@ async function Store(fastify: FastifyInstance) {
     },
     async handler(request, replay) {
       const token = request.headers.authorization;
-      const stores = await storeService.findMany(token);
+      const stores = await storeService.findAll(token);
       if (isLeft(stores)) {
         const httpStatus = findCodeByError(stores.left);
         return replay.code(httpStatus).send({ message: stores.left.message });

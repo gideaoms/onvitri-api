@@ -43,4 +43,6 @@ function ProductModel(productRepository: ProductRepository) {
 
 ProductModel.maximumQuantityPublished = 20;
 
+ProductModel.itemsLimit = 12;
+
 export default ProductModel;

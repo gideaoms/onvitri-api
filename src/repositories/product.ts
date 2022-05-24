@@ -1,5 +1,6 @@
 import { left, right } from 'fp-either';
 import { ProductRepository } from '@/types/repositories/product';
+import ProductModel from '@/models/product';
 import ProductMapper from '@/mappers/product';
 import StoreMapper from '@/mappers/store';
 import prisma from '@/libs/prisma';
@@ -10,7 +11,7 @@ function ProductRepository(): ProductRepository {
   const storeMapper = StoreMapper();
 
   async function findMany(page: number) {
-    const limit = 12;
+    const limit = ProductModel.itemsLimit;
     const offset = limit * (page - 1);
     const products = await prisma.product.findMany({
       where: {
@@ -59,7 +60,7 @@ function ProductRepository(): ProductRepository {
   }
 
   async function findManyByStore(storeId: string, page: number) {
-    const limit = 12;
+    const limit = ProductModel.itemsLimit;
     const offset = limit * (page - 1);
     const products = await prisma.product.findMany({
       where: {

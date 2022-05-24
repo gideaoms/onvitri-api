@@ -5,5 +5,5 @@ import NotFoundError from '@/errors/not-found';
 
 export type StoreRepository = {
   exists(storeId: string, ownerId: string): Promise<Either<NotFoundError, Store>>;
-  findMany(ownerId: string): Promise<(Store & { city: City })[]>;
+  findAll(ownerId: string): Promise<(Store & { city: City })[]>;
 };

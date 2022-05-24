@@ -10,4 +10,6 @@ function StoreModel() {
   };
 }
 
+StoreModel.itemsLimit = 12;
+
 export default StoreModel;
