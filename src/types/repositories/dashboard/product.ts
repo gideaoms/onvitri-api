@@ -4,8 +4,6 @@ import { Store } from '@/types/store';
 import { City } from '@/types/city';
 import NotFoundError from '@/errors/not-found';
 
-// TODO: change from Promise<Either<User, Error>> to Promise<[User, Error?]>
-
 export type ProductRepository = {
   findMany(
     ownerId: string,

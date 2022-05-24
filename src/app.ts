@@ -37,5 +37,3 @@ app.register(autoload, {
 });
 
 export default app;
-
-// TODO: remove unused packages from package.json
