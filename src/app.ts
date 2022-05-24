@@ -4,6 +4,7 @@ import autoload from 'fastify-autoload';
 import cors from 'fastify-cors';
 import multipart from 'fastify-multipart';
 import staticy from 'fastify-static';
+import helmet from '@fastify/helmet';
 import config from '@/config';
 import sentry from '@/libs/sentry';
 
@@ -21,6 +22,7 @@ app.setErrorHandler(function cb(err, _request, replay) {
   replay.code(500).send({ statusCode: 500, message: 'Internal server error' });
 });
 
+app.register(helmet);
 app.register(cors, {
   exposedHeaders: ['x-has-more'],
 });
