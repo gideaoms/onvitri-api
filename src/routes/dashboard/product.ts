@@ -1,6 +1,8 @@
 import { FastifyInstance } from 'fastify';
 import { isLeft } from 'fp-either';
-import { findCodeByError, getBy } from '@/utils';
+import { findCodeByError } from '@/utils';
+import { Product } from '@/types/product';
+import { ProductObject } from '@/types/objects/product';
 import UserRepository from '@/repositories/user';
 import ProductRepository from '@/repositories/dashboard/product';
 import CryptoProvider from '@/providers/crypto';
@@ -11,8 +13,6 @@ import StoreMapper from '@/mappers/store';
 import CityMapper from '@/mappers/city';
 import ProductService from '@/services/dashboard/product';
 import StoreRepository from '@/repositories/dashboard/store';
-import { Product } from '@/types/product';
-import { PhotoObject } from '@/types/objects/photo';
 import PhotoMapper from '@/mappers/photo';
 
 const userRepository = UserRepository();
@@ -28,7 +28,11 @@ const cityMapper = CityMapper();
 const productService = ProductService(guardianProvider, productRepository, storeRepository);
 
 async function Product(fastify: FastifyInstance) {
-  fastify.route({
+  fastify.route<{
+    Querystring: {
+      page: number;
+    };
+  }>({
     url: '/products',
     method: 'GET',
     schema: {
@@ -139,7 +143,7 @@ async function Product(fastify: FastifyInstance) {
       },
     },
     async handler(request, replay) {
-      const page = getBy(request.query, 'page');
+      const page = request.query.page;
       const token = request.headers.authorization;
       const products = await productService.findMany(page, token);
       if (isLeft(products)) {
@@ -157,7 +161,9 @@ async function Product(fastify: FastifyInstance) {
     },
   });
 
-  fastify.route({
+  fastify.route<{
+    Body: ProductObject;
+  }>({
     url: '/products',
     method: 'POST',
     schema: {
@@ -248,12 +254,12 @@ async function Product(fastify: FastifyInstance) {
     },
     async handler(request, replay) {
       const token = request.headers.authorization;
-      const storeId = getBy(request.body, 'store_id');
-      const title = getBy(request.body, 'title');
-      const description = getBy(request.body, 'description');
-      const price = getBy(request.body, 'price');
-      const photos: PhotoObject[] = getBy(request.body, 'photos');
-      const status = getBy(request.body, 'status');
+      const storeId = request.body.store_id;
+      const title = request.body.title;
+      const description = request.body.description;
+      const price = request.body.price;
+      const photos = request.body.photos;
+      const status = request.body.status;
       const product = await productService.create(
         storeId,
         title,
@@ -273,7 +279,11 @@ async function Product(fastify: FastifyInstance) {
     },
   });
 
-  fastify.route({
+  fastify.route<{
+    Params: {
+      product_id: string;
+    };
+  }>({
     url: '/products/:product_id',
     method: 'GET',
     schema: {
@@ -382,7 +392,7 @@ async function Product(fastify: FastifyInstance) {
       },
     },
     async handler(request, replay) {
-      const productId = getBy(request.params, 'product_id');
+      const productId = request.params.product_id;
       const token = request.headers.authorization;
       const product = await productService.findOne(productId, token);
       if (isLeft(product)) {
@@ -400,7 +410,12 @@ async function Product(fastify: FastifyInstance) {
     },
   });
 
-  fastify.route({
+  fastify.route<{
+    Params: {
+      product_id: string;
+    };
+    Body: ProductObject;
+  }>({
     url: '/products/:product_id',
     method: 'PUT',
     schema: {
@@ -454,12 +469,12 @@ async function Product(fastify: FastifyInstance) {
       },
     },
     async handler(request, replay) {
-      const productId = getBy(request.params, 'product_id');
-      const title = getBy(request.body, 'title');
-      const description = getBy(request.body, 'description');
-      const price = getBy(request.body, 'price');
-      const photos: PhotoObject[] = getBy(request.body, 'photos');
-      const status = getBy(request.body, 'status');
+      const productId = request.params.product_id;
+      const title = request.body.title;
+      const description = request.body.description;
+      const price = request.body.price;
+      const photos = request.body.photos;
+      const status = request.body.status;
       const token = request.headers.authorization;
       const updated = await productService.update(
         productId,
@@ -479,7 +494,11 @@ async function Product(fastify: FastifyInstance) {
     },
   });
 
-  fastify.route({
+  fastify.route<{
+    Params: {
+      product_id: string;
+    };
+  }>({
     url: '/products/:product_id',
     method: 'DELETE',
     schema: {
@@ -495,7 +514,7 @@ async function Product(fastify: FastifyInstance) {
       },
     },
     async handler(request, replay) {
-      const productId = getBy(request.params, 'product_id');
+      const productId = request.params.product_id;
       const token = request.headers.authorization;
       const destroyed = await productService.destroy(productId, token);
       if (isLeft(destroyed)) {

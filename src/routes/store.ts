@@ -14,7 +14,11 @@ const productMapper = ProductMapper();
 const cityMapper = CityMapper();
 
 async function Product(fastify: FastifyInstance) {
-  fastify.route({
+  fastify.route<{
+    Params: {
+      store_id: string;
+    };
+  }>({
     url: '/stores/:store_id',
     method: 'GET',
     schema: {
@@ -126,7 +130,7 @@ async function Product(fastify: FastifyInstance) {
       },
     },
     async handler(request, replay) {
-      const storeId = (request.params as any).store_id;
+      const storeId = request.params.store_id;
       const store = await storeService.findOne(storeId);
       if (isLeft(store)) {
         const httpStatus = findCodeByError(store.left);

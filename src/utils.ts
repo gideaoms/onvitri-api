@@ -10,10 +10,6 @@ export function findCodeByError(error: Error) {
   throw new Error('Invalid error parameter');
 }
 
-export function getBy(source: any, key: string) {
-  return source[key];
-}
-
 export function isNil(value: unknown) {
   return value === undefined || value === null;
 }

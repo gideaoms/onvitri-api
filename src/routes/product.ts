@@ -14,7 +14,12 @@ const productMapper = ProductMapper();
 const storeMapper = StoreMapper();
 
 async function Product(fastify: FastifyInstance) {
-  fastify.route({
+  fastify.route<{
+    Querystring: {
+      page: number;
+      store_id: string;
+    };
+  }>({
     url: '/products',
     method: 'GET',
     schema: {
@@ -115,8 +120,8 @@ async function Product(fastify: FastifyInstance) {
       },
     },
     async handler(request, replay) {
-      const page = (request.query as any).page;
-      const storeId = (request.query as any).store_id;
+      const page = request.query.page;
+      const storeId = request.query.store_id;
       if (storeId) {
         const products = await productService.findManyByStore(storeId, page);
         if (isLeft(products)) {
@@ -135,7 +140,11 @@ async function Product(fastify: FastifyInstance) {
     },
   });
 
-  fastify.route({
+  fastify.route<{
+    Params: {
+      product_id: string;
+    };
+  }>({
     url: '/products/:product_id',
     method: 'GET',
     schema: {
@@ -227,7 +236,7 @@ async function Product(fastify: FastifyInstance) {
       },
     },
     async handler(request, replay) {
-      const productId = (request.params as any).product_id;
+      const productId = request.params.product_id;
       const product = await productService.findOne(productId);
       if (isLeft(product)) {
         const httpStatus = findCodeByError(product.left);
