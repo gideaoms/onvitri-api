@@ -5,11 +5,15 @@ import cors from 'fastify-cors';
 import multipart from 'fastify-multipart';
 import staticy from 'fastify-static';
 import helmet from '@fastify/helmet';
+import keywords from 'ajv-keywords';
 import config from '@/config';
 import sentry from '@/libs/sentry';
 
 const app = fastify({
   logger: config.APP_ENV === 'development',
+  ajv: {
+    plugins: [keywords],
+  },
 });
 
 app.setErrorHandler(function cb(err, _request, replay) {

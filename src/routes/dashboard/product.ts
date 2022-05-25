@@ -176,9 +176,13 @@ async function Product(fastify: FastifyInstance) {
           },
           title: {
             type: 'string',
+            minLength: 1,
+            transform: ['trim'],
           },
           description: {
             type: 'string',
+            minLength: 1,
+            transform: ['trim'],
           },
           price: {
             type: 'integer',
@@ -260,6 +264,8 @@ async function Product(fastify: FastifyInstance) {
       const price = request.body.price;
       const photos = request.body.photos;
       const status = request.body.status;
+      if (!title) return replay.code(400).send({ statusCode: 400, message: 'body.title is required' });
+      if (!description) return replay.code(400).send({ statusCode: 400, message: 'body.description is required' });
       const product = await productService.create(
         storeId,
         title,
@@ -434,9 +440,13 @@ async function Product(fastify: FastifyInstance) {
         properties: {
           title: {
             type: 'string',
+            minLength: 1,
+            transform: ['trim'],
           },
           description: {
             type: 'string',
+            minLength: 1,
+            transform: ['trim'],
           },
           price: {
             type: 'integer',
@@ -476,6 +486,8 @@ async function Product(fastify: FastifyInstance) {
       const photos = request.body.photos;
       const status = request.body.status;
       const token = request.headers.authorization;
+      if (!title) return replay.code(400).send({ statusCode: 400, message: 'body.title is required' });
+      if (!description) return replay.code(400).send({ statusCode: 400, message: 'body.description is required' });
       const updated = await productService.update(
         productId,
         title,
