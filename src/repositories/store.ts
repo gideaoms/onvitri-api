@@ -1,5 +1,8 @@
 import { left, right } from 'fp-either';
 import { StoreRepository } from '@/types/repositories/store';
+import { ProductRecord } from '@/types/records/product';
+import { PhotoRecord } from '@/types/records/photo';
+import { StoreRecord } from '@/types/records/store';
 import StoreModel from '@/models/store';
 import ProductMapper from '@/mappers/product';
 import StoreMapper from '@/mappers/store';
@@ -42,9 +45,19 @@ function StoreRepository(): StoreRepository {
     });
     return right({
       data: {
-        ...storeMapper.fromRecord(store as any),
+        ...storeMapper.fromRecord({
+          ...store,
+          phone: store.phone as StoreRecord.Phone,
+          status: store.status as StoreRecord.Status,
+        }),
         city: cityMapper.fromRecord(store.city),
-        products: store.products.map((product) => productMapper.fromRecord(product as any)),
+        products: store.products.map((product) =>
+          productMapper.fromRecord({
+            ...product,
+            status: product.status as ProductRecord.Status,
+            photos: product.photos as PhotoRecord[],
+          }),
+        ),
       },
       hasMore: Boolean(hasMore),
     });

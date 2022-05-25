@@ -1,5 +1,6 @@
 import { left, right } from 'fp-either';
 import { UserRepository } from '@/types/repositories/user';
+import { UserRecord } from '@/types/records/user';
 import UserMapper from '@/mappers/user';
 import prisma from '@/libs/prisma';
 import NotFoundError from '@/errors/not-found';
@@ -14,7 +15,14 @@ function UserRepository(): UserRepository {
       },
     });
     if (!user) return left(new NotFoundError('User not found'));
-    return right(userMapper.fromRecord(user as any));
+    return right(
+      userMapper.fromRecord({
+        ...user,
+        token: '',
+        roles: user.roles as UserRecord.Role[],
+        status: user.status as UserRecord.Status,
+      }),
+    );
   }
 
   async function findOneById(userId: string) {
@@ -24,7 +32,14 @@ function UserRepository(): UserRepository {
       },
     });
     if (!user) return left(new NotFoundError('User not found'));
-    return right(userMapper.fromRecord(user as any));
+    return right(
+      userMapper.fromRecord({
+        ...user,
+        token: '',
+        roles: user.roles as UserRecord.Role[],
+        status: user.status as UserRecord.Status,
+      }),
+    );
   }
 
   return {

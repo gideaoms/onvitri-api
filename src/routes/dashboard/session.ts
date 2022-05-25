@@ -16,7 +16,12 @@ const userMapper = UserMapper();
 const sessionService = SessionService(userRepository, cryptoProvider, tokenProvider, guardianProvider);
 
 async function Session(fastify: FastifyInstance) {
-  fastify.route({
+  fastify.route<{
+    Body: {
+      email: string;
+      password: string;
+    };
+  }>({
     url: '/sessions',
     method: 'POST',
     schema: {
@@ -60,8 +65,7 @@ async function Session(fastify: FastifyInstance) {
       },
     },
     async handler(request, replay) {
-      const email = (request.body as any).email;
-      const password = (request.body as any).password;
+      const { email, password } = request.body;
       const session = await sessionService.create(email, password);
       if (isLeft(session)) {
         const httpStatus = findCodeByError(session.left);

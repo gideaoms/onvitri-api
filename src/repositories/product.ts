@@ -1,5 +1,8 @@
 import { left, right } from 'fp-either';
 import { ProductRepository } from '@/types/repositories/product';
+import { ProductRecord } from '@/types/records/product';
+import { PhotoRecord } from '@/types/records/photo';
+import { StoreRecord } from '@/types/records/store';
 import ProductModel from '@/models/product';
 import ProductMapper from '@/mappers/product';
 import StoreMapper from '@/mappers/store';
@@ -35,8 +38,16 @@ function ProductRepository(): ProductRepository {
     });
     return {
       data: products.map((record) => ({
-        ...productMapper.fromRecord(record as any),
-        store: storeMapper.fromRecord(record.store as any),
+        ...productMapper.fromRecord({
+          ...record,
+          status: record.status as ProductRecord.Status,
+          photos: record.photos as PhotoRecord[],
+        }),
+        store: storeMapper.fromRecord({
+          ...record.store,
+          phone: record.store.phone as StoreRecord.Phone,
+          status: record.store.status as StoreRecord.Status,
+        }),
       })),
       hasMore: Boolean(hasMore),
     };
@@ -54,8 +65,16 @@ function ProductRepository(): ProductRepository {
     });
     if (!product) return left(new NotFoundError('Product not found'));
     return right({
-      ...productMapper.fromRecord(product as any),
-      store: storeMapper.fromRecord(product.store as any),
+      ...productMapper.fromRecord({
+        ...product,
+        status: product.status as ProductRecord.Status,
+        photos: product.photos as PhotoRecord[],
+      }),
+      store: storeMapper.fromRecord({
+        ...product.store,
+        phone: product.store.phone as StoreRecord.Phone,
+        status: product.store.status as StoreRecord.Status,
+      }),
     });
   }
 
@@ -82,7 +101,13 @@ function ProductRepository(): ProductRepository {
       skip: limit * page,
     });
     return {
-      data: products.map((product) => productMapper.fromRecord(product as any)),
+      data: products.map((product) =>
+        productMapper.fromRecord({
+          ...product,
+          status: product.status as ProductRecord.Status,
+          photos: product.photos as PhotoRecord[],
+        }),
+      ),
       hasMore: Boolean(hasMore),
     };
   }
