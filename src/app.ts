@@ -1,18 +1,37 @@
 import path from 'path';
+import ajv from 'ajv';
 import fastify from 'fastify';
 import autoload from 'fastify-autoload';
 import cors from 'fastify-cors';
 import multipart from 'fastify-multipart';
 import staticy from 'fastify-static';
 import helmet from '@fastify/helmet';
-import keywords from 'ajv-keywords';
 import config from '@/config';
 import sentry from '@/libs/sentry';
+
+const plugin = (ajv: ajv.Ajv): ajv.Ajv => {
+  ajv.addKeyword('trim', {
+    type: 'string',
+    compile: (schema) => {
+      const validate: ajv.ValidateFunction = (data: string, _dataPath, parentData, parentDataProperty) => {
+        if (!schema) return true;
+        const trimmed = data.trim();
+        if (parentData && parentDataProperty) {
+          // eslint-disable-next-line no-param-reassign
+          parentData[parentDataProperty] = trimmed;
+        }
+        return trimmed.length > 0;
+      };
+      return validate;
+    },
+  });
+  return ajv;
+};
 
 const app = fastify({
   logger: config.APP_ENV === 'development',
   ajv: {
-    plugins: [keywords],
+    plugins: [plugin],
   },
 });
 
