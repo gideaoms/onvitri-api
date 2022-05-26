@@ -20,6 +20,7 @@ function StoreRepository(): StoreRepository {
     const store = await prisma.store.findFirst({
       where: {
         id: storeId,
+        status: 'active',
       },
       include: {
         city: true,
@@ -39,6 +40,7 @@ function StoreRepository(): StoreRepository {
     const hasMore = await prisma.product.count({
       where: {
         status: 'active',
+        store_id: storeId,
       },
       take: limit,
       skip: limit * page,

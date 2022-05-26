@@ -19,6 +19,9 @@ function ProductRepository(): ProductRepository {
     const products = await prisma.product.findMany({
       where: {
         status: 'active',
+        store: {
+          status: 'active',
+        },
       },
       orderBy: {
         created_at: 'desc',
@@ -32,6 +35,9 @@ function ProductRepository(): ProductRepository {
     const hasMore = await prisma.product.count({
       where: {
         status: 'active',
+        store: {
+          status: 'active',
+        },
       },
       take: limit,
       skip: limit * page,
@@ -58,6 +64,9 @@ function ProductRepository(): ProductRepository {
       where: {
         id: productId,
         status: 'active',
+        store: {
+          status: 'active',
+        },
       },
       include: {
         store: true,
@@ -84,7 +93,10 @@ function ProductRepository(): ProductRepository {
     const products = await prisma.product.findMany({
       where: {
         status: 'active',
-        store_id: storeId,
+        store: {
+          id: storeId,
+          status: 'active',
+        },
       },
       orderBy: {
         created_at: 'desc',
@@ -95,7 +107,10 @@ function ProductRepository(): ProductRepository {
     const hasMore = await prisma.product.count({
       where: {
         status: 'active',
-        store_id: storeId,
+        store: {
+          id: storeId,
+          status: 'active',
+        },
       },
       take: limit,
       skip: limit * page,
