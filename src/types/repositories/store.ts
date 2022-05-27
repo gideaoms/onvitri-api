@@ -4,7 +4,7 @@ import { Store } from '@/types/store';
 import { City } from '@/types/city';
 import { Product } from '@/types/product';
 
-export type StoreRepository = {
+export type IStoreRepository = {
   findOne(storeId: string): Promise<
     Either<
       NotFoundError,

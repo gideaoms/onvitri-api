@@ -4,11 +4,11 @@ import fs from 'fs';
 import crypto from 'crypto';
 import { S3 } from 'aws-sdk';
 import format from 'date-fns/format';
-import { MultipartProvider } from '@/types/providers/multipart';
+import { IMultipartProvider } from '@/types/providers/multipart';
 import { Photo } from '@/types/photo';
 import config from '@/config';
 
-function MultipartS3Provider(): MultipartProvider {
+function MultipartS3Provider(): IMultipartProvider {
   const s3 = new S3({
     endpoint: config.AWS_S3_ENDPOINT,
     region: 'sfo3',

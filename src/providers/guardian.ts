@@ -1,15 +1,15 @@
 import { isLeft, left, right } from 'fp-either';
-import { TokenProvider } from '@/types/providers/token';
-import { UserRepository } from '@/types/repositories/user';
-import { CryptoProvider } from '@/types/providers/crypto';
+import { ITokenProvider } from '@/types/providers/token';
+import { IUserRepository } from '@/types/repositories/user';
+import { ICryptoProvider } from '@/types/providers/crypto';
 import { User } from '@/types/user';
 import UserModel from '@/models/user';
 import UnauthorizedError from '@/errors/unauthorized';
 
 function GuardianProvider(
-  tokenProvider: TokenProvider,
-  userRepository: UserRepository,
-  cryptoProvider: CryptoProvider,
+  tokenProvider: ITokenProvider,
+  userRepository: IUserRepository,
+  cryptoProvider: ICryptoProvider,
 ) {
   const userModel = UserModel(cryptoProvider);
 

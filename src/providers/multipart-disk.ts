@@ -2,11 +2,11 @@ import os from 'os';
 import crypto from 'crypto';
 import path from 'path';
 import fse from 'fs-extra';
-import { MultipartProvider } from '@/types/providers/multipart';
+import { IMultipartProvider } from '@/types/providers/multipart';
 import { Photo } from '@/types/photo';
 import config from '@/config';
 
-function MultipartDiskProvider(): MultipartProvider {
+function MultipartDiskProvider(): IMultipartProvider {
   const appTmpSrc = path.resolve(__dirname, '..', '..', 'tmp');
 
   async function create(photoName: string) {

@@ -1,7 +1,7 @@
 import { subDays } from 'date-fns';
-import { TimeProvider } from '@/types/providers/time';
+import { ITimeProvider } from '@/types/providers/time';
 
-function TimeProvider(): TimeProvider {
+function TimeProvider(): ITimeProvider {
   function subtractDays(days: number) {
     return subDays(new Date(), days);
   }

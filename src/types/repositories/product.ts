@@ -3,7 +3,7 @@ import { Product } from '@/types/product';
 import { Store } from '@/types/store';
 import NotFoundError from '@/errors/not-found';
 
-export type ProductRepository = {
+export type IProductRepository = {
   findMany(page: number): Promise<{
     data: (Product & { store: Store })[];
     hasMore: boolean;

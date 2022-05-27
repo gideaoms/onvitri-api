@@ -1,5 +1,5 @@
 import { left, right } from 'fp-either';
-import { StoreRepository } from '@/types/repositories/store';
+import { IStoreRepository } from '@/types/repositories/store';
 import { ProductRecord } from '@/types/records/product';
 import { PhotoRecord } from '@/types/records/photo';
 import { StoreRecord } from '@/types/records/store';
@@ -10,7 +10,7 @@ import CityMapper from '@/mappers/city';
 import prisma from '@/libs/prisma';
 import NotFoundError from '@/errors/not-found';
 
-function StoreRepository(): StoreRepository {
+function StoreRepository(): IStoreRepository {
   const productMapper = ProductMapper();
   const storeMapper = StoreMapper();
   const cityMapper = CityMapper();
