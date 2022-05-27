@@ -1,16 +1,16 @@
 import { isLeft, left, right } from 'fp-either';
-import { GuardianProvider } from '@/types/providers/guardian';
-import { ProductRepository } from '@/types/repositories/dashboard/product';
-import { StoreRepository } from '@/types/repositories/dashboard/store';
+import { IGuardianProvider } from '@/types/providers/guardian';
+import { IProductRepository } from '@/types/repositories/dashboard/product';
+import { IStoreRepository } from '@/types/repositories/dashboard/store';
 import { Product } from '@/types/product';
 import { Photo } from '@/types/photo';
 import ProductModel from '@/models/product';
 import BadRequestError from '@/errors/bad-request';
 
 function ProductService(
-  guardianProvider: GuardianProvider,
-  productRepository: ProductRepository,
-  storeRepository: StoreRepository,
+  guardianProvider: IGuardianProvider,
+  productRepository: IProductRepository,
+  storeRepository: IStoreRepository,
 ) {
   const productModel = ProductModel(productRepository);
 

@@ -1,8 +1,8 @@
 import { isLeft, left, right } from 'fp-either';
-import { GuardianProvider } from '@/types/providers/guardian';
-import { MultipartProvider } from '@/types/providers/multipart';
+import { IGuardianProvider } from '@/types/providers/guardian';
+import { IMultipartProvider } from '@/types/providers/multipart';
 
-function PhotoService(guardianProvider: GuardianProvider, multipartProvider: MultipartProvider) {
+function PhotoService(guardianProvider: IGuardianProvider, multipartProvider: IMultipartProvider) {
   async function create(photoName: string, token?: string) {
     const user = await guardianProvider.passThrough('shopkeeper', token);
     if (isLeft(user)) return left(user.left);

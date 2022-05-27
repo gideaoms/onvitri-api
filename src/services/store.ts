@@ -1,6 +1,6 @@
-import { StoreRepository } from '@/types/repositories/store';
+import { IStoreRepository } from '@/types/repositories/store';
 
-function StoreService(storeRepository: StoreRepository) {
+function StoreService(storeRepository: IStoreRepository) {
   async function findOne(storeId: string) {
     const store = await storeRepository.findOne(storeId);
     return store;

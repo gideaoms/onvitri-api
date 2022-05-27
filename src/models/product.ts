@@ -1,8 +1,8 @@
 import { Product } from '@/types/product';
 import { Photo } from '@/types/photo';
-import { ProductRepository } from '@/types/repositories/dashboard/product';
+import { IProductRepository } from '@/types/repositories/dashboard/product';
 
-function ProductModel(productRepository: ProductRepository) {
+function ProductModel(productRepository: IProductRepository) {
   function addPhotos(product: Product, photos: Photo[]) {
     const newProduct: Product = {
       ...product,

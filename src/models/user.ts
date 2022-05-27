@@ -1,7 +1,7 @@
 import { User } from '@/types/user';
-import { CryptoProvider } from '@/types/providers/crypto';
+import { ICryptoProvider } from '@/types/providers/crypto';
 
-function UserModel(cryptoProvider: CryptoProvider) {
+function UserModel(cryptoProvider: ICryptoProvider) {
   function isPasswordCorrect(plainPassword: string, hashedPassword: string) {
     return cryptoProvider.compare(plainPassword, hashedPassword);
   }

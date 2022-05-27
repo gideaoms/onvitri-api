@@ -1,16 +1,16 @@
 import { isLeft, left, right } from 'fp-either';
-import { UserRepository } from '@/types/repositories/user';
-import { CryptoProvider } from '@/types/providers/crypto';
-import { TokenProvider } from '@/types/providers/token';
-import { GuardianProvider } from '@/types/providers/guardian';
+import { IUserRepository } from '@/types/repositories/user';
+import { ICryptoProvider } from '@/types/providers/crypto';
+import { ITokenProvider } from '@/types/providers/token';
+import { IGuardianProvider } from '@/types/providers/guardian';
 import UserModel from '@/models/user';
 import BadRequestError from '@/errors/bad-request';
 
 function SessionService(
-  userRepository: UserRepository,
-  cryptoProvider: CryptoProvider,
-  tokenProvider: TokenProvider,
-  guardianProvider: GuardianProvider,
+  userRepository: IUserRepository,
+  cryptoProvider: ICryptoProvider,
+  tokenProvider: ITokenProvider,
+  guardianProvider: IGuardianProvider,
 ) {
   const userModel = UserModel(cryptoProvider);
 
