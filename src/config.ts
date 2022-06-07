@@ -14,6 +14,7 @@ const config = {
   AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID as string,
   AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY as string,
   AWS_S3_ENDPOINT: process.env.AWS_S3_ENDPOINT,
+  AWS_S3_NAME: process.env.AWS_S3_NAME,
   SENTRY_DSN: process.env.SENTRY_DSN,
 };
 

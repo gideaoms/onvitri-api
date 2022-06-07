@@ -44,8 +44,8 @@ function MultipartS3Provider(): IMultipartProvider {
     await fs.promises.unlink(thumbPhotoSrc);
     const photo: Photo = {
       id: crypto.randomUUID(),
-      url: `https://onvitri.${config.AWS_S3_ENDPOINT}/${folder}/${photoName}`,
-      thumbnailUrl: `https://onvitri.${config.AWS_S3_ENDPOINT}/${folder}/thumbs/${photoName}`,
+      url: `https://${config.AWS_S3_NAME}.${config.AWS_S3_ENDPOINT}/${folder}/${photoName}`,
+      thumbnailUrl: `https://${config.AWS_S3_NAME}.${config.AWS_S3_ENDPOINT}/${folder}/thumbs/${photoName}`,
     };
     return photo;
   }
