@@ -24,7 +24,7 @@ function MultipartS3Provider(): IMultipartProvider {
     const folder = format(new Date(), 'yyyy-MM-dd');
     await s3
       .putObject({
-        Bucket: `onvitri/${folder}`,
+        Bucket: `${config.AWS_S3_NAME}/${folder}`,
         Key: photoName,
         ACL: 'public-read',
         Body: fs.createReadStream(tmpPhotoSrc),
@@ -33,7 +33,7 @@ function MultipartS3Provider(): IMultipartProvider {
       .promise();
     await s3
       .putObject({
-        Bucket: `onvitri/${folder}/thumbs`,
+        Bucket: `${config.AWS_S3_NAME}/${folder}/thumbs`,
         Key: photoName,
         ACL: 'public-read',
         Body: fs.createReadStream(thumbPhotoSrc),
