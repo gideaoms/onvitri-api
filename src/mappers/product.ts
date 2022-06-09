@@ -2,7 +2,7 @@ import { ProductRecord } from '@/types/records/product';
 import { Product } from '@/types/product';
 import { ProductObject } from '@/types/objects/product';
 
-function ProductMapper() {
+export function ProductMapper() {
   function fromRecord(record: ProductRecord) {
     const product: Product = {
       id: record.id,
@@ -55,10 +55,8 @@ function ProductMapper() {
   }
 
   return {
-    fromRecord,
-    toObject,
-    toRecord,
+    fromRecord: fromRecord,
+    toObject: toObject,
+    toRecord: toRecord,
   };
 }
-
-export default ProductMapper;

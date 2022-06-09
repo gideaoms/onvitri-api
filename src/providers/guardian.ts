@@ -1,16 +1,17 @@
 import { isLeft, left, right } from 'fp-either';
-import { ITokenProvider } from '@/types/providers/token';
-import { IUserRepository } from '@/types/repositories/user';
-import { ICryptoProvider } from '@/types/providers/crypto';
+import { TokenProvider } from '@/types/providers/token';
+import { UserRepository } from '@/types/repositories/user';
+import { CryptoProvider } from '@/types/providers/crypto';
+import { GuardianProvider } from '@/types/providers/guardian';
 import { User } from '@/types/user';
-import UserModel from '@/models/user';
-import UnauthorizedError from '@/errors/unauthorized';
+import { UserModel } from '@/models/user';
+import { UnauthorizedError } from '@/errors/unauthorized';
 
-function GuardianProvider(
-  tokenProvider: ITokenProvider,
-  userRepository: IUserRepository,
-  cryptoProvider: ICryptoProvider,
-) {
+export function GuardianProvider(
+  tokenProvider: TokenProvider,
+  userRepository: UserRepository,
+  cryptoProvider: CryptoProvider,
+): GuardianProvider {
   const userModel = UserModel(cryptoProvider);
 
   async function passThrough(role: User.Role, token?: string) {
@@ -28,8 +29,6 @@ function GuardianProvider(
   }
 
   return {
-    passThrough,
+    passThrough: passThrough,
   };
 }
-
-export default GuardianProvider;

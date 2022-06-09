@@ -1,11 +1,11 @@
 import { left, right } from 'fp-either';
-import { IUserRepository } from '@/types/repositories/user';
-import { UserRecord } from '@/types/records/user';
-import UserMapper from '@/mappers/user';
 import prisma from '@/libs/prisma';
-import NotFoundError from '@/errors/not-found';
+import { UserRepository } from '@/types/repositories/user';
+import { UserRecord } from '@/types/records/user';
+import { UserMapper } from '@/mappers/user';
+import { NotFoundError } from '@/errors/not-found';
 
-function UserRepository(): IUserRepository {
+export function UserRepository(): UserRepository {
   const userMapper = UserMapper();
 
   async function findOneByEmail(email: string) {
@@ -43,9 +43,7 @@ function UserRepository(): IUserRepository {
   }
 
   return {
-    findOneByEmail,
-    findOneById,
+    findOneByEmail: findOneByEmail,
+    findOneById: findOneById,
   };
 }
-
-export default UserRepository;

@@ -1,16 +1,16 @@
 import { left, right } from 'fp-either';
-import { IStoreRepository } from '@/types/repositories/store';
+import { StoreRepository } from '@/types/repositories/store';
 import { ProductRecord } from '@/types/records/product';
 import { PhotoRecord } from '@/types/records/photo';
 import { StoreRecord } from '@/types/records/store';
-import StoreModel from '@/models/store';
-import ProductMapper from '@/mappers/product';
-import StoreMapper from '@/mappers/store';
-import CityMapper from '@/mappers/city';
+import { StoreModel } from '@/models/store';
+import { ProductMapper } from '@/mappers/product';
+import { StoreMapper } from '@/mappers/store';
+import { CityMapper } from '@/mappers/city';
+import { NotFoundError } from '@/errors/not-found';
 import prisma from '@/libs/prisma';
-import NotFoundError from '@/errors/not-found';
 
-function StoreRepository(): IStoreRepository {
+export function StoreRepository(): StoreRepository {
   const productMapper = ProductMapper();
   const storeMapper = StoreMapper();
   const cityMapper = CityMapper();
@@ -66,8 +66,6 @@ function StoreRepository(): IStoreRepository {
   }
 
   return {
-    findOne,
+    findOne: findOne,
   };
 }
-
-export default StoreRepository;

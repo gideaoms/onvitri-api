@@ -2,7 +2,7 @@ import { StoreRecord } from '@/types/records/store';
 import { Store } from '@/types/store';
 import { StoreObject } from '@/types/objects/store';
 
-function StoreMapper() {
+export function StoreMapper() {
   function fromRecord(record: StoreRecord) {
     const store: Store = {
       id: record.id,
@@ -38,9 +38,7 @@ function StoreMapper() {
   }
 
   return {
-    fromRecord,
-    toObject,
+    fromRecord: fromRecord,
+    toObject: toObject,
   };
 }
-
-export default StoreMapper;

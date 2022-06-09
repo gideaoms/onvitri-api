@@ -1,11 +1,11 @@
 import { FastifyInstance } from 'fastify';
 import { isLeft } from 'fp-either';
 import { findCodeByError } from '@/utils';
-import StoreRepository from '@/repositories/store';
-import StoreService from '@/services/store';
-import StoreMapper from '@/mappers/store';
-import ProductMapper from '@/mappers/product';
-import CityMapper from '@/mappers/city';
+import { StoreRepository } from '@/repositories/store';
+import { StoreService } from '@/services/store';
+import { StoreMapper } from '@/mappers/store';
+import { ProductMapper } from '@/mappers/product';
+import { CityMapper } from '@/mappers/city';
 
 const storeRepository = StoreRepository();
 const storeService = StoreService(storeRepository);

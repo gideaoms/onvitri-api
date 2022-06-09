@@ -1,8 +1,8 @@
 import { isLeft, left, right } from 'fp-either';
-import { IGuardianProvider } from '@/types/providers/guardian';
-import { IStoreRepository } from '@/types/repositories/dashboard/store';
+import { GuardianProvider } from '@/types/providers/guardian';
+import { StoreRepository } from '@/types/repositories/dashboard/store';
 
-function StoreService(guardianProvider: IGuardianProvider, storeRepository: IStoreRepository) {
+export function StoreService(guardianProvider: GuardianProvider, storeRepository: StoreRepository) {
   async function findAll(token?: string) {
     const user = await guardianProvider.passThrough('shopkeeper', token);
     if (isLeft(user)) return left(user.left);
@@ -12,8 +12,6 @@ function StoreService(guardianProvider: IGuardianProvider, storeRepository: ISto
   }
 
   return {
-    findAll,
+    findAll: findAll,
   };
 }
-
-export default StoreService;

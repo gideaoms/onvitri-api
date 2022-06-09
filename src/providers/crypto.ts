@@ -1,7 +1,7 @@
 import bcryptjs from 'bcryptjs';
-import { ICryptoProvider } from '@/types/providers/crypto';
+import { CryptoProvider } from '@/types/providers/crypto';
 
-function CryptoProvider(): ICryptoProvider {
+export function CryptoProvider(): CryptoProvider {
   function compare(plain: string, hashed: string) {
     return bcryptjs.compare(plain, hashed);
   }
@@ -11,9 +11,7 @@ function CryptoProvider(): ICryptoProvider {
   }
 
   return {
-    compare,
-    hash,
+    compare: compare,
+    hash: hash,
   };
 }
-
-export default CryptoProvider;

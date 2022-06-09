@@ -1,7 +1,7 @@
 import { Photo } from '@/types/photo';
 import { PhotoObject } from '@/types/objects/photo';
 
-function PhotoMapper() {
+export function PhotoMapper() {
   function toObject(photo: Photo) {
     const object: PhotoObject = {
       id: photo.id,
@@ -21,9 +21,7 @@ function PhotoMapper() {
   }
 
   return {
-    toObject,
-    fromObject,
+    toObject: toObject,
+    fromObject: fromObject,
   };
 }
-
-export default PhotoMapper;

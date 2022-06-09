@@ -2,7 +2,7 @@ import { User } from '@/types/user';
 import { UserObject } from '@/types/objects/user';
 import { UserRecord } from '@/types/records/user';
 
-function UserMapper() {
+export function UserMapper() {
   function fromRecord(record: UserRecord) {
     const user: User = {
       id: record.id,
@@ -29,9 +29,7 @@ function UserMapper() {
   }
 
   return {
-    fromRecord,
-    toObject,
+    fromRecord: fromRecord,
+    toObject: toObject,
   };
 }
-
-export default UserMapper;

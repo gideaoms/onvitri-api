@@ -1,7 +1,7 @@
 import { User } from '@/types/user';
-import { ICryptoProvider } from '@/types/providers/crypto';
+import { CryptoProvider } from '@/types/providers/crypto';
 
-function UserModel(cryptoProvider: ICryptoProvider) {
+export function UserModel(cryptoProvider: CryptoProvider) {
   function isPasswordCorrect(plainPassword: string, hashedPassword: string) {
     return cryptoProvider.compare(plainPassword, hashedPassword);
   }
@@ -15,10 +15,8 @@ function UserModel(cryptoProvider: ICryptoProvider) {
   }
 
   return {
-    isPasswordCorrect,
-    isActive,
-    hasRole,
+    isPasswordCorrect: isPasswordCorrect,
+    isActive: isActive,
+    hasRole: hasRole,
   };
 }
-
-export default UserModel;

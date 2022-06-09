@@ -1,16 +1,14 @@
 import { isLeft, left, right } from 'fp-either';
-import { IUserRepository } from '@/types/repositories/user';
-import { ICryptoProvider } from '@/types/providers/crypto';
-import { ITokenProvider } from '@/types/providers/token';
-import { IGuardianProvider } from '@/types/providers/guardian';
-import UserModel from '@/models/user';
-import BadRequestError from '@/errors/bad-request';
+import { UserRepository } from '@/types/repositories/user';
+import { CryptoProvider } from '@/types/providers/crypto';
+import { TokenProvider } from '@/types/providers/token';
+import { UserModel } from '@/models/user';
+import { BadRequestError } from '@/errors/bad-request';
 
-function SessionService(
-  userRepository: IUserRepository,
-  cryptoProvider: ICryptoProvider,
-  tokenProvider: ITokenProvider,
-  guardianProvider: IGuardianProvider,
+export function SessionService(
+  userRepository: UserRepository,
+  cryptoProvider: CryptoProvider,
+  tokenProvider: TokenProvider,
 ) {
   const userModel = UserModel(cryptoProvider);
 
@@ -26,15 +24,7 @@ function SessionService(
     return right({ ...foundUser.right, token: token });
   }
 
-  async function findOne(token?: string) {
-    const user = await guardianProvider.passThrough('shopkeeper', token);
-    return user;
-  }
-
   return {
-    create,
-    findOne,
+    create: create,
   };
 }
-
-export default SessionService;

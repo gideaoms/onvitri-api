@@ -7,14 +7,14 @@ import sharp from 'sharp';
 import crypto from 'crypto';
 import { isLeft } from 'fp-either';
 import { findCodeByError } from '@/utils';
-import TokenProvider from '@/providers/token';
-import UserRepository from '@/repositories/user';
-import CryptoProvider from '@/providers/crypto';
-import GuardianProvider from '@/providers/guardian';
-import MultipartDiskProvider from '@/providers/multipart-disk';
-import MultipartS3Provider from '@/providers/multipart-s3';
-import PhotoService from '@/services/dashboard/photo';
-import PhotoMapper from '@/mappers/photo';
+import { TokenProvider } from '@/providers/token';
+import { UserRepository } from '@/repositories/user';
+import { CryptoProvider } from '@/providers/crypto';
+import { GuardianProvider } from '@/providers/guardian';
+import { MultipartDiskProvider } from '@/providers/multipart-disk';
+import { MultipartS3Provider } from '@/providers/multipart-s3';
+import { PhotoService } from '@/services/dashboard/photo';
+import { PhotoMapper } from '@/mappers/photo';
 import config from '@/config';
 
 const userRepository = UserRepository();
@@ -31,6 +31,11 @@ async function Photo(fastify: FastifyInstance) {
     method: 'POST',
     async handler(request, replay) {
       const token = request.headers.authorization;
+      const user = await guardianProvider.passThrough('shopkeeper', token);
+      if (isLeft(user)) {
+        const code = findCodeByError(user.left);
+        return replay.code(code).send({ message: user.left.message });
+      }
       const allowed = ['image/png', 'image/jpg', 'image/jpeg', 'image/webp'];
       const data = await request.file();
       if (!allowed.includes(data.mimetype)) return replay.code(400).send({ message: 'Tipo de image não permitido.' });
@@ -43,12 +48,8 @@ async function Photo(fastify: FastifyInstance) {
       const transformer = sharp({ failOnError: false }).resize({ width: 1000, withoutEnlargement: true }).webp();
       await stream.pipeline(data.file, transformer, fs.createWriteStream(tmpPhotoSrc));
       await sharp(tmpPhotoSrc, { failOnError: false }).resize({ width: 250, height: 250 }).webp().toFile(thumbPhotoSrc);
-      const photo = await photoService.create(photoName, token);
-      if (isLeft(photo)) {
-        const code = findCodeByError(photo.left);
-        return replay.code(code).send({ message: photo.left.message });
-      }
-      const object = photoMapper.toObject(photo.right);
+      const photo = await photoService.create(photoName);
+      const object = photoMapper.toObject(photo);
       return replay.send(object);
     },
   });

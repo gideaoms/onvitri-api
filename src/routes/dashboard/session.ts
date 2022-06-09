@@ -1,19 +1,19 @@
 import { FastifyInstance } from 'fastify';
 import { isLeft } from 'fp-either';
 import { findCodeByError } from '@/utils';
-import UserRepository from '@/repositories/user';
-import CryptoProvider from '@/providers/crypto';
-import TokenProvider from '@/providers/token';
-import GuardianProvider from '@/providers/guardian';
-import UserMapper from '@/mappers/user';
-import SessionService from '@/services/dashboard/session';
+import { UserRepository } from '@/repositories/user';
+import { CryptoProvider } from '@/providers/crypto';
+import { TokenProvider } from '@/providers/token';
+import { GuardianProvider } from '@/providers/guardian';
+import { UserMapper } from '@/mappers/user';
+import { SessionService } from '@/services/dashboard/session';
 
 const userRepository = UserRepository();
 const cryptoProvider = CryptoProvider();
 const tokenProvider = TokenProvider();
 const guardianProvider = GuardianProvider(tokenProvider, userRepository, cryptoProvider);
 const userMapper = UserMapper();
-const sessionService = SessionService(userRepository, cryptoProvider, tokenProvider, guardianProvider);
+const sessionService = SessionService(userRepository, cryptoProvider, tokenProvider);
 
 async function Session(fastify: FastifyInstance) {
   fastify.route<{
@@ -109,12 +109,12 @@ async function Session(fastify: FastifyInstance) {
     },
     async handler(request, replay) {
       const token = request.headers.authorization;
-      const session = await sessionService.findOne(token);
-      if (isLeft(session)) {
-        const httpStatus = findCodeByError(session.left);
-        return replay.code(httpStatus).send({ message: session.left.message });
+      const user = await guardianProvider.passThrough('shopkeeper', token);
+      if (isLeft(user)) {
+        const httpStatus = findCodeByError(user.left);
+        return replay.code(httpStatus).send({ message: user.left.message });
       }
-      const object = userMapper.toObject(session.right);
+      const object = userMapper.toObject(user.right);
       return replay.send(object);
     },
   });

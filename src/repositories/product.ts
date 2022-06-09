@@ -1,15 +1,15 @@
 import { left, right } from 'fp-either';
-import { IProductRepository } from '@/types/repositories/product';
+import prisma from '@/libs/prisma';
+import { ProductRepository } from '@/types/repositories/product';
 import { ProductRecord } from '@/types/records/product';
 import { PhotoRecord } from '@/types/records/photo';
 import { StoreRecord } from '@/types/records/store';
 import { ProductModel } from '@/models/product';
-import ProductMapper from '@/mappers/product';
-import StoreMapper from '@/mappers/store';
-import prisma from '@/libs/prisma';
-import NotFoundError from '@/errors/not-found';
+import { ProductMapper } from '@/mappers/product';
+import { StoreMapper } from '@/mappers/store';
+import { NotFoundError } from '@/errors/not-found';
 
-function ProductRepository(): IProductRepository {
+export function ProductRepository(): ProductRepository {
   const productMapper = ProductMapper();
   const storeMapper = StoreMapper();
 
@@ -128,10 +128,8 @@ function ProductRepository(): IProductRepository {
   }
 
   return {
-    findMany,
-    findOne,
-    findManyByStore,
+    findMany: findMany,
+    findOne: findOne,
+    findManyByStore: findManyByStore,
   };
 }
-
-export default ProductRepository;

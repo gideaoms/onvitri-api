@@ -1,9 +1,9 @@
 import { Either } from 'fp-either';
 import { Product } from '@/types/product';
 import { Store } from '@/types/store';
-import NotFoundError from '@/errors/not-found';
+import { NotFoundError } from '@/errors/not-found';
 
-export type IProductRepository = {
+export type ProductRepository = {
   findMany(page: number): Promise<{
     data: (Product & { store: Store })[];
     hasMore: boolean;

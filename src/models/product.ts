@@ -33,11 +33,11 @@ export function ProductModel(productRepository: ProductRepository) {
   }
 
   return {
-    addPhotos,
-    updateStatus,
-    isActive,
-    hasPhotos,
-    reachedMaximumActiveByStore,
+    addPhotos: addPhotos,
+    updateStatus: updateStatus,
+    isActive: isActive,
+    hasPhotos: hasPhotos,
+    reachedMaximumActiveByStore: reachedMaximumActiveByStore,
   };
 }
 

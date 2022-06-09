@@ -1,10 +1,10 @@
 import jsonwebtoken from 'jsonwebtoken';
 import { left, right } from 'fp-either';
-import { ITokenProvider } from '@/types/providers/token';
-import UnauthorizedError from '@/errors/unauthorized';
+import { TokenProvider } from '@/types/providers/token';
+import { UnauthorizedError } from '@/errors/unauthorized';
 import config from '@/config';
 
-function TokenProvider(): ITokenProvider {
+export function TokenProvider(): TokenProvider {
   function generate(sub: string) {
     return jsonwebtoken.sign({ sub }, config.TOKEN_SECRET, {
       expiresIn: config.TOKEN_EXPIRES_IN,
@@ -21,9 +21,7 @@ function TokenProvider(): ITokenProvider {
   }
 
   return {
-    generate,
-    verify,
+    generate: generate,
+    verify: verify,
   };
 }
-
-export default TokenProvider;

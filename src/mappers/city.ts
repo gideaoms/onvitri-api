@@ -2,7 +2,7 @@ import { CityObject } from '@/types/objects/city';
 import { City } from '@/types/city';
 import { CityRecord } from '@/types/records/city';
 
-function CityMapper() {
+export function CityMapper() {
   function fromRecord(record: CityRecord) {
     const model: City = {
       id: record.id,
@@ -22,9 +22,7 @@ function CityMapper() {
   }
 
   return {
-    fromRecord,
-    toObject,
+    fromRecord: fromRecord,
+    toObject: toObject,
   };
 }
-
-export default CityMapper;

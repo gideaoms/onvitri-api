@@ -4,11 +4,11 @@ import fs from 'fs';
 import crypto from 'crypto';
 import { S3 } from 'aws-sdk';
 import format from 'date-fns/format';
-import { IMultipartProvider } from '@/types/providers/multipart';
+import { MultipartProvider } from '@/types/providers/multipart';
 import { Photo } from '@/types/photo';
 import config from '@/config';
 
-function MultipartS3Provider(): IMultipartProvider {
+export function MultipartS3Provider(): MultipartProvider {
   const s3 = new S3({
     endpoint: config.AWS_S3_ENDPOINT,
     region: 'sfo3',
@@ -51,8 +51,6 @@ function MultipartS3Provider(): IMultipartProvider {
   }
 
   return {
-    create,
+    create: create,
   };
 }
-
-export default MultipartS3Provider;

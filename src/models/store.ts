@@ -1,15 +1,13 @@
 import { Store } from '@/types/store';
 
-function StoreModel() {
+export function StoreModel() {
   function isActive(store: Store) {
     return store.status === 'active';
   }
 
   return {
-    isActive,
+    isActive: isActive,
   };
 }
 
 StoreModel.itemsByPage = 12;
-
-export default StoreModel;

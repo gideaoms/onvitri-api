@@ -5,15 +5,15 @@ import { Product } from '@/types/product';
 import { ProductObject } from '@/types/objects/product';
 import { ProductRepository } from '@/repositories/dashboard/product';
 import { ProductService } from '@/services/dashboard/product';
-import UserRepository from '@/repositories/user';
-import CryptoProvider from '@/providers/crypto';
-import TokenProvider from '@/providers/token';
-import GuardianProvider from '@/providers/guardian';
-import ProductMapper from '@/mappers/product';
-import StoreMapper from '@/mappers/store';
-import CityMapper from '@/mappers/city';
-import StoreRepository from '@/repositories/dashboard/store';
-import PhotoMapper from '@/mappers/photo';
+import { UserRepository } from '@/repositories/user';
+import { CryptoProvider } from '@/providers/crypto';
+import { TokenProvider } from '@/providers/token';
+import { GuardianProvider } from '@/providers/guardian';
+import { ProductMapper } from '@/mappers/product';
+import { StoreMapper } from '@/mappers/store';
+import { CityMapper } from '@/mappers/city';
+import { PhotoMapper } from '@/mappers/photo';
+import { StoreRepository } from '@/repositories/dashboard/store';
 
 const userRepository = UserRepository();
 const productRepository = ProductRepository();
@@ -145,19 +145,20 @@ async function Product(fastify: FastifyInstance) {
     async handler(request, replay) {
       const page = request.query.page;
       const token = request.headers.authorization;
-      const products = await productService.findMany(page, token);
-      if (isLeft(products)) {
-        const httpStatus = findCodeByError(products.left);
-        return replay.code(httpStatus).send({ message: products.left.message });
+      const user = await guardianProvider.passThrough('shopkeeper', token);
+      if (isLeft(user)) {
+        const httpStatus = findCodeByError(user.left);
+        return replay.code(httpStatus).send({ message: user.left.message });
       }
-      const object = products.right.data.map((product) => ({
+      const products = await productService.findMany(page, user.right);
+      const object = products.data.map((product) => ({
         ...productMapper.toObject(product),
         store: {
           ...storeMapper.toObject(product.store),
           city: cityMapper.toObject(product.store.city),
         },
       }));
-      return replay.header('x-has-more', products.right.hasMore).send(object);
+      return replay.header('x-has-more', products.hasMore).send(object);
     },
   });
 
@@ -258,14 +259,18 @@ async function Product(fastify: FastifyInstance) {
     },
     async handler(request, replay) {
       const token = request.headers.authorization;
+      const user = await guardianProvider.passThrough('shopkeeper', token);
+      if (isLeft(user)) {
+        const httpStatus = findCodeByError(user.left);
+        return replay.code(httpStatus).send({ message: user.left.message });
+      }
       const storeId = request.body.store_id;
       const title = request.body.title;
       const description = request.body.description;
       const price = request.body.price;
       const photos = request.body.photos.map(photoMapper.fromObject);
       const status = request.body.status;
-      const product = await productService.create(storeId, title, description, price, photos, status, token);
-
+      const product = await productService.create(storeId, title, description, price, photos, status, user.right);
       if (isLeft(product)) {
         const httpStatus = findCodeByError(product.left);
         return replay.code(httpStatus).send({ message: product.left.message });
@@ -390,7 +395,12 @@ async function Product(fastify: FastifyInstance) {
     async handler(request, replay) {
       const productId = request.params.product_id;
       const token = request.headers.authorization;
-      const product = await productService.findOne(productId, token);
+      const user = await guardianProvider.passThrough('shopkeeper', token);
+      if (isLeft(user)) {
+        const httpStatus = findCodeByError(user.left);
+        return replay.code(httpStatus).send({ message: user.left.message });
+      }
+      const product = await productService.findOne(productId, user.right);
       if (isLeft(product)) {
         const httpStatus = findCodeByError(product.left);
         return replay.code(httpStatus).send({ message: product.left.message });
@@ -469,14 +479,19 @@ async function Product(fastify: FastifyInstance) {
       },
     },
     async handler(request, replay) {
+      const token = request.headers.authorization;
+      const user = await guardianProvider.passThrough('shopkeeper', token);
+      if (isLeft(user)) {
+        const code = findCodeByError(user.left);
+        return replay.code(code).send({ message: user.left.message });
+      }
       const productId = request.params.product_id;
       const title = request.body.title;
       const description = request.body.description;
       const price = request.body.price;
       const photos = request.body.photos.map(photoMapper.fromObject);
       const status = request.body.status;
-      const token = request.headers.authorization;
-      const updated = await productService.update(productId, title, description, price, photos, status, token);
+      const updated = await productService.update(productId, title, description, price, photos, status, user.right);
       if (isLeft(updated)) {
         const code = findCodeByError(updated.left);
         return replay.code(code).send({ message: updated.left.message });
@@ -506,9 +521,14 @@ async function Product(fastify: FastifyInstance) {
       },
     },
     async handler(request, replay) {
-      const productId = request.params.product_id;
       const token = request.headers.authorization;
-      const destroyed = await productService.destroy(productId, token);
+      const user = await guardianProvider.passThrough('shopkeeper', token);
+      if (isLeft(user)) {
+        const code = findCodeByError(user.left);
+        return replay.code(code).send({ message: user.left.message });
+      }
+      const productId = request.params.product_id;
+      const destroyed = await productService.destroy(productId, user.right);
       if (isLeft(destroyed)) {
         const code = findCodeByError(destroyed.left);
         return replay.code(code).send({ message: destroyed.left.message });

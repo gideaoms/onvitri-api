@@ -1,12 +1,12 @@
 import { left, right } from 'fp-either';
 import prisma from '@/libs/prisma';
-import { IStoreRepository } from '@/types/repositories/dashboard/store';
+import { StoreRepository } from '@/types/repositories/dashboard/store';
 import { StoreRecord } from '@/types/records/store';
-import StoreMapper from '@/mappers/store';
-import CityMapper from '@/mappers/city';
-import NotFoundError from '@/errors/not-found';
+import { StoreMapper } from '@/mappers/store';
+import { CityMapper } from '@/mappers/city';
+import { NotFoundError } from '@/errors/not-found';
 
-function StoreRepository(): IStoreRepository {
+export function StoreRepository(): StoreRepository {
   const storeMapper = StoreMapper();
   const cityMapper = CityMapper();
 
@@ -47,9 +47,7 @@ function StoreRepository(): IStoreRepository {
   }
 
   return {
-    exists,
-    findAll,
+    exists: exists,
+    findAll: findAll,
   };
 }
-
-export default StoreRepository;

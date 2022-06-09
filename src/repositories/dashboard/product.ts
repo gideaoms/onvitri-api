@@ -6,10 +6,10 @@ import { StoreRecord } from '@/types/records/store';
 import { ProductRecord } from '@/types/records/product';
 import { PhotoRecord } from '@/types/records/photo';
 import { ProductModel } from '@/models/product';
-import ProductMapper from '@/mappers/product';
-import StoreMapper from '@/mappers/store';
-import CityMapper from '@/mappers/city';
-import NotFoundError from '@/errors/not-found';
+import { ProductMapper } from '@/mappers/product';
+import { StoreMapper } from '@/mappers/store';
+import { CityMapper } from '@/mappers/city';
+import { NotFoundError } from '@/errors/not-found';
 
 export function ProductRepository(): ProductRepository {
   const productMapper = ProductMapper();
@@ -167,12 +167,12 @@ export function ProductRepository(): ProductRepository {
   }
 
   return {
-    findMany,
-    create,
-    exists,
-    update,
-    findOne,
-    destroy,
-    getAmountOfActiveByStore,
+    findMany: findMany,
+    create: create,
+    exists: exists,
+    update: update,
+    findOne: findOne,
+    destroy: destroy,
+    getAmountOfActiveByStore: getAmountOfActiveByStore,
   };
 }

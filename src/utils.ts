@@ -1,7 +1,7 @@
 import { BAD_REQUEST, NOT_FOUND, UNAUTHORIZED } from 'http-status';
-import BadRequestError from '@/errors/bad-request';
-import NotFoundError from '@/errors/not-found';
-import UnauthorizedError from '@/errors/unauthorized';
+import { BadRequestError } from '@/errors/bad-request';
+import { NotFoundError } from '@/errors/not-found';
+import { UnauthorizedError } from '@/errors/unauthorized';
 
 export function findCodeByError(error: Error) {
   if (error instanceof NotFoundError) return NOT_FOUND;

@@ -1,16 +1,14 @@
 import { isLeft, left, right } from 'fp-either';
-import { IProductRepository } from '@/types/repositories/product';
-import { IStoreRepository } from '@/types/repositories/store';
+import { ProductRepository } from '@/types/repositories/product';
+import { StoreRepository } from '@/types/repositories/store';
 
-function ProductService(productRepository: IProductRepository, storeRepository: IStoreRepository) {
+export function ProductService(productRepository: ProductRepository, storeRepository: StoreRepository) {
   async function findMany(page: number) {
-    const products = await productRepository.findMany(page);
-    return products;
+    return productRepository.findMany(page);
   }
 
   async function findOne(productId: string) {
-    const product = await productRepository.findOne(productId);
-    return product;
+    return productRepository.findOne(productId);
   }
 
   async function findManyByStore(storeId: string, page: number) {
@@ -21,10 +19,8 @@ function ProductService(productRepository: IProductRepository, storeRepository: 
   }
 
   return {
-    findMany,
-    findOne,
-    findManyByStore,
+    findMany: findMany,
+    findOne: findOne,
+    findManyByStore: findManyByStore,
   };
 }
-
-export default ProductService;

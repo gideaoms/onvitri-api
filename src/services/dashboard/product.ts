@@ -1,25 +1,23 @@
 import { isLeft, left, right } from 'fp-either';
-import { IGuardianProvider } from '@/types/providers/guardian';
+import { GuardianProvider } from '@/types/providers/guardian';
 import { ProductRepository } from '@/types/repositories/dashboard/product';
-import { IStoreRepository } from '@/types/repositories/dashboard/store';
+import { StoreRepository } from '@/types/repositories/dashboard/store';
 import { Product } from '@/types/product';
 import { Photo } from '@/types/photo';
 import { ProductModel } from '@/models/product';
-import BadRequestError from '@/errors/bad-request';
+import { User } from '@/types/user';
+import { BadRequestError } from '@/errors/bad-request';
 
 export function ProductService(
-  guardianProvider: IGuardianProvider,
+  guardianProvider: GuardianProvider,
   productRepository: ProductRepository,
-  storeRepository: IStoreRepository,
+  storeRepository: StoreRepository,
 ) {
   const productModel = ProductModel(productRepository);
 
-  async function findMany(page: number, token?: string) {
-    const user = await guardianProvider.passThrough('shopkeeper', token);
-    if (isLeft(user)) return left(user.left);
-    const ownerId = user.right.id;
-    const products = await productRepository.findMany(ownerId, page);
-    return right(products);
+  function findMany(page: number, user: User) {
+    const ownerId = user.id;
+    return productRepository.findMany(ownerId, page);
   }
 
   async function create(
@@ -29,11 +27,9 @@ export function ProductService(
     price: number,
     photos: Photo[],
     status: Product.Status,
-    token?: string,
+    user: User,
   ) {
-    const user = await guardianProvider.passThrough('shopkeeper', token);
-    if (isLeft(user)) return left(user.left);
-    const ownerId = user.right.id;
+    const ownerId = user.id;
     const store = await storeRepository.exists(storeId, ownerId);
     if (isLeft(store)) return left(store.left);
     const product: Product = {
@@ -55,10 +51,8 @@ export function ProductService(
     return right(await productRepository.create(product));
   }
 
-  async function findOne(productId: string, token?: string) {
-    const user = await guardianProvider.passThrough('shopkeeper', token);
-    if (isLeft(user)) return left(user.left);
-    const ownerId = user.right.id;
+  async function findOne(productId: string, user: User) {
+    const ownerId = user.id;
     const found = await productRepository.findOne(productId, ownerId);
     if (isLeft(found)) return left(found.left);
     return right(found.right);
@@ -71,11 +65,9 @@ export function ProductService(
     price: number,
     photos: Photo[],
     status: Product.Status,
-    token?: string,
+    user: User,
   ) {
-    const user = await guardianProvider.passThrough('shopkeeper', token);
-    if (isLeft(user)) return left(user.left);
-    const ownerId = user.right.id;
+    const ownerId = user.id;
     const foundProduct = await productRepository.exists(productId, ownerId);
     if (isLeft(foundProduct)) return left(foundProduct.left);
     const storeId = foundProduct.right.storeId;
@@ -98,10 +90,8 @@ export function ProductService(
     return right(await productRepository.update(product));
   }
 
-  async function destroy(productId: string, token?: string) {
-    const user = await guardianProvider.passThrough('shopkeeper', token);
-    if (isLeft(user)) return left(user.left);
-    const ownerId = user.right.id;
+  async function destroy(productId: string, user: User) {
+    const ownerId = user.id;
     const found = await productRepository.exists(productId, ownerId);
     if (isLeft(found)) return left(found.left);
     await productRepository.destroy(productId);
@@ -109,10 +99,10 @@ export function ProductService(
   }
 
   return {
-    findMany,
-    create,
-    findOne,
-    update,
-    destroy,
+    findMany: findMany,
+    create: create,
+    findOne: findOne,
+    update: update,
+    destroy: destroy,
   };
 }

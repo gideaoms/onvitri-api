@@ -2,7 +2,7 @@ import { Either } from 'fp-either';
 import { Product } from '@/types/product';
 import { Store } from '@/types/store';
 import { City } from '@/types/city';
-import NotFoundError from '@/errors/not-found';
+import { NotFoundError } from '@/errors/not-found';
 
 export type ProductRepository = {
   findMany(
