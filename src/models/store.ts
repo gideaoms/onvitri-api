@@ -10,6 +10,6 @@ function StoreModel() {
   };
 }
 
-StoreModel.itemsLimit = 12;
+StoreModel.itemsByPage = 12;
 
 export default StoreModel;

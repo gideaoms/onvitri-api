@@ -1,15 +1,15 @@
 import { isLeft, left, right } from 'fp-either';
 import { IGuardianProvider } from '@/types/providers/guardian';
-import { IProductRepository } from '@/types/repositories/dashboard/product';
+import { ProductRepository } from '@/types/repositories/dashboard/product';
 import { IStoreRepository } from '@/types/repositories/dashboard/store';
 import { Product } from '@/types/product';
 import { Photo } from '@/types/photo';
-import ProductModel from '@/models/product';
+import { ProductModel } from '@/models/product';
 import BadRequestError from '@/errors/bad-request';
 
-function ProductService(
+export function ProductService(
   guardianProvider: IGuardianProvider,
-  productRepository: IProductRepository,
+  productRepository: ProductRepository,
   storeRepository: IStoreRepository,
 ) {
   const productModel = ProductModel(productRepository);
@@ -47,9 +47,9 @@ function ProductService(
     };
     if (productModel.isActive(product) && !productModel.hasPhotos(product))
       return left(new BadRequestError('Você não pode publicar um produto sem foto'));
-    const reachedMaximumQuantityPublished = await productModel.reachedMaximumQuantityPublished(ownerId);
-    if (productModel.isActive(product) && reachedMaximumQuantityPublished) {
-      const message = `Você não pode ter mais que ${ProductModel.maximumQuantityPublished} produtos publicados ao mesmo tempo`;
+    const reachedMaximumAmountOfActiveProducts = await productModel.reachedMaximumActiveByStore(storeId, ownerId);
+    if (productModel.isActive(product) && reachedMaximumAmountOfActiveProducts) {
+      const message = `Você não pode ter mais que ${ProductModel.maximumAmountActive} produtos publicados na mesma loja`;
       return left(new BadRequestError(message));
     }
     return right(await productRepository.create(product));
@@ -78,9 +78,10 @@ function ProductService(
     const ownerId = user.right.id;
     const foundProduct = await productRepository.exists(productId, ownerId);
     if (isLeft(foundProduct)) return left(foundProduct.left);
+    const storeId = foundProduct.right.storeId;
     const product: Product = {
       id: productId,
-      storeId: foundProduct.right.storeId,
+      storeId: storeId,
       title: title,
       description: description,
       price: price,
@@ -89,9 +90,9 @@ function ProductService(
     };
     if (productModel.isActive(product) && !productModel.hasPhotos(product))
       return left(new BadRequestError('Você não pode publicar um produto sem foto'));
-    const reachedMaximumQuantityPublished = await productModel.reachedMaximumQuantityPublished(ownerId);
-    if (productModel.isActive(product) && reachedMaximumQuantityPublished) {
-      const message = `Você não pode ter mais que ${ProductModel.maximumQuantityPublished} produtos publicados ao mesmo tempo`;
+    const reachedMaximumAmountOfActiveProducts = await productModel.reachedMaximumActiveByStore(storeId, ownerId);
+    if (productModel.isActive(product) && reachedMaximumAmountOfActiveProducts) {
+      const message = `Você não pode ter mais que ${ProductModel.maximumAmountActive} produtos publicados na mesma loja`;
       return left(new BadRequestError(message));
     }
     return right(await productRepository.update(product));
@@ -104,7 +105,7 @@ function ProductService(
     const found = await productRepository.exists(productId, ownerId);
     if (isLeft(found)) return left(found.left);
     await productRepository.destroy(productId);
-    return right(null);
+    return right(found);
   }
 
   return {
@@ -115,5 +116,3 @@ function ProductService(
     destroy,
   };
 }
-
-export default ProductService;

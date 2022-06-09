@@ -1,8 +1,8 @@
 import { Product } from '@/types/product';
 import { Photo } from '@/types/photo';
-import { IProductRepository } from '@/types/repositories/dashboard/product';
+import { ProductRepository } from '@/types/repositories/dashboard/product';
 
-function ProductModel(productRepository: IProductRepository) {
+export function ProductModel(productRepository: ProductRepository) {
   function addPhotos(product: Product, photos: Photo[]) {
     const newProduct: Product = {
       ...product,
@@ -27,9 +27,9 @@ function ProductModel(productRepository: IProductRepository) {
     return product.photos.length > 0;
   }
 
-  async function reachedMaximumQuantityPublished(ownerId: string) {
-    const activeProductsCount = await productRepository.activeProductsCount(ownerId);
-    return activeProductsCount >= ProductModel.maximumQuantityPublished;
+  async function reachedMaximumActiveByStore(storeId: string, ownerId: string) {
+    const amountOfActiveProductsByStore = await productRepository.getAmountOfActiveByStore(storeId, ownerId);
+    return amountOfActiveProductsByStore >= ProductModel.maximumAmountActive;
   }
 
   return {
@@ -37,12 +37,10 @@ function ProductModel(productRepository: IProductRepository) {
     updateStatus,
     isActive,
     hasPhotos,
-    reachedMaximumQuantityPublished,
+    reachedMaximumActiveByStore,
   };
 }
 
-ProductModel.maximumQuantityPublished = 20;
+ProductModel.maximumAmountActive = 25;
 
-ProductModel.itemsLimit = 12;
-
-export default ProductModel;
+ProductModel.itemsByPage = 12;

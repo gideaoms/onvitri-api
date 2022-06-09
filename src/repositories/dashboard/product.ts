@@ -1,23 +1,23 @@
 import { left, right } from 'fp-either';
 import prisma from '@/libs/prisma';
-import { IProductRepository } from '@/types/repositories/dashboard/product';
+import { ProductRepository } from '@/types/repositories/dashboard/product';
 import { Product } from '@/types/product';
 import { StoreRecord } from '@/types/records/store';
 import { ProductRecord } from '@/types/records/product';
 import { PhotoRecord } from '@/types/records/photo';
-import ProductModel from '@/models/product';
+import { ProductModel } from '@/models/product';
 import ProductMapper from '@/mappers/product';
 import StoreMapper from '@/mappers/store';
 import CityMapper from '@/mappers/city';
 import NotFoundError from '@/errors/not-found';
 
-function ProductRepository(): IProductRepository {
+export function ProductRepository(): ProductRepository {
   const productMapper = ProductMapper();
   const storeMapper = StoreMapper();
   const cityMapper = CityMapper();
 
   async function findMany(ownerId: string, page: number) {
-    const limit = ProductModel.itemsLimit;
+    const limit = ProductModel.itemsByPage;
     const offset = limit * (page - 1);
     const products = await prisma.product.findMany({
       where: {
@@ -153,11 +153,13 @@ function ProductRepository(): IProductRepository {
     });
   }
 
-  async function activeProductsCount(ownerId: string) {
+  async function getAmountOfActiveByStore(storeId: string, ownerId: string) {
     return prisma.product.count({
       where: {
         store: {
+          id: storeId,
           owner_id: ownerId,
+          status: 'active',
         },
         status: 'active',
       },
@@ -171,8 +173,6 @@ function ProductRepository(): IProductRepository {
     update,
     findOne,
     destroy,
-    activeProductsCount,
+    getAmountOfActiveByStore,
   };
 }
-
-export default ProductRepository;

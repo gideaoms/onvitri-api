@@ -9,7 +9,7 @@ import helmet from '@fastify/helmet';
 import config from '@/config';
 import sentry from '@/libs/sentry';
 
-const plugin = (ajv: ajv.Ajv): ajv.Ajv => {
+function plugin(ajv: ajv.Ajv) {
   ajv.addKeyword('trim', {
     type: 'string',
     compile: (schema) => {
@@ -26,7 +26,7 @@ const plugin = (ajv: ajv.Ajv): ajv.Ajv => {
     },
   });
   return ajv;
-};
+}
 
 const app = fastify({
   logger: config.APP_ENV === 'development',
@@ -40,7 +40,7 @@ app.setErrorHandler(function cb(err, _request, replay) {
     replay.code(400).send({ statusCode: 400, message: err.message });
     return;
   }
-  this.log.error(err);
+  console.error(err);
   sentry.captureException(err);
   replay.code(500).send({ statusCode: 500, message: 'Internal server error' });
 });

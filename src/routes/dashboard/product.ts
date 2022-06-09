@@ -3,15 +3,15 @@ import { isLeft } from 'fp-either';
 import { findCodeByError } from '@/utils';
 import { Product } from '@/types/product';
 import { ProductObject } from '@/types/objects/product';
+import { ProductRepository } from '@/repositories/dashboard/product';
+import { ProductService } from '@/services/dashboard/product';
 import UserRepository from '@/repositories/user';
-import ProductRepository from '@/repositories/dashboard/product';
 import CryptoProvider from '@/providers/crypto';
 import TokenProvider from '@/providers/token';
 import GuardianProvider from '@/providers/guardian';
 import ProductMapper from '@/mappers/product';
 import StoreMapper from '@/mappers/store';
 import CityMapper from '@/mappers/city';
-import ProductService from '@/services/dashboard/product';
 import StoreRepository from '@/repositories/dashboard/store';
 import PhotoMapper from '@/mappers/photo';
 
@@ -262,17 +262,9 @@ async function Product(fastify: FastifyInstance) {
       const title = request.body.title;
       const description = request.body.description;
       const price = request.body.price;
-      const photos = request.body.photos;
+      const photos = request.body.photos.map(photoMapper.fromObject);
       const status = request.body.status;
-      const product = await productService.create(
-        storeId,
-        title,
-        description,
-        price,
-        photos.map(photoMapper.fromObject),
-        status,
-        token,
-      );
+      const product = await productService.create(storeId, title, description, price, photos, status, token);
 
       if (isLeft(product)) {
         const httpStatus = findCodeByError(product.left);
@@ -481,18 +473,10 @@ async function Product(fastify: FastifyInstance) {
       const title = request.body.title;
       const description = request.body.description;
       const price = request.body.price;
-      const photos = request.body.photos;
+      const photos = request.body.photos.map(photoMapper.fromObject);
       const status = request.body.status;
       const token = request.headers.authorization;
-      const updated = await productService.update(
-        productId,
-        title,
-        description,
-        price,
-        photos.map(photoMapper.fromObject),
-        status,
-        token,
-      );
+      const updated = await productService.update(productId, title, description, price, photos, status, token);
       if (isLeft(updated)) {
         const code = findCodeByError(updated.left);
         return replay.code(code).send({ message: updated.left.message });

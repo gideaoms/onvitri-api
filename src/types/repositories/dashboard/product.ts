@@ -4,7 +4,7 @@ import { Store } from '@/types/store';
 import { City } from '@/types/city';
 import NotFoundError from '@/errors/not-found';
 
-export type IProductRepository = {
+export type ProductRepository = {
   findMany(
     ownerId: string,
     page: number,
@@ -20,5 +20,5 @@ export type IProductRepository = {
     ownerId: string,
   ): Promise<Either<NotFoundError, Product & { store: Store & { city: City } }>>;
   destroy(productId: string): Promise<void>;
-  activeProductsCount(ownerId: string): Promise<number>;
+  getAmountOfActiveByStore(storeId: string, ownerId: string): Promise<number>;
 };

@@ -16,7 +16,7 @@ function StoreRepository(): IStoreRepository {
   const cityMapper = CityMapper();
 
   async function findOne(storeId: string) {
-    const limit = StoreModel.itemsLimit;
+    const limit = StoreModel.itemsByPage;
     const store = await prisma.store.findFirst({
       where: {
         id: storeId,

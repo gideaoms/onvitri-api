@@ -3,7 +3,7 @@ import { IProductRepository } from '@/types/repositories/product';
 import { ProductRecord } from '@/types/records/product';
 import { PhotoRecord } from '@/types/records/photo';
 import { StoreRecord } from '@/types/records/store';
-import ProductModel from '@/models/product';
+import { ProductModel } from '@/models/product';
 import ProductMapper from '@/mappers/product';
 import StoreMapper from '@/mappers/store';
 import prisma from '@/libs/prisma';
@@ -14,7 +14,7 @@ function ProductRepository(): IProductRepository {
   const storeMapper = StoreMapper();
 
   async function findMany(page: number) {
-    const limit = ProductModel.itemsLimit;
+    const limit = ProductModel.itemsByPage;
     const offset = limit * (page - 1);
     const products = await prisma.product.findMany({
       where: {
@@ -88,7 +88,7 @@ function ProductRepository(): IProductRepository {
   }
 
   async function findManyByStore(storeId: string, page: number) {
-    const limit = ProductModel.itemsLimit;
+    const limit = ProductModel.itemsByPage;
     const offset = limit * (page - 1);
     const products = await prisma.product.findMany({
       where: {
