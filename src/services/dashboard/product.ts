@@ -90,11 +90,11 @@ export function ProductService(
     return right(await productRepository.update(product));
   }
 
-  async function destroy(productId: string, user: User) {
+  async function remove(productId: string, user: User) {
     const ownerId = user.id;
     const found = await productRepository.exists(productId, ownerId);
     if (isLeft(found)) return left(found.left);
-    await productRepository.destroy(productId);
+    await productRepository.remove(productId);
     return right(found);
   }
 
@@ -103,6 +103,6 @@ export function ProductService(
     create: create,
     findOne: findOne,
     update: update,
-    destroy: destroy,
+    remove: remove,
   };
 }

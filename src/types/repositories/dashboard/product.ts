@@ -15,6 +15,6 @@ export type ProductRepository = {
   exists(productId: string, ownerId: string): Promise<Either<Error, Product>>;
   update(product: Product): Promise<Product>;
   findOne(productId: string, ownerId: string): Promise<Either<Error, Product & { store: Store & { city: City } }>>;
-  destroy(productId: string): Promise<void>;
+  remove(productId: string): Promise<void>;
   getAmountOfActiveByStore(storeId: string, ownerId: string): Promise<number>;
 };

@@ -528,10 +528,10 @@ async function Product(fastify: FastifyInstance) {
         return replay.code(code).send({ message: user.left.message });
       }
       const productId = request.params.product_id;
-      const destroyed = await productService.destroy(productId, user.right);
-      if (isLeft(destroyed)) {
-        const code = findCodeByError(destroyed.left);
-        return replay.code(code).send({ message: destroyed.left.message });
+      const removed = await productService.remove(productId, user.right);
+      if (isLeft(removed)) {
+        const code = findCodeByError(removed.left);
+        return replay.code(code).send({ message: removed.left.message });
       }
       return replay.send();
     },

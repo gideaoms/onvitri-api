@@ -145,7 +145,7 @@ export function ProductRepository(): ProductRepository {
     });
   }
 
-  async function destroy(productId: string) {
+  async function remove(productId: string) {
     await prisma.product.delete({
       where: {
         id: productId,
@@ -172,7 +172,7 @@ export function ProductRepository(): ProductRepository {
     exists: exists,
     update: update,
     findOne: findOne,
-    destroy: destroy,
+    remove: remove,
     getAmountOfActiveByStore: getAmountOfActiveByStore,
   };
 }
