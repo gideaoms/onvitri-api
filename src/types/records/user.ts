@@ -1,6 +1,6 @@
 export declare namespace UserRecord {
   type Status = 'active' | 'inactive';
-  type Role = 'shopkeeper' | 'customer';
+  type Role = 'shopkeeper' | 'consumer';
 }
 
 export type UserRecord = {

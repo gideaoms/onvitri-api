@@ -6,12 +6,24 @@ import { StoreService } from '@/services/store';
 import { StoreMapper } from '@/mappers/store';
 import { ProductMapper } from '@/mappers/product';
 import { CityMapper } from '@/mappers/city';
+import { FollowerService } from '@/services/follower';
+import { FollowerRepository } from '@/repositories/follower';
+import { UserRepository } from '@/repositories/user';
+import { TokenProvider } from '@/providers/token';
+import { CryptoProvider } from '@/providers/crypto';
+import { GuardianProvider } from '@/providers/guardian';
 
 const storeRepository = StoreRepository();
 const storeService = StoreService(storeRepository);
 const storeMapper = StoreMapper();
 const productMapper = ProductMapper();
 const cityMapper = CityMapper();
+const followerRepository = FollowerRepository();
+const followerService = FollowerService(storeRepository, followerRepository);
+const userRepository = UserRepository();
+const tokenProvider = TokenProvider();
+const cryptoProvider = CryptoProvider();
+const guardianProvider = GuardianProvider(tokenProvider, userRepository, cryptoProvider);
 
 async function Product(fastify: FastifyInstance) {
   fastify.route<{
@@ -142,6 +154,78 @@ async function Product(fastify: FastifyInstance) {
         products: store.right.data.products.map(productMapper.toObject),
       };
       return replay.header('x-has-more', store.right.hasMore).send(object);
+    },
+  });
+
+  fastify.route<{
+    Params: {
+      store_id: string;
+    };
+  }>({
+    url: '/stores/:store_id/followers',
+    method: 'POST',
+    schema: {
+      params: {
+        type: 'object',
+        properties: {
+          store_id: {
+            type: 'string',
+            format: 'uuid',
+          },
+        },
+        required: ['store_id'],
+      },
+    },
+    async handler(request, replay) {
+      const storeId = request.params.store_id;
+      const token = request.headers.authorization;
+      const user = await guardianProvider.passThrough('consumer', token);
+      if (isLeft(user)) {
+        const code = findCodeByError(user.left);
+        return replay.code(code).send({ message: user.left.message });
+      }
+      const store = await followerService.create(storeId, user.right);
+      if (isLeft(store)) {
+        const httpStatus = findCodeByError(store.left);
+        return replay.code(httpStatus).send({ message: store.left.message });
+      }
+      return replay.send();
+    },
+  });
+
+  fastify.route<{
+    Params: {
+      store_id: string;
+    };
+  }>({
+    url: '/stores/:store_id/followers',
+    method: 'DELETE',
+    schema: {
+      params: {
+        type: 'object',
+        properties: {
+          store_id: {
+            type: 'string',
+            format: 'uuid',
+          },
+        },
+        required: ['store_id'],
+      },
+    },
+    async handler(request, replay) {
+      const storeId = request.params.store_id;
+      const token = request.headers.authorization;
+      const user = await guardianProvider.passThrough('consumer', token);
+      if (isLeft(user)) {
+        const code = findCodeByError(user.left);
+        return replay.code(code).send({ message: user.left.message });
+      }
+      const store = await followerService.remove(storeId, user.right);
+      if (isLeft(store)) {
+        const httpStatus = findCodeByError(store.left);
+        return replay.code(httpStatus).send({ message: store.left.message });
+      }
+      return replay.send();
     },
   });
 }

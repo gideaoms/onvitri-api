@@ -9,6 +9,7 @@ import { StoreMapper } from '@/mappers/store';
 import { CityMapper } from '@/mappers/city';
 import { NotFoundError } from '@/errors/not-found';
 import prisma from '@/libs/prisma';
+import { Store } from '@/types/store';
 
 export function StoreRepository(): StoreRepository {
   const productMapper = ProductMapper();
@@ -65,7 +66,25 @@ export function StoreRepository(): StoreRepository {
     });
   }
 
+  async function exists(storeId: string, status: Store.Status) {
+    const store = await prisma.store.findFirst({
+      where: {
+        id: storeId,
+        status: status,
+      },
+    });
+    if (!store) return left(new NotFoundError('Store not found'));
+    return right(
+      storeMapper.fromRecord({
+        ...store,
+        phone: store.phone as StoreRecord.Phone,
+        status: store.status as StoreRecord.Status,
+      }),
+    );
+  }
+
   return {
     findOne: findOne,
+    exists: exists,
   };
 }

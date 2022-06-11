@@ -20,46 +20,50 @@ model City {
 }
 
 model User {
-  id         String   @id @default(uuid()) @db.Uuid
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-  name       String
-  email      String   @unique
-  password   String
-  roles      String[]
-  status     String
+  id              String   @id @default(uuid()) @db.Uuid
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+  name            String
+  email           String   @unique
+  password        String
+  roles           String[]
+  status          String
+  following_count Int      @default(0)
 
-  stores Store[]
+  stores    Store[]
+  following Follower[]
 
   @@map("users")
 }
 
 model Store {
-  id           String   @id @default(uuid()) @db.Uuid
-  city_id      String   @db.Uuid
-  owner_id     String   @db.Uuid
-  created_at   DateTime @default(now())
-  updated_at   DateTime @updatedAt
-  fantasy_name String
-  street       String
-  number       String
-  neighborhood String
-  phone        Json
-  zip_code     String
-  status       String
+  id              String   @id @default(uuid()) @db.Uuid
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+  city_id         String   @db.Uuid
+  owner_id        String   @db.Uuid
+  fantasy_name    String
+  street          String
+  number          String
+  neighborhood    String
+  phone           Json
+  zip_code        String
+  status          String
+  followers_count Int      @default(0)
 
-  city     City      @relation(fields: [city_id], references: [id])
-  user     User      @relation(fields: [owner_id], references: [id])
-  products Product[]
+  city      City       @relation(fields: [city_id], references: [id])
+  owner     User       @relation(fields: [owner_id], references: [id])
+  products  Product[]
+  followers Follower[]
 
   @@map("stores")
 }
 
 model Product {
   id          String   @id @default(uuid()) @db.Uuid
-  store_id    String   @db.Uuid
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
+  store_id    String   @db.Uuid
   title       String
   description String
   price       Int
@@ -69,4 +73,17 @@ model Product {
   store Store @relation(fields: [store_id], references: [id])
 
   @@map("products")
+}
+
+model Follower {
+  user_id    String   @db.Uuid
+  store_id   String   @db.Uuid
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  store Store @relation(fields: [store_id], references: [id])
+  user  User  @relation(fields: [user_id], references: [id])
+
+  @@id(fields: [user_id, store_id])
+  @@map("followers")
 }

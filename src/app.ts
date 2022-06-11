@@ -9,7 +9,7 @@ import helmet from '@fastify/helmet';
 import config from '@/config';
 import sentry from '@/libs/sentry';
 
-function plugin(ajv: ajv.Ajv) {
+function trim(ajv: ajv.Ajv) {
   ajv.addKeyword('trim', {
     type: 'string',
     compile: (schema) => {
@@ -31,7 +31,7 @@ function plugin(ajv: ajv.Ajv) {
 const app = fastify({
   logger: config.APP_ENV === 'development',
   ajv: {
-    plugins: [plugin],
+    plugins: [trim],
   },
 });
 
