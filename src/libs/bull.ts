@@ -2,8 +2,8 @@ import Bull, { Job } from 'bull';
 import sentry from '@/libs/sentry';
 import config from '@/config';
 
-export function makeBull<TemplateVars>() {
-  return new Bull<TemplateVars>('session', {
+export function makeBull<TemplateVars>(name: string) {
+  return new Bull<TemplateVars>(name, {
     redis: {
       host: config.REDIS_HOST,
       port: config.REDIS_PORT,

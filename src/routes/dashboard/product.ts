@@ -25,7 +25,7 @@ const productMapper = ProductMapper();
 const storeMapper = StoreMapper();
 const photoMapper = PhotoMapper();
 const cityMapper = CityMapper();
-const productService = ProductService(guardianProvider, productRepository, storeRepository);
+const productService = ProductService(productRepository, storeRepository);
 
 async function Product(fastify: FastifyInstance) {
   fastify.route<{

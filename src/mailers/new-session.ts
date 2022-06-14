@@ -1,11 +1,11 @@
-import { SessionMailer } from '@/types/mailers/session';
+import { NewSessionMailer } from '@/types/mailers/new-session';
 import { makeMailer } from '@/libs/mailer';
 
-export function SessionMailer(): SessionMailer {
+export function NewSessionMailer(): NewSessionMailer {
   const mailer = makeMailer<{ name: string; email: string; token: string }>();
 
-  async function send(name: string, email: string, token: string) {
-    await mailer.send({
+  function send(name: string, email: string, token: string) {
+    return mailer.send({
       locals: {
         name: name,
         email: email,
@@ -14,7 +14,7 @@ export function SessionMailer(): SessionMailer {
       message: {
         to: `${name} <${email}>`,
       },
-      template: 'session',
+      template: 'new-session',
     });
   }
 

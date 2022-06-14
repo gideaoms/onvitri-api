@@ -1,5 +1,4 @@
 import { isLeft, left, right } from 'fp-either';
-import { GuardianProvider } from '@/types/providers/guardian';
 import { ProductRepository } from '@/types/repositories/dashboard/product';
 import { StoreRepository } from '@/types/repositories/dashboard/store';
 import { Product } from '@/types/product';
@@ -8,11 +7,7 @@ import { ProductModel } from '@/models/product';
 import { User } from '@/types/user';
 import { BadRequestError } from '@/errors/bad-request';
 
-export function ProductService(
-  guardianProvider: GuardianProvider,
-  productRepository: ProductRepository,
-  storeRepository: StoreRepository,
-) {
+export function ProductService(productRepository: ProductRepository, storeRepository: StoreRepository) {
   const productModel = ProductModel(productRepository);
 
   function findMany(page: number, user: User) {
