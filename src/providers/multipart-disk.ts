@@ -8,11 +8,10 @@ import config from '@/config';
 
 export function MultipartDiskProvider(): MultipartProvider {
   async function create(photoName: string) {
-    const osTmpSrc = os.tmpdir();
-    const tmpPhotoSrc = path.join(osTmpSrc, photoName);
-    const thumbPhotoSrc = path.join(osTmpSrc, 'thumbs', photoName);
-    await fse.move(tmpPhotoSrc, path.join(MultipartDiskProvider.tmpSrc, photoName));
-    await fse.move(thumbPhotoSrc, path.join(MultipartDiskProvider.tmpSrc, 'thumbs', photoName));
+    const tmpPhotoSrc = path.resolve(os.tmpdir(), photoName);
+    const thumbPhotoSrc = path.resolve(os.tmpdir(), 'thumbs', photoName);
+    await fse.move(tmpPhotoSrc, path.resolve(MultipartDiskProvider.FOLDER, photoName));
+    await fse.move(thumbPhotoSrc, path.resolve(MultipartDiskProvider.FOLDER, 'thumbs', photoName));
     const photo: Photo = {
       id: crypto.randomUUID(),
       url: `http://localhost:${config.APP_PORT}/photos/${photoName}`,
@@ -26,4 +25,4 @@ export function MultipartDiskProvider(): MultipartProvider {
   };
 }
 
-MultipartDiskProvider.tmpSrc = path.resolve(__dirname, '..', '..', 'tmp');
+MultipartDiskProvider.FOLDER = path.resolve(__dirname, '..', '..', 'tmp');

@@ -2,7 +2,7 @@ import { isNil } from '@/utils';
 
 const config = {
   APP_ENV: process.env.APP_ENV,
-  APP_PORT: process.env.APP_PORT as any as number,
+  APP_PORT: Number(process.env.APP_PORT),
   APP_HOST: process.env.APP_HOST,
   DATABASE_NAME: process.env.DATABASE_NAME,
   DATABASE_USER: process.env.DATABASE_USER,
@@ -16,6 +16,13 @@ const config = {
   AWS_S3_ENDPOINT: process.env.AWS_S3_ENDPOINT,
   AWS_S3_NAME: process.env.AWS_S3_NAME,
   SENTRY_DSN: process.env.SENTRY_DSN,
+  MAIL_HOST: process.env.MAIL_HOST,
+  MAIL_PORT: Number(process.env.MAIL_PORT),
+  MAIL_USER: process.env.MAIL_USER,
+  MAIL_PASS: process.env.MAIL_PASS,
+  REDIS_HOST: process.env.REDIS_HOST,
+  REDIS_PASS: process.env.REDIS_PASS,
+  REDIS_PORT: Number(process.env.REDIS_PORT),
 };
 
 Object.entries(config).forEach(([key, value]) => {

@@ -8,7 +8,8 @@
     "dev:server": "npx prisma generate && npx nodemon src/server.ts",
     "dev:compose": "docker-compose -f docker-compose.dev.yml",
     "dev:migrate": "npm run dev:compose exec onvitri_api npx prisma migrate dev",
-    "dev": "npm run dev:compose up -- --remove-orphans"
+    "dev": "npm run dev:compose up -- --remove-orphans",
+    "dev:worker": "npx nodemon src/worker.ts"
   },
   "prisma": {
     "seed": "node --require ts-node/register/transpile-only --require tsconfig-paths/register src/seeder.ts"
@@ -21,6 +22,8 @@
   "license": "ISC",
   "devDependencies": {
     "@types/bcryptjs": "2.4.2",
+    "@types/bull": "3.15.8",
+    "@types/email-templates": "8.0.4",
     "@types/fs-extra": "9.0.13",
     "@types/jsonwebtoken": "8.5.6",
     "@types/sharp": "0.30.2",
@@ -48,7 +51,9 @@
     "ajv": "6.12.6",
     "aws-sdk": "2.1126.0",
     "bcryptjs": "2.4.3",
+    "bull": "4.8.3",
     "date-fns": "2.28.0",
+    "email-templates": "9.0.0",
     "fastify": "3.27.4",
     "fastify-autoload": "3.11.0",
     "fastify-cors": "6.0.3",
@@ -58,6 +63,7 @@
     "fs-extra": "10.0.0",
     "http-status": "1.5.0",
     "jsonwebtoken": "8.5.1",
+    "nunjucks": "3.2.3",
     "sharp": "0.30.4"
   }
 }
