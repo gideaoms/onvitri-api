@@ -66,10 +66,28 @@ export function UserRepository(): UserRepository {
     });
   }
 
+  async function findOneByEmailAndEmailCode(email: string, emailCode: string) {
+    const found = await prisma.user.findFirst({
+      where: {
+        email: email,
+        email_code: emailCode,
+      },
+    });
+    if (!found) return left(new NotFoundError('Invalid email and/or token'));
+    return right(
+      userMapper.fromRecord({
+        ...found,
+        roles: found.roles as UserRecord.Role[],
+        status: found.status as UserRecord.Status,
+      }),
+    );
+  }
+
   return {
     findOneByEmail: findOneByEmail,
     findOneById: findOneById,
     update: update,
     create: create,
+    findOneByEmailAndEmailCode: findOneByEmailAndEmailCode,
   };
 }

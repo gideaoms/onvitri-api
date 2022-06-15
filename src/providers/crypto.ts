@@ -11,13 +11,13 @@ export function CryptoProvider(): CryptoProvider {
     return bcryptjs.hash(plain, round);
   }
 
-  function random(size: number) {
-    return crypto.randomBytes(size).toString('hex').substring(size).toUpperCase();
+  function randomDigits() {
+    return crypto.randomInt(100000, 999999).toString(); // 6 digits
   }
 
   return {
     compare: compare,
     hash: hash,
-    random: random,
+    randomDigits: randomDigits,
   };
 }

@@ -12,8 +12,7 @@ export function SessionService(
   async function create(email: string) {
     const user = await userRepository.findOneByEmail(email);
     if (isRight(user)) {
-      const size = 6;
-      const emailCode = cryptoProvider.random(size);
+      const emailCode = cryptoProvider.randomDigits();
       const newUser: User = { ...user.right, emailCode: emailCode };
       await userRepository.update(newUser);
       newSessionJob.addToQueue(user.right.name, user.right.email, emailCode);

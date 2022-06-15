@@ -6,4 +6,5 @@ export type UserRepository = {
   findOneById(userId: string): Promise<Either<Error, User>>;
   update(user: User): Promise<User>;
   create(user: User): Promise<User>;
+  findOneByEmailAndEmailCode(email: string, emailCode: string): Promise<Either<Error, User>>;
 };
