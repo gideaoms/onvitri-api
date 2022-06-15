@@ -18,10 +18,15 @@ export function UserModel(cryptoProvider: CryptoProvider) {
     return user.status === 'awaiting';
   }
 
+  function isEmailCodeValid(user: User, emailCode: string) {
+    return user.emailCode === emailCode;
+  }
+
   return {
     isPasswordCorrect: isPasswordCorrect,
     isActive: isActive,
     hasRole: hasRole,
     isAwaiting: isAwaiting,
+    isEmailCodeValid: isEmailCodeValid,
   };
 }

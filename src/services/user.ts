@@ -5,8 +5,14 @@ import { CryptoProvider } from '@/types/providers/crypto';
 import { UserModel } from '@/models/user';
 import { NewUserJob } from '@/types/jobs/new-user';
 import { BadRequestError } from '@/errors/bad-request';
+import { TokenProvider } from '@/types/providers/token';
 
-export function UserService(userRepository: UserRepository, cryptoProvider: CryptoProvider, newUserJob: NewUserJob) {
+export function UserService(
+  userRepository: UserRepository,
+  cryptoProvider: CryptoProvider,
+  newUserJob: NewUserJob,
+  tokenProvider: TokenProvider,
+) {
   const userModel = UserModel(cryptoProvider);
 
   async function create(name: string, email: string) {
@@ -40,11 +46,15 @@ export function UserService(userRepository: UserRepository, cryptoProvider: Cryp
   }
 
   async function activate(email: string, emailCode: string) {
-    const user = await userRepository.findOneByEmailAndEmailCode(email, emailCode);
-    if (isLeft(user)) return left(user.left);
+    const message = 'Email e/ou código inválidos';
+    const user = await userRepository.findOneByEmail(email);
+    if (isLeft(user)) return left(new BadRequestError(message));
+    if (!userModel.isEmailCodeValid(user.right, emailCode)) return left(new BadRequestError(message));
     const userToUpdate: User = { ...user.right, status: 'active', emailCode: null };
     const updatedUser = await userRepository.update(userToUpdate);
-    return right(updatedUser);
+    const sub = updatedUser.id;
+    const token = tokenProvider.generate(sub);
+    return right({ ...updatedUser, token: token });
   }
 
   return {

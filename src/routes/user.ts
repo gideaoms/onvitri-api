@@ -7,12 +7,14 @@ import { NewUserJob } from '@/jobs/new-user';
 import { NewUserMailer } from '@/mailers/new-user';
 import { UserMapper } from '@/mappers/user';
 import { findCodeByError } from '@/utils';
+import { TokenProvider } from '@/providers/token';
 
 const userRepository = UserRepository();
 const cryptoProvider = CryptoProvider();
 const newUserMailer = NewUserMailer();
 const newUserJob = NewUserJob(newUserMailer);
-const userService = UserService(userRepository, cryptoProvider, newUserJob);
+const tokenProvider = TokenProvider();
+const userService = UserService(userRepository, cryptoProvider, newUserJob, tokenProvider);
 const userMapper = UserMapper();
 
 async function User(fastify: FastifyInstance) {
@@ -52,7 +54,8 @@ async function User(fastify: FastifyInstance) {
               type: 'string',
             },
             roles: {
-              type: 'string',
+              type: 'array',
+              format: 'string',
             },
             status: {
               type: 'string',
@@ -108,9 +111,13 @@ async function User(fastify: FastifyInstance) {
               type: 'string',
             },
             roles: {
-              type: 'string',
+              type: 'array',
+              format: 'string',
             },
             status: {
+              type: 'string',
+            },
+            token: {
               type: 'string',
             },
           },
