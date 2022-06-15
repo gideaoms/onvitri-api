@@ -1,14 +1,14 @@
-import { NewSessionJob } from '@/types/jobs/new-session';
+import { NewUserJob } from '@/types/jobs/new-user';
 import { makeBull, handleFailure } from '@/libs/bull';
-import { NewSessionMailer } from '@/types/mailers/new-session';
+import { NewUserMailer } from '@/types/mailers/new-user';
 
-export function NewSessionJob(newSessionMailer: NewSessionMailer): NewSessionJob {
-  const bull = makeBull<{ name: string; email: string; code: string }>('new-session');
+export function NewUserJob(newUserMailer: NewUserMailer): NewUserJob {
+  const bull = makeBull<{ name: string; email: string; code: string }>('new-user');
 
   function prepare() {
     bull.process((job) => {
       const { name, email, code } = job.data;
-      newSessionMailer.send(name, email, code);
+      newUserMailer.send(name, email, code);
     });
     bull.on('failed', handleFailure);
   }

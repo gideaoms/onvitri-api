@@ -1,11 +1,12 @@
-import { SessionJob } from '@/jobs/session';
-import { SessionMailer } from '@/mailers/session';
+import { NewSessionJob } from '@/jobs/new-session';
+import { NewUserJob } from '@/jobs/new-user';
+import { NewSessionMailer } from '@/mailers/new-session';
+import { NewUserMailer } from '@/mailers/new-user';
 
-const sessionMailer = SessionMailer();
-const sessionJob = SessionJob(sessionMailer);
+const newSessionMailer = NewSessionMailer();
+const newUserMailer = NewUserMailer();
+const newSessionJob = NewSessionJob(newSessionMailer);
+const newUserJob = NewUserJob(newUserMailer);
 
-sessionJob.prepare();
-
-// setTimeout(() => {
-//   sessionJob.addToQueue('Gideão', 'gideaoms@gmail.com', 'a1b2c3');
-// }, 3000);
+newSessionJob.prepare();
+newUserJob.prepare();

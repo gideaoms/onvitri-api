@@ -4,6 +4,7 @@ import { UserRepository } from '@/types/repositories/user';
 import { UserRecord } from '@/types/records/user';
 import { UserMapper } from '@/mappers/user';
 import { NotFoundError } from '@/errors/not-found';
+import { User } from '@/types/user';
 
 export function UserRepository(): UserRepository {
   const userMapper = UserMapper();
@@ -18,7 +19,6 @@ export function UserRepository(): UserRepository {
     return right(
       userMapper.fromRecord({
         ...user,
-        token: '',
         roles: user.roles as UserRecord.Role[],
         status: user.status as UserRecord.Status,
       }),
@@ -35,15 +35,41 @@ export function UserRepository(): UserRepository {
     return right(
       userMapper.fromRecord({
         ...user,
-        token: '',
         roles: user.roles as UserRecord.Role[],
         status: user.status as UserRecord.Status,
       }),
     );
   }
 
+  async function update(user: User) {
+    const updated = await prisma.user.update({
+      data: userMapper.toRecord(user),
+      where: {
+        id: user.id,
+      },
+    });
+    return userMapper.fromRecord({
+      ...updated,
+      roles: user.roles as UserRecord.Role[],
+      status: user.status as UserRecord.Status,
+    });
+  }
+
+  async function create(user: User) {
+    const created = await prisma.user.create({
+      data: userMapper.toRecord(user),
+    });
+    return userMapper.fromRecord({
+      ...created,
+      roles: user.roles as UserRecord.Role[],
+      status: user.status as UserRecord.Status,
+    });
+  }
+
   return {
     findOneByEmail: findOneByEmail,
     findOneById: findOneById,
+    update: update,
+    create: create,
   };
 }

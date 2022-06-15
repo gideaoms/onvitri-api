@@ -1,7 +1,7 @@
-import { NewSessionMailer } from '@/types/mailers/new-session';
+import { NewUserMailer } from '@/types/mailers/new-user';
 import { makeMailer } from '@/libs/mailer';
 
-export function NewSessionMailer(): NewSessionMailer {
+export function NewUserMailer(): NewUserMailer {
   const mailer = makeMailer<{ name: string; email: string; code: string }>();
 
   function send(name: string, email: string, code: string) {
@@ -14,7 +14,7 @@ export function NewSessionMailer(): NewSessionMailer {
       message: {
         to: `${name} <${email}>`,
       },
-      template: 'new-session',
+      template: 'new-user',
     });
   }
 

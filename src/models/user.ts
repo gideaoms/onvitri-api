@@ -14,9 +14,14 @@ export function UserModel(cryptoProvider: CryptoProvider) {
     return user.roles.includes(role);
   }
 
+  function isAwaiting(user: User) {
+    return user.status === 'awaiting';
+  }
+
   return {
     isPasswordCorrect: isPasswordCorrect,
     isActive: isActive,
     hasRole: hasRole,
+    isAwaiting: isAwaiting,
   };
 }

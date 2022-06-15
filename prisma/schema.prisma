@@ -25,10 +25,11 @@ model User {
   updated_at      DateTime @updatedAt
   name            String
   email           String   @unique
-  password        String
+  password        String?
   roles           String[]
   status          String
   following_count Int      @default(0)
+  email_code      String?
 
   stores    Store[]
   following Follower[]

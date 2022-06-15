@@ -1,6 +1,6 @@
 export declare namespace User {
   type Role = 'shopkeeper' | 'consumer';
-  type Status = 'active' | 'inactive';
+  type Status = 'active' | 'inactive' | 'awaiting';
 }
 
 export type User = {
@@ -11,4 +11,5 @@ export type User = {
   roles: User.Role[];
   status: User.Status;
   token: string;
+  emailCode: string | null;
 };

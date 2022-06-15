@@ -1,6 +1,6 @@
 export declare namespace UserObject {
   type Role = 'shopkeeper' | 'consumer';
-  type Status = 'active' | 'inactive';
+  type Status = 'active' | 'inactive' | 'awaiting';
 }
 
 export type UserObject = {

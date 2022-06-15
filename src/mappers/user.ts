@@ -11,7 +11,8 @@ export function UserMapper() {
       password: record.password,
       roles: record.roles,
       status: record.status,
-      token: record.token,
+      token: '',
+      emailCode: record.email_code,
     };
     return user;
   }
@@ -28,8 +29,22 @@ export function UserMapper() {
     return object;
   }
 
+  function toRecord(user: User) {
+    const record: UserRecord = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      roles: user.roles,
+      status: user.status,
+      password: user.password,
+      email_code: user.emailCode,
+    };
+    return record;
+  }
+
   return {
     fromRecord: fromRecord,
     toObject: toObject,
+    toRecord: toRecord,
   };
 }

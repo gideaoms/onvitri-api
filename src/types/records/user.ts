@@ -1,5 +1,5 @@
 export declare namespace UserRecord {
-  type Status = 'active' | 'inactive';
+  type Status = 'active' | 'inactive' | 'awaiting';
   type Role = 'shopkeeper' | 'consumer';
 }
 
@@ -10,5 +10,5 @@ export type UserRecord = {
   password: string;
   roles: UserRecord.Role[];
   status: UserRecord.Status;
-  token: string;
+  email_code: string | null;
 };

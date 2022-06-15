@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import bcryptjs from 'bcryptjs';
 import { CryptoProvider } from '@/types/providers/crypto';
 
@@ -10,8 +11,13 @@ export function CryptoProvider(): CryptoProvider {
     return bcryptjs.hash(plain, round);
   }
 
+  function random(size: number) {
+    return crypto.randomBytes(size).toString('hex').substring(size).toUpperCase();
+  }
+
   return {
     compare: compare,
     hash: hash,
+    random: random,
   };
 }
