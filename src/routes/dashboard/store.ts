@@ -15,7 +15,7 @@ const userRepository = UserRepository();
 const tokenProvider = TokenProvider();
 const guardianProvider = GuardianProvider(tokenProvider, userRepository, cryptoProvider);
 const storeRepository = StoreRepository();
-const storeService = StoreService(guardianProvider, storeRepository);
+const storeService = StoreService(storeRepository);
 const storeMapper = StoreMapper();
 const cityMapper = CityMapper();
 
@@ -83,12 +83,13 @@ async function Store(fastify: FastifyInstance) {
     },
     async handler(request, replay) {
       const token = request.headers.authorization;
-      const stores = await storeService.findAll(token);
-      if (isLeft(stores)) {
-        const httpStatus = findCodeByError(stores.left);
-        return replay.code(httpStatus).send({ message: stores.left.message });
+      const user = await guardianProvider.passThrough('shopkeeper', token);
+      if (isLeft(user)) {
+        const httpStatus = findCodeByError(user.left);
+        return replay.code(httpStatus).send({ message: user.left.message });
       }
-      const object = stores.right.map((store) => ({
+      const stores = await storeService.findAll(user.right);
+      const object = stores.map((store) => ({
         ...storeMapper.toObject(store),
         city: cityMapper.toObject(store.city),
       }));

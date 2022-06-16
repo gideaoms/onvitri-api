@@ -23,7 +23,7 @@ const cryptoProvider = CryptoProvider();
 const guardianProvider = GuardianProvider(tokenProvider, userRepository, cryptoProvider);
 const multipartProvider = config.APP_ENV === 'production' ? MultipartS3Provider() : MultipartDiskProvider();
 const photoMapper = PhotoMapper();
-const photoService = PhotoService(guardianProvider, multipartProvider);
+const photoService = PhotoService(multipartProvider);
 
 async function Photo(fastify: FastifyInstance) {
   fastify.route({
