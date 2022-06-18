@@ -3,9 +3,9 @@ import { isLeft } from 'fp-either';
 import { findCodeByError } from '@/utils';
 import { Product } from '@/types/product';
 import { ProductObject } from '@/types/objects/product';
-import { ProductRepository } from '@/repositories/dashboard/product';
-import { ProductService } from '@/services/dashboard/product';
-import { UserRepository } from '@/repositories/user';
+import { ProductRepository } from '@/repositories/shopkeeper/product';
+import { ProductService } from '@/services/shopkeeper/product';
+import { UserRepository } from '@/repositories/shopkeeper/user';
 import { CryptoProvider } from '@/providers/crypto';
 import { TokenProvider } from '@/providers/token';
 import { GuardianProvider } from '@/providers/guardian';
@@ -13,7 +13,8 @@ import { ProductMapper } from '@/mappers/product';
 import { StoreMapper } from '@/mappers/store';
 import { CityMapper } from '@/mappers/city';
 import { PhotoMapper } from '@/mappers/photo';
-import { StoreRepository } from '@/repositories/dashboard/store';
+import { StoreRepository } from '@/repositories/shopkeeper/store';
+import { schemas } from '@/schemas';
 
 const userRepository = UserRepository();
 const productRepository = ProductRepository();
@@ -51,89 +52,14 @@ async function Product(fastify: FastifyInstance) {
           items: {
             type: 'object',
             properties: {
-              id: {
-                type: 'string',
-              },
-              store_id: {
-                type: 'string',
-              },
-              title: {
-                type: 'string',
-              },
-              description: {
-                type: 'string',
-              },
-              price: {
-                type: 'integer',
-              },
-              status: {
-                type: 'string',
-              },
-              photos: {
-                type: 'array',
-                items: {
-                  type: 'object',
-                  properties: {
-                    id: {
-                      type: 'string',
-                    },
-                    url: {
-                      type: 'string',
-                    },
-                    thumbnail_url: {
-                      type: 'string',
-                    },
-                  },
-                },
-              },
+              ...schemas.product,
               store: {
                 type: 'object',
                 properties: {
-                  id: {
-                    type: 'string',
-                  },
-                  fantasy_name: {
-                    type: 'string',
-                  },
-                  street: {
-                    type: 'string',
-                  },
-                  number: {
-                    type: 'string',
-                  },
-                  neighborhood: {
-                    type: 'string',
-                  },
-                  phone: {
-                    type: 'object',
-                    properties: {
-                      country_code: {
-                        type: 'string',
-                      },
-                      area_code: {
-                        type: 'string',
-                      },
-                      number: {
-                        type: 'string',
-                      },
-                    },
-                  },
-                  status: {
-                    type: 'string',
-                  },
+                  ...schemas.store,
                   city: {
                     type: 'object',
-                    properties: {
-                      id: {
-                        type: 'string',
-                      },
-                      name: {
-                        type: 'string',
-                      },
-                      initials: {
-                        type: 'string',
-                      },
-                    },
+                    properties: schemas.city,
                   },
                 },
               },
@@ -151,14 +77,15 @@ async function Product(fastify: FastifyInstance) {
         return replay.code(httpStatus).send({ message: user.left.message });
       }
       const products = await productService.findMany(page, user.right);
-      const object = products.data.map((product) => ({
-        ...productMapper.toObject(product),
-        store: {
-          ...storeMapper.toObject(product.store),
-          city: cityMapper.toObject(product.store.city),
-        },
-      }));
-      return replay.header('x-has-more', products.hasMore).send(object);
+      return replay.header('x-has-more', products.hasMore).send(
+        products.data.map((product) => ({
+          ...productMapper.toObject(product),
+          store: {
+            ...storeMapper.toObject(product.store),
+            city: cityMapper.toObject(product.store.city),
+          },
+        })),
+      );
     },
   });
 
@@ -217,43 +144,7 @@ async function Product(fastify: FastifyInstance) {
       response: {
         200: {
           type: 'object',
-          properties: {
-            id: {
-              type: 'string',
-            },
-            store_id: {
-              type: 'string',
-            },
-            title: {
-              type: 'string',
-            },
-            description: {
-              type: 'string',
-            },
-            price: {
-              type: 'integer',
-            },
-            status: {
-              type: 'string',
-            },
-            photos: {
-              type: 'array',
-              items: {
-                type: 'object',
-                properties: {
-                  id: {
-                    type: 'string',
-                  },
-                  url: {
-                    type: 'string',
-                  },
-                  thumbnail_url: {
-                    type: 'string',
-                  },
-                },
-              },
-            },
-          },
+          properties: schemas.product,
         },
       },
     },
@@ -302,89 +193,14 @@ async function Product(fastify: FastifyInstance) {
         200: {
           type: 'object',
           properties: {
-            id: {
-              type: 'string',
-            },
-            store_id: {
-              type: 'string',
-            },
-            title: {
-              type: 'string',
-            },
-            description: {
-              type: 'string',
-            },
-            price: {
-              type: 'integer',
-            },
-            status: {
-              type: 'string',
-            },
-            photos: {
-              type: 'array',
-              items: {
-                type: 'object',
-                properties: {
-                  id: {
-                    type: 'string',
-                  },
-                  url: {
-                    type: 'string',
-                  },
-                  thumbnail_url: {
-                    type: 'string',
-                  },
-                },
-              },
-            },
+            ...schemas.product,
             store: {
               type: 'object',
               properties: {
-                id: {
-                  type: 'string',
-                },
-                fantasy_name: {
-                  type: 'string',
-                },
-                street: {
-                  type: 'string',
-                },
-                number: {
-                  type: 'string',
-                },
-                neighborhood: {
-                  type: 'string',
-                },
-                phone: {
-                  type: 'object',
-                  properties: {
-                    country_code: {
-                      type: 'string',
-                    },
-                    area_code: {
-                      type: 'string',
-                    },
-                    number: {
-                      type: 'string',
-                    },
-                  },
-                },
-                status: {
-                  type: 'string',
-                },
+                ...schemas.store,
                 city: {
                   type: 'object',
-                  properties: {
-                    id: {
-                      type: 'string',
-                    },
-                    name: {
-                      type: 'string',
-                    },
-                    initials: {
-                      type: 'string',
-                    },
-                  },
+                  properties: schemas.city,
                 },
               },
             },
@@ -476,6 +292,12 @@ async function Product(fastify: FastifyInstance) {
           },
         },
         required: ['title', 'description', 'price', 'photos', 'status'],
+      },
+      response: {
+        200: {
+          type: 'object',
+          properties: schemas.product,
+        },
       },
     },
     async handler(request, replay) {

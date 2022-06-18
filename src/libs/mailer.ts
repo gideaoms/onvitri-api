@@ -1,6 +1,6 @@
 import path from 'path';
 import Email from 'email-templates';
-import config from '@/config';
+import { config } from '@/config';
 
 export function makeMailer<TemplateVars>() {
   return new Email<TemplateVars>({

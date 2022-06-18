@@ -3,11 +3,11 @@ import { ProductRepository } from '@/types/repositories/product';
 import { StoreRepository } from '@/types/repositories/store';
 
 export function ProductService(productRepository: ProductRepository, storeRepository: StoreRepository) {
-  async function findMany(page: number) {
-    return productRepository.findMany(page);
+  function findManyByCity(cityId: string, page: number) {
+    return productRepository.findManyByCity(cityId, page);
   }
 
-  async function findOne(productId: string) {
+  function findOne(productId: string) {
     return productRepository.findOne(productId);
   }
 
@@ -19,7 +19,7 @@ export function ProductService(productRepository: ProductRepository, storeReposi
   }
 
   return {
-    findMany: findMany,
+    findManyByCity: findManyByCity,
     findOne: findOne,
     findManyByStore: findManyByStore,
   };

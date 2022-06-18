@@ -8,14 +8,14 @@ import crypto from 'crypto';
 import { isLeft } from 'fp-either';
 import { findCodeByError } from '@/utils';
 import { TokenProvider } from '@/providers/token';
-import { UserRepository } from '@/repositories/user';
+import { UserRepository } from '@/repositories/shopkeeper/user';
 import { CryptoProvider } from '@/providers/crypto';
 import { GuardianProvider } from '@/providers/guardian';
 import { MultipartDiskProvider } from '@/providers/multipart-disk';
 import { MultipartS3Provider } from '@/providers/multipart-s3';
-import { PhotoService } from '@/services/dashboard/photo';
+import { PhotoService } from '@/services/shopkeeper/photo';
 import { PhotoMapper } from '@/mappers/photo';
-import config from '@/config';
+import { config } from '@/config';
 
 const userRepository = UserRepository();
 const tokenProvider = TokenProvider();

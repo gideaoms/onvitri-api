@@ -1,6 +1,6 @@
 import { isLeft, left, right } from 'fp-either';
-import { ProductRepository } from '@/types/repositories/dashboard/product';
-import { StoreRepository } from '@/types/repositories/dashboard/store';
+import { ProductRepository } from '@/types/repositories/shopkeeper/product';
+import { StoreRepository } from '@/types/repositories/shopkeeper/store';
 import { Product } from '@/types/product';
 import { Photo } from '@/types/photo';
 import { ProductModel } from '@/models/product';
@@ -40,7 +40,7 @@ export function ProductService(productRepository: ProductRepository, storeReposi
       return left(new BadRequestError('Você não pode publicar um produto sem foto'));
     const reachedMaximumAmountOfActiveProducts = await productModel.reachedMaximumActiveByStore(storeId, ownerId);
     if (productModel.isActive(product) && reachedMaximumAmountOfActiveProducts) {
-      const message = `Você não pode ter mais que ${ProductModel.maximumAmountActive} produtos publicados na mesma loja`;
+      const message = `Você não pode ter mais que ${ProductModel.MAXIMUM_ACTIVE_BY_STORE} produtos publicados na mesma loja`;
       return left(new BadRequestError(message));
     }
     return right(await productRepository.create(product));
@@ -79,7 +79,7 @@ export function ProductService(productRepository: ProductRepository, storeReposi
       return left(new BadRequestError('Você não pode publicar um produto sem foto'));
     const reachedMaximumAmountOfActiveProducts = await productModel.reachedMaximumActiveByStore(storeId, ownerId);
     if (productModel.isActive(product) && reachedMaximumAmountOfActiveProducts) {
-      const message = `Você não pode ter mais que ${ProductModel.maximumAmountActive} produtos publicados na mesma loja`;
+      const message = `Você não pode ter mais que ${ProductModel.MAXIMUM_ACTIVE_BY_STORE} produtos publicados na mesma loja`;
       return left(new BadRequestError(message));
     }
     return right(await productRepository.update(product));

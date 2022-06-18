@@ -1,23 +1,23 @@
 import { isLeft, isRight, left, right } from 'fp-either';
-import { UserRepository } from '@/types/repositories/user';
-import { NewSessionJob } from '@/types/jobs/new-session';
+import { UserRepository } from '@/types/repositories/shopkeeper/user';
 import { CryptoProvider } from '@/types/providers/crypto';
-import { User } from '@/types/user';
 import { UserModel } from '@/models/user';
 import { BadRequestError } from '@/errors/bad-request';
+import { User } from '@/types/user';
+import { NewSessionJob } from '@/types/jobs/new-session';
 import { TokenProvider } from '@/types/providers/token';
 
 export function SessionService(
   userRepository: UserRepository,
-  newSessionJob: NewSessionJob,
   cryptoProvider: CryptoProvider,
   tokenProvider: TokenProvider,
+  newSessionJob: NewSessionJob,
 ) {
   const userModel = UserModel(cryptoProvider);
 
   async function create(email: string) {
     const user = await userRepository.findOneByEmail(email);
-    if (isRight(user)) {
+    if (isRight(user) && userModel.hasRole(user.right, 'shopkeeper')) {
       if (!userModel.isActive(user.right))
         return left(new BadRequestError('O email informado não está ativo em nossa plataforma'));
       const emailCode = cryptoProvider.randomDigits();

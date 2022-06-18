@@ -2,19 +2,14 @@ import { Either } from 'fp-either';
 import { Product } from '@/types/product';
 import { Store } from '@/types/store';
 import { City } from '@/types/city';
+import { ListOf } from '@/utils';
 
 export type ProductRepository = {
-  findMany(
-    ownerId: string,
-    page: number,
-  ): Promise<{
-    data: (Product & { store: Store & { city: City } })[];
-    hasMore: boolean;
-  }>;
+  findMany(ownerId: string, page: number): Promise<ListOf<Product & { store: Store & { city: City } }>>;
   create(product: Product): Promise<Product>;
   exists(productId: string, ownerId: string): Promise<Either<Error, Product>>;
   update(product: Product): Promise<Product>;
   findOne(productId: string, ownerId: string): Promise<Either<Error, Product & { store: Store & { city: City } }>>;
   remove(productId: string): Promise<void>;
-  getAmountOfActiveByStore(storeId: string, ownerId: string): Promise<number>;
+  countActiveByStore(storeId: string, ownerId: string): Promise<number>;
 };

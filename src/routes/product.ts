@@ -6,6 +6,7 @@ import { StoreRepository } from '@/repositories/store';
 import { ProductService } from '@/services/product';
 import { ProductMapper } from '@/mappers/product';
 import { StoreMapper } from '@/mappers/store';
+import { schemas } from '@/schemas';
 
 const productRepository = ProductRepository();
 const storeRepository = StoreRepository();
@@ -18,6 +19,7 @@ async function Product(fastify: FastifyInstance) {
     Querystring: {
       page: number;
       store_id: string;
+      city_id: string;
     };
   }>({
     url: '/products',
@@ -33,8 +35,20 @@ async function Product(fastify: FastifyInstance) {
             type: 'string',
             format: 'uuid',
           },
+          city_id: {
+            type: 'string',
+            format: 'uuid',
+          },
         },
         required: ['page'],
+        if: {
+          properties: {
+            store_id: false,
+          },
+        },
+        then: {
+          required: ['city_id'],
+        },
       },
       response: {
         200: {
@@ -42,77 +56,10 @@ async function Product(fastify: FastifyInstance) {
           items: {
             type: 'object',
             properties: {
-              id: {
-                type: 'string',
-              },
-              title: {
-                type: 'string',
-              },
-              description: {
-                type: 'string',
-              },
-              price: {
-                type: 'integer',
-              },
-              status: {
-                type: 'string',
-              },
-              photos: {
-                type: 'array',
-                items: {
-                  type: 'object',
-                  properties: {
-                    id: {
-                      type: 'string',
-                    },
-                    url: {
-                      type: 'string',
-                    },
-                    thumbnail_url: {
-                      type: 'string',
-                    },
-                  },
-                },
-              },
+              ...schemas.product,
               store: {
                 type: 'object',
-                properties: {
-                  id: {
-                    type: 'string',
-                  },
-                  fantasy_name: {
-                    type: 'string',
-                  },
-                  street: {
-                    type: 'string',
-                  },
-                  number: {
-                    type: 'number',
-                  },
-                  neighborhood: {
-                    type: 'string',
-                  },
-                  phone: {
-                    type: 'object',
-                    properties: {
-                      country_code: {
-                        type: 'string',
-                      },
-                      area_code: {
-                        type: 'string',
-                      },
-                      number: {
-                        type: 'string',
-                      },
-                    },
-                  },
-                  zip_code: {
-                    type: 'string',
-                  },
-                  status: {
-                    type: 'string',
-                  },
-                },
+                properties: schemas.store,
               },
             },
           },
@@ -122,21 +69,24 @@ async function Product(fastify: FastifyInstance) {
     async handler(request, replay) {
       const page = request.query.page;
       const storeId = request.query.store_id;
+      const cityId = request.query.city_id;
       if (storeId) {
         const products = await productService.findManyByStore(storeId, page);
         if (isLeft(products)) {
           const httpStatus = findCodeByError(products.left);
           return replay.code(httpStatus).send({ message: products.left.message });
         }
-        const object = products.right.data.map(productMapper.toObject);
-        return replay.header('x-has-more', products.right.hasMore).send(object);
+        return replay
+          .header('x-has-more', products.right.hasMore)
+          .send(products.right.data.map(productMapper.toObject));
       }
-      const { data: products, hasMore } = await productService.findMany(page);
-      const object = products.map((product) => ({
-        ...productMapper.toObject(product),
-        store: storeMapper.toObject(product.store),
-      }));
-      return replay.header('x-has-more', hasMore).send(object);
+      const products = await productService.findManyByCity(cityId, page);
+      return replay.header('x-has-more', products.hasMore).send(
+        products.data.map((product) => ({
+          ...productMapper.toObject(product),
+          store: storeMapper.toObject(product.store),
+        })),
+      );
     },
   });
 
@@ -162,74 +112,10 @@ async function Product(fastify: FastifyInstance) {
         200: {
           type: 'object',
           properties: {
-            id: {
-              type: 'string',
-            },
-            title: {
-              type: 'string',
-            },
-            description: {
-              type: 'string',
-            },
-            price: {
-              type: 'integer',
-            },
-            status: {
-              type: 'string',
-            },
-            photos: {
-              type: 'array',
-              items: {
-                type: 'object',
-                properties: {
-                  id: {
-                    url: 'string',
-                  },
-                  url: {
-                    type: 'string',
-                  },
-                  thumbnail_url: {
-                    type: 'string',
-                  },
-                },
-              },
-            },
+            ...schemas.product,
             store: {
               type: 'object',
-              properties: {
-                id: {
-                  type: 'string',
-                },
-                fantasy_name: {
-                  type: 'string',
-                },
-                street: {
-                  type: 'string',
-                },
-                number: {
-                  type: 'string',
-                },
-                neighborhood: {
-                  type: 'string',
-                },
-                phone: {
-                  type: 'object',
-                  properties: {
-                    country_code: {
-                      type: 'string',
-                    },
-                    area_code: {
-                      type: 'string',
-                    },
-                    number: {
-                      type: 'string',
-                    },
-                  },
-                },
-                status: {
-                  type: 'string',
-                },
-              },
+              properties: schemas.store,
             },
           },
         },
@@ -242,11 +128,10 @@ async function Product(fastify: FastifyInstance) {
         const httpStatus = findCodeByError(product.left);
         return replay.code(httpStatus).send({ message: product.left.message });
       }
-      const object = {
+      return replay.send({
         ...productMapper.toObject(product.right),
         store: storeMapper.toObject(product.right.store),
-      };
-      return replay.send(object);
+      });
     },
   });
 }

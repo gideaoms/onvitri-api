@@ -1,5 +1,6 @@
 import { left, right } from 'fp-either';
-import prisma from '@/libs/prisma';
+import { Prisma } from '@prisma/client';
+import { prisma } from '@/libs/prisma';
 import { ProductRepository } from '@/types/repositories/product';
 import { ProductRecord } from '@/types/records/product';
 import { PhotoRecord } from '@/types/records/photo';
@@ -13,16 +14,18 @@ export function ProductRepository(): ProductRepository {
   const productMapper = ProductMapper();
   const storeMapper = StoreMapper();
 
-  async function findMany(page: number) {
-    const limit = ProductModel.itemsByPage;
+  async function findManyByCity(cityId: string, page: number) {
+    const limit = ProductModel.ITEMS_BY_PAGE;
     const offset = limit * (page - 1);
-    const products = await prisma.product.findMany({
-      where: {
+    const where: Prisma.ProductWhereInput = {
+      status: 'active',
+      store: {
         status: 'active',
-        store: {
-          status: 'active',
-        },
+        city_id: cityId,
       },
+    };
+    const products = await prisma.product.findMany({
+      where: where,
       orderBy: {
         created_at: 'desc',
       },
@@ -33,12 +36,7 @@ export function ProductRepository(): ProductRepository {
       },
     });
     const hasMore = await prisma.product.count({
-      where: {
-        status: 'active',
-        store: {
-          status: 'active',
-        },
-      },
+      where: where,
       take: limit,
       skip: limit * page,
     });
@@ -88,7 +86,7 @@ export function ProductRepository(): ProductRepository {
   }
 
   async function findManyByStore(storeId: string, page: number) {
-    const limit = ProductModel.itemsByPage;
+    const limit = ProductModel.ITEMS_BY_PAGE;
     const offset = limit * (page - 1);
     const products = await prisma.product.findMany({
       where: {
@@ -128,7 +126,7 @@ export function ProductRepository(): ProductRepository {
   }
 
   return {
-    findMany: findMany,
+    findManyByCity: findManyByCity,
     findOne: findOne,
     findManyByStore: findManyByStore,
   };

@@ -2,7 +2,7 @@ import jsonwebtoken from 'jsonwebtoken';
 import { left, right } from 'fp-either';
 import { TokenProvider } from '@/types/providers/token';
 import { UnauthorizedError } from '@/errors/unauthorized';
-import config from '@/config';
+import { config } from '@/config';
 
 export function TokenProvider(): TokenProvider {
   function generate(sub: string) {

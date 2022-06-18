@@ -1,6 +1,6 @@
 import { left, right } from 'fp-either';
-import prisma from '@/libs/prisma';
-import { UserRepository } from '@/types/repositories/user';
+import { prisma } from '@/libs/prisma';
+import { UserRepository } from '@/types/repositories/shopkeeper/user';
 import { UserRecord } from '@/types/records/user';
 import { UserMapper } from '@/mappers/user';
 import { NotFoundError } from '@/errors/not-found';
@@ -55,21 +55,9 @@ export function UserRepository(): UserRepository {
     });
   }
 
-  async function create(user: User) {
-    const created = await prisma.user.create({
-      data: userMapper.toRecord(user),
-    });
-    return userMapper.fromRecord({
-      ...created,
-      roles: user.roles as UserRecord.Role[],
-      status: user.status as UserRecord.Status,
-    });
-  }
-
   return {
     findOneByEmail: findOneByEmail,
     findOneById: findOneById,
     update: update,
-    create: create,
   };
 }

@@ -2,11 +2,11 @@ import path from 'path';
 import os from 'os';
 import fs from 'fs';
 import crypto from 'crypto';
-import { S3 } from 'aws-sdk';
 import format from 'date-fns/format';
+import { S3 } from 'aws-sdk';
 import { MultipartProvider } from '@/types/providers/multipart';
 import { Photo } from '@/types/photo';
-import config from '@/config';
+import { config } from '@/config';
 
 export function MultipartS3Provider(): MultipartProvider {
   const s3 = new S3({

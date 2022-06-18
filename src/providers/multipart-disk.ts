@@ -4,7 +4,7 @@ import path from 'path';
 import fse from 'fs-extra';
 import { MultipartProvider } from '@/types/providers/multipart';
 import { Photo } from '@/types/photo';
-import config from '@/config';
+import { config } from '@/config';
 
 export function MultipartDiskProvider(): MultipartProvider {
   async function create(photoName: string) {

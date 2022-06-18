@@ -1,6 +1,6 @@
 import { Product } from '@/types/product';
 import { Photo } from '@/types/photo';
-import { ProductRepository } from '@/types/repositories/dashboard/product';
+import { ProductRepository } from '@/types/repositories/shopkeeper/product';
 
 export function ProductModel(productRepository: ProductRepository) {
   function addPhotos(product: Product, photos: Photo[]) {
@@ -28,8 +28,8 @@ export function ProductModel(productRepository: ProductRepository) {
   }
 
   async function reachedMaximumActiveByStore(storeId: string, ownerId: string) {
-    const amountOfActiveProductsByStore = await productRepository.getAmountOfActiveByStore(storeId, ownerId);
-    return amountOfActiveProductsByStore >= ProductModel.maximumAmountActive;
+    const activeProductsByStore = await productRepository.countActiveByStore(storeId, ownerId);
+    return activeProductsByStore >= ProductModel.MAXIMUM_ACTIVE_BY_STORE;
   }
 
   return {
@@ -41,6 +41,6 @@ export function ProductModel(productRepository: ProductRepository) {
   };
 }
 
-ProductModel.maximumAmountActive = 25;
+ProductModel.MAXIMUM_ACTIVE_BY_STORE = 25;
 
-ProductModel.itemsByPage = 12;
+ProductModel.ITEMS_BY_PAGE = 12;

@@ -6,8 +6,8 @@ import cors from 'fastify-cors';
 import multipart from 'fastify-multipart';
 import staticy from 'fastify-static';
 import helmet from '@fastify/helmet';
-import config from '@/config';
-import sentry from '@/libs/sentry';
+import { config } from '@/config';
+import { sentry } from '@/libs/sentry';
 
 function trim(ajv: ajv.Ajv) {
   ajv.addKeyword('trim', {
@@ -28,7 +28,7 @@ function trim(ajv: ajv.Ajv) {
   return ajv;
 }
 
-const app = fastify({
+export const app = fastify({
   logger: config.APP_ENV === 'development',
   ajv: {
     plugins: [trim],
@@ -58,5 +58,3 @@ app.register(autoload, {
   dir: path.join(__dirname, 'routes'),
   options: { prefix: '/v1' },
 });
-
-export default app;

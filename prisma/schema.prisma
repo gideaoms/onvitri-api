@@ -7,6 +7,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Status {
+  active
+  inactive
+}
+
 model City {
   id         String   @id @default(uuid()) @db.Uuid
   created_at DateTime @default(now())
@@ -19,43 +24,44 @@ model City {
   @@map("cities")
 }
 
-model User {
-  id              String   @id @default(uuid()) @db.Uuid
-  created_at      DateTime @default(now())
-  updated_at      DateTime @updatedAt
-  name            String
-  email           String   @unique
-  password        String?
-  roles           String[]
-  status          String
-  following_count Int      @default(0)
-  email_code      String?
+enum UserStatus {
+  active
+  inactive
+  awaiting
+}
 
-  stores    Store[]
-  following Follower[]
+model User {
+  id         String     @id @default(uuid()) @db.Uuid
+  created_at DateTime   @default(now())
+  updated_at DateTime   @updatedAt
+  name       String
+  email      String     @unique
+  roles      String[]
+  status     UserStatus
+  email_code String?
+
+  stores Store[]
 
   @@map("users")
 }
 
 model Store {
-  id              String   @id @default(uuid()) @db.Uuid
-  created_at      DateTime @default(now())
-  updated_at      DateTime @updatedAt
-  city_id         String   @db.Uuid
-  owner_id        String   @db.Uuid
-  fantasy_name    String
-  street          String
-  number          String
-  neighborhood    String
-  phone           Json
-  zip_code        String
-  status          String
-  followers_count Int      @default(0)
+  id           String   @id @default(uuid()) @db.Uuid
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+  city_id      String   @db.Uuid
+  owner_id     String   @db.Uuid
+  fantasy_name String
+  street       String
+  number       String
+  neighborhood String
+  phone        Json
+  zip_code     String
+  status       Status
 
-  city      City       @relation(fields: [city_id], references: [id])
-  owner     User       @relation(fields: [owner_id], references: [id])
-  products  Product[]
-  followers Follower[]
+  city     City      @relation(fields: [city_id], references: [id])
+  owner    User      @relation(fields: [owner_id], references: [id])
+  products Product[]
 
   @@map("stores")
 }
@@ -69,22 +75,9 @@ model Product {
   description String
   price       Int
   photos      Json
-  status      String
+  status      Status
 
   store Store @relation(fields: [store_id], references: [id])
 
   @@map("products")
-}
-
-model Follower {
-  user_id    String   @db.Uuid
-  store_id   String   @db.Uuid
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-
-  store Store @relation(fields: [store_id], references: [id])
-  user  User  @relation(fields: [user_id], references: [id])
-
-  @@id(fields: [user_id, store_id])
-  @@map("followers")
 }

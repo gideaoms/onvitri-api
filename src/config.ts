@@ -1,6 +1,6 @@
 import { isNil } from '@/utils';
 
-const config = {
+export const config = {
   APP_ENV: process.env.APP_ENV,
   APP_PORT: Number(process.env.APP_PORT),
   APP_HOST: process.env.APP_HOST,
@@ -28,5 +28,3 @@ const config = {
 Object.entries(config).forEach(([key, value]) => {
   if (isNil(value)) throw new Error(`Env ${key} is not defined`);
 });
-
-export default config;

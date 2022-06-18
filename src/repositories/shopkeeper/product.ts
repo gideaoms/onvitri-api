@@ -1,6 +1,7 @@
 import { left, right } from 'fp-either';
-import prisma from '@/libs/prisma';
-import { ProductRepository } from '@/types/repositories/dashboard/product';
+import { Prisma } from '@prisma/client';
+import { prisma } from '@/libs/prisma';
+import { ProductRepository } from '@/types/repositories/shopkeeper/product';
 import { Product } from '@/types/product';
 import { StoreRecord } from '@/types/records/store';
 import { ProductRecord } from '@/types/records/product';
@@ -17,14 +18,15 @@ export function ProductRepository(): ProductRepository {
   const cityMapper = CityMapper();
 
   async function findMany(ownerId: string, page: number) {
-    const limit = ProductModel.itemsByPage;
+    const limit = ProductModel.ITEMS_BY_PAGE;
     const offset = limit * (page - 1);
-    const products = await prisma.product.findMany({
-      where: {
-        store: {
-          owner_id: ownerId,
-        },
+    const where: Prisma.ProductWhereInput = {
+      store: {
+        owner_id: ownerId,
       },
+    };
+    const products = await prisma.product.findMany({
+      where: where,
       orderBy: {
         created_at: 'desc',
       },
@@ -39,11 +41,7 @@ export function ProductRepository(): ProductRepository {
       },
     });
     const hasMore = await prisma.product.count({
-      where: {
-        store: {
-          owner_id: ownerId,
-        },
-      },
+      where: where,
       take: limit,
       skip: limit * page,
     });
@@ -153,7 +151,7 @@ export function ProductRepository(): ProductRepository {
     });
   }
 
-  async function getAmountOfActiveByStore(storeId: string, ownerId: string) {
+  function countActiveByStore(storeId: string, ownerId: string) {
     return prisma.product.count({
       where: {
         store: {
@@ -173,6 +171,6 @@ export function ProductRepository(): ProductRepository {
     update: update,
     findOne: findOne,
     remove: remove,
-    getAmountOfActiveByStore: getAmountOfActiveByStore,
+    countActiveByStore: countActiveByStore,
   };
 }

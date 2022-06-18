@@ -1,6 +1,6 @@
 import { isLeft, left, right } from 'fp-either';
 import { TokenProvider } from '@/types/providers/token';
-import { UserRepository } from '@/types/repositories/user';
+import { UserRepository } from '@/types/repositories/shopkeeper/user';
 import { CryptoProvider } from '@/types/providers/crypto';
 import { GuardianProvider } from '@/types/providers/guardian';
 import { User } from '@/types/user';

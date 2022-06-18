@@ -1,10 +1,12 @@
 import { left, right } from 'fp-either';
-import prisma from '@/libs/prisma';
-import { StoreRepository } from '@/types/repositories/dashboard/store';
+import { Prisma } from '@prisma/client';
+import { prisma } from '@/libs/prisma';
+import { StoreRepository } from '@/types/repositories/shopkeeper/store';
 import { StoreRecord } from '@/types/records/store';
 import { StoreMapper } from '@/mappers/store';
 import { CityMapper } from '@/mappers/city';
 import { NotFoundError } from '@/errors/not-found';
+import { StoreModel } from '@/models/store';
 
 export function StoreRepository(): StoreRepository {
   const storeMapper = StoreMapper();
@@ -27,27 +29,40 @@ export function StoreRepository(): StoreRepository {
     );
   }
 
-  async function findAll(ownerId: string) {
+  async function findMany(page: number, ownerId: string) {
+    const limit = StoreModel.ITEMS_BY_PAGE;
+    const offset = limit * (page - 1);
+    const where: Prisma.StoreWhereInput = {
+      owner_id: ownerId,
+    };
     const stores = await prisma.store.findMany({
-      where: {
-        owner_id: ownerId,
-      },
+      where: where,
+      take: limit,
+      skip: offset,
       include: {
         city: true,
       },
     });
-    return stores.map((store) => ({
-      ...storeMapper.fromRecord({
-        ...store,
-        phone: store.phone as StoreRecord.Phone,
-        status: store.status as StoreRecord.Status,
-      }),
-      city: cityMapper.fromRecord(store.city),
-    }));
+    const hasMore = await prisma.store.count({
+      where: where,
+      take: limit,
+      skip: limit * page,
+    });
+    return {
+      data: stores.map((store) => ({
+        ...storeMapper.fromRecord({
+          ...store,
+          phone: store.phone as StoreRecord.Phone,
+          status: store.status as StoreRecord.Status,
+        }),
+        city: cityMapper.fromRecord(store.city),
+      })),
+      hasMore: Boolean(hasMore),
+    };
   }
 
   return {
     exists: exists,
-    findAll: findAll,
+    findMany: findMany,
   };
 }
