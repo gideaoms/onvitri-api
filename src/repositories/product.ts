@@ -88,14 +88,15 @@ export function ProductRepository(): ProductRepository {
   async function findManyByStore(storeId: string, page: number) {
     const limit = ProductModel.ITEMS_BY_PAGE;
     const offset = limit * (page - 1);
-    const products = await prisma.product.findMany({
-      where: {
+    const where: Prisma.ProductWhereInput = {
+      status: 'active',
+      store: {
+        id: storeId,
         status: 'active',
-        store: {
-          id: storeId,
-          status: 'active',
-        },
       },
+    };
+    const products = await prisma.product.findMany({
+      where: where,
       orderBy: {
         created_at: 'desc',
       },
@@ -103,13 +104,7 @@ export function ProductRepository(): ProductRepository {
       skip: offset,
     });
     const hasMore = await prisma.product.count({
-      where: {
-        status: 'active',
-        store: {
-          id: storeId,
-          status: 'active',
-        },
-      },
+      where: where,
       take: limit,
       skip: limit * page,
     });
