@@ -68,12 +68,29 @@ export function ProductRepository(): ProductRepository {
   async function create(product: Product) {
     const created = await prisma.product.create({
       data: productMapper.toRecord(product),
+      include: {
+        store: {
+          include: {
+            city: true,
+          },
+        },
+      },
     });
-    return productMapper.fromRecord({
-      ...created,
-      status: created.status as ProductRecord.Status,
-      photos: created.photos as PhotoRecord[],
-    });
+    return {
+      ...productMapper.fromRecord({
+        ...created,
+        status: created.status as ProductRecord.Status,
+        photos: created.photos as PhotoRecord[],
+      }),
+      store: {
+        ...storeMapper.fromRecord({
+          ...created.store,
+          phone: created.store.phone as StoreRecord.Phone,
+          status: created.store.status as StoreRecord.Status,
+        }),
+        city: cityMapper.fromRecord(created.store.city),
+      },
+    };
   }
 
   async function exists(productId: string, ownerId: string) {
@@ -101,12 +118,29 @@ export function ProductRepository(): ProductRepository {
       where: {
         id: product.id,
       },
+      include: {
+        store: {
+          include: {
+            city: true,
+          },
+        },
+      },
     });
-    return productMapper.fromRecord({
-      ...updated,
-      status: updated.status as ProductRecord.Status,
-      photos: updated.photos as PhotoRecord[],
-    });
+    return {
+      ...productMapper.fromRecord({
+        ...updated,
+        status: updated.status as ProductRecord.Status,
+        photos: updated.photos as PhotoRecord[],
+      }),
+      store: {
+        ...storeMapper.fromRecord({
+          ...updated.store,
+          phone: updated.store.phone as StoreRecord.Phone,
+          status: updated.store.status as StoreRecord.Status,
+        }),
+        city: cityMapper.fromRecord(updated.store.city),
+      },
+    };
   }
 
   async function findOne(productId: string, ownerId: string) {

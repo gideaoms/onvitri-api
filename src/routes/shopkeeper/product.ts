@@ -144,7 +144,19 @@ async function Product(fastify: FastifyInstance) {
       response: {
         200: {
           type: 'object',
-          properties: schemas.product,
+          properties: {
+            ...schemas.product,
+            store: {
+              type: 'object',
+              properties: {
+                ...schemas.store,
+                city: {
+                  type: 'object',
+                  properties: schemas.city,
+                },
+              },
+            },
+          },
         },
       },
     },
@@ -166,8 +178,13 @@ async function Product(fastify: FastifyInstance) {
         const httpStatus = findCodeByError(product.left);
         return replay.code(httpStatus).send({ message: product.left.message });
       }
-      const object = productMapper.toObject(product.right);
-      return replay.send(object);
+      return replay.send({
+        ...productMapper.toObject(product.right),
+        store: {
+          ...storeMapper.toObject(product.right.store),
+          city: cityMapper.toObject(product.right.store.city),
+        },
+      });
     },
   });
 
@@ -221,14 +238,13 @@ async function Product(fastify: FastifyInstance) {
         const httpStatus = findCodeByError(product.left);
         return replay.code(httpStatus).send({ message: product.left.message });
       }
-      const object = {
+      return replay.send({
         ...productMapper.toObject(product.right),
         store: {
           ...storeMapper.toObject(product.right.store),
           city: cityMapper.toObject(product.right.store.city),
         },
-      };
-      return replay.send(object);
+      });
     },
   });
 
@@ -296,7 +312,19 @@ async function Product(fastify: FastifyInstance) {
       response: {
         200: {
           type: 'object',
-          properties: schemas.product,
+          properties: {
+            ...schemas.product,
+            store: {
+              type: 'object',
+              properties: {
+                ...schemas.store,
+                city: {
+                  type: 'object',
+                  properties: schemas.city,
+                },
+              },
+            },
+          },
         },
       },
     },
@@ -318,8 +346,13 @@ async function Product(fastify: FastifyInstance) {
         const code = findCodeByError(updated.left);
         return replay.code(code).send({ message: updated.left.message });
       }
-      const object = productMapper.toObject(updated.right);
-      return replay.send(object);
+      return replay.send({
+        ...productMapper.toObject(updated.right),
+        store: {
+          ...storeMapper.toObject(updated.right.store),
+          city: cityMapper.toObject(updated.right.store.city),
+        },
+      });
     },
   });
 
