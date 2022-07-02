@@ -1,5 +1,5 @@
-import { Photo } from '@/types/photo';
+import { Picture } from '@/types/picture';
 
 export type MultipartProvider = {
-  create(photoName: string): Promise<Photo>;
+  create(picture: Picture): Promise<Picture>;
 };
