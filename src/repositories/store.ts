@@ -2,7 +2,7 @@ import { left, right } from 'fp-either';
 import { Prisma } from '@prisma/client';
 import { StoreRepository } from '@/types/repositories/store';
 import { ProductRecord } from '@/types/records/product';
-import { PhotoRecord } from '@/types/records/photo';
+import { PictureRecord } from '@/types/records/picture';
 import { StoreRecord } from '@/types/records/store';
 import { StoreModel } from '@/models/store';
 import { ProductMapper } from '@/mappers/product';
@@ -56,7 +56,7 @@ export function StoreRepository(): StoreRepository {
           productMapper.fromRecord({
             ...product,
             status: product.status as ProductRecord.Status,
-            photos: product.photos as PhotoRecord[],
+            pictures: product.pictures as PictureRecord[],
           }),
         ),
         hasMore: Boolean(hasMore),

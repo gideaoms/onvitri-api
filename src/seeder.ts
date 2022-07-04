@@ -1,8 +1,6 @@
 import { prisma } from '@/libs/prisma';
-import { CryptoProvider } from '@/providers/crypto';
 
 async function main() {
-  const cryptoProvider = CryptoProvider();
   const city = await prisma.city.create({
     data: {
       id: 'b9bd02e7-7315-4df6-81b8-c3e150666c61',
@@ -17,7 +15,6 @@ async function main() {
       email: 'store1@mail.com',
       roles: ['shopkeeper'],
       status: 'active',
-      password: await cryptoProvider.hash('123456'),
     },
   });
   await prisma.store.create({

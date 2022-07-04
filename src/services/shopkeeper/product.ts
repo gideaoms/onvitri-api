@@ -2,7 +2,7 @@ import { isLeft, left, right } from 'fp-either';
 import { ProductRepository } from '@/types/repositories/shopkeeper/product';
 import { StoreRepository } from '@/types/repositories/shopkeeper/store';
 import { Product } from '@/types/product';
-import { Photo } from '@/types/photo';
+import { Picture } from '@/types/picture';
 import { ProductModel } from '@/models/product';
 import { User } from '@/types/user';
 import { BadRequestError } from '@/errors/bad-request';
@@ -20,7 +20,7 @@ export function ProductService(productRepository: ProductRepository, storeReposi
     title: string,
     description: string,
     price: number,
-    photos: Photo[],
+    pictures: Picture[],
     status: Product.Status,
     user: User,
   ) {
@@ -33,10 +33,10 @@ export function ProductService(productRepository: ProductRepository, storeReposi
       title: title,
       description: description,
       price: price,
-      photos: photos,
+      pictures: pictures,
       status: status,
     };
-    if (productModel.isActive(product) && !productModel.hasPhotos(product))
+    if (productModel.isActive(product) && !productModel.hasPictures(product))
       return left(new BadRequestError('Você não pode publicar um produto sem foto'));
     const reachedMaximumAmountOfActiveProducts = await productModel.reachedMaximumActiveByStore(storeId, ownerId);
     if (productModel.isActive(product) && reachedMaximumAmountOfActiveProducts) {
@@ -58,7 +58,7 @@ export function ProductService(productRepository: ProductRepository, storeReposi
     title: string,
     description: string,
     price: number,
-    photos: Photo[],
+    pictures: Picture[],
     status: Product.Status,
     user: User,
   ) {
@@ -72,10 +72,10 @@ export function ProductService(productRepository: ProductRepository, storeReposi
       title: title,
       description: description,
       price: price,
-      photos: photos,
+      pictures: pictures,
       status: status,
     };
-    if (productModel.isActive(product) && !productModel.hasPhotos(product))
+    if (productModel.isActive(product) && !productModel.hasPictures(product))
       return left(new BadRequestError('Você não pode publicar um produto sem foto'));
     const reachedMaximumAmountOfActiveProducts = await productModel.reachedMaximumActiveByStore(storeId, ownerId);
     if (productModel.isActive(product) && reachedMaximumAmountOfActiveProducts) {

@@ -74,7 +74,7 @@ model Product {
   title       String
   description String
   price       Int
-  photos      Json
+  pictures    Json
   status      Status
 
   store Store @relation(fields: [store_id], references: [id])

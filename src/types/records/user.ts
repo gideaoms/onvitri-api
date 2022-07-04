@@ -7,7 +7,6 @@ export type UserRecord = {
   id: string;
   name: string;
   email: string;
-  password: string;
   roles: UserRecord.Role[];
   status: UserRecord.Status;
   email_code: string | null;

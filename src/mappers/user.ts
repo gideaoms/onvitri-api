@@ -8,7 +8,6 @@ export function UserMapper() {
       id: record.id,
       name: record.name,
       email: record.email,
-      password: record.password,
       roles: record.roles,
       status: record.status,
       token: '',
@@ -36,7 +35,6 @@ export function UserMapper() {
       email: user.email,
       roles: user.roles,
       status: user.status,
-      password: user.password,
       email_code: user.emailCode,
     };
     return record;

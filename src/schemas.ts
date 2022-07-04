@@ -65,7 +65,7 @@ export const schemas = {
     status: {
       type: 'string',
     },
-    photos: {
+    pictures: {
       type: 'array',
       items: {
         type: 'object',

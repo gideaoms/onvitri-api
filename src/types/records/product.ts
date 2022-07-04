@@ -1,4 +1,4 @@
-import { PhotoRecord } from './photo';
+import { PictureRecord } from './picture';
 
 export declare namespace ProductRecord {
   type Status = 'active' | 'inactive';
@@ -11,5 +11,5 @@ export type ProductRecord = {
   description: string;
   price: number;
   status: ProductRecord.Status;
-  photos: PhotoRecord[];
+  pictures: PictureRecord[];
 };

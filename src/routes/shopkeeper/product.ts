@@ -12,7 +12,7 @@ import { GuardianProvider } from '@/providers/guardian';
 import { ProductMapper } from '@/mappers/product';
 import { StoreMapper } from '@/mappers/store';
 import { CityMapper } from '@/mappers/city';
-import { PhotoMapper } from '@/mappers/photo';
+import { PictureMapper } from '@/mappers/picture';
 import { StoreRepository } from '@/repositories/shopkeeper/store';
 import { schemas } from '@/schemas';
 
@@ -24,7 +24,7 @@ const tokenProvider = TokenProvider();
 const guardianProvider = GuardianProvider(tokenProvider, userRepository, cryptoProvider);
 const productMapper = ProductMapper();
 const storeMapper = StoreMapper();
-const photoMapper = PhotoMapper();
+const pictureMapper = PictureMapper();
 const cityMapper = CityMapper();
 const productService = ProductService(productRepository, storeRepository);
 
@@ -115,7 +115,7 @@ async function Product(fastify: FastifyInstance) {
           price: {
             type: 'integer',
           },
-          photos: {
+          pictures: {
             type: 'array',
             maxItems: 6,
             items: {
@@ -139,7 +139,7 @@ async function Product(fastify: FastifyInstance) {
             enum: ['active', 'inactive'],
           },
         },
-        required: ['store_id', 'title', 'description', 'price', 'photos', 'status'],
+        required: ['store_id', 'title', 'description', 'price', 'pictures', 'status'],
       },
       response: {
         200: {
@@ -171,9 +171,9 @@ async function Product(fastify: FastifyInstance) {
       const title = request.body.title;
       const description = request.body.description;
       const price = request.body.price;
-      const photos = request.body.photos.map(photoMapper.fromObject);
+      const pictures = request.body.pictures.map(pictureMapper.fromObject);
       const status = request.body.status;
-      const product = await productService.create(storeId, title, description, price, photos, status, user.right);
+      const product = await productService.create(storeId, title, description, price, pictures, status, user.right);
       if (isLeft(product)) {
         const httpStatus = findCodeByError(product.left);
         return replay.code(httpStatus).send({ message: product.left.message });
@@ -283,7 +283,7 @@ async function Product(fastify: FastifyInstance) {
           price: {
             type: 'integer',
           },
-          photos: {
+          pictures: {
             type: 'array',
             maxItems: 6,
             items: {
@@ -307,7 +307,7 @@ async function Product(fastify: FastifyInstance) {
             enum: ['active', 'inactive'],
           },
         },
-        required: ['title', 'description', 'price', 'photos', 'status'],
+        required: ['title', 'description', 'price', 'pictures', 'status'],
       },
       response: {
         200: {
@@ -339,9 +339,9 @@ async function Product(fastify: FastifyInstance) {
       const title = request.body.title;
       const description = request.body.description;
       const price = request.body.price;
-      const photos = request.body.photos.map(photoMapper.fromObject);
+      const pictures = request.body.pictures.map(pictureMapper.fromObject);
       const status = request.body.status;
-      const updated = await productService.update(productId, title, description, price, photos, status, user.right);
+      const updated = await productService.update(productId, title, description, price, pictures, status, user.right);
       if (isLeft(updated)) {
         const code = findCodeByError(updated.left);
         return replay.code(code).send({ message: updated.left.message });

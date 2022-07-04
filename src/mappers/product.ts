@@ -11,10 +11,14 @@ export function ProductMapper() {
       description: record.description,
       price: record.price,
       status: record.status,
-      photos: record.photos.map((photo) => ({
-        id: photo.id,
-        url: photo.url,
-        thumbnailUrl: photo.thumbnail_url,
+      pictures: record.pictures.map((picture) => ({
+        id: picture.id,
+        url: picture.url,
+        ext: picture.ext,
+        height: picture.height,
+        name: picture.name,
+        size: picture.size,
+        width: picture.width,
       })),
     };
     return product;
@@ -28,10 +32,14 @@ export function ProductMapper() {
       description: product.description,
       price: product.price,
       status: product.status,
-      photos: product.photos.map((photo) => ({
-        id: photo.id,
-        url: photo.url,
-        thumbnail_url: photo.thumbnailUrl,
+      pictures: product.pictures.map((picture) => ({
+        id: picture.id,
+        url: picture.url,
+        ext: picture.ext,
+        height: picture.height,
+        name: picture.name,
+        size: picture.size,
+        width: picture.width,
       })),
     };
     return object;
@@ -45,10 +53,14 @@ export function ProductMapper() {
       description: product.description,
       price: product.price,
       status: product.status,
-      photos: product.photos.map((photo) => ({
-        id: photo.id,
-        url: photo.url,
-        thumbnail_url: photo.thumbnailUrl,
+      pictures: product.pictures.map((picture) => ({
+        id: picture.id,
+        url: picture.url,
+        ext: picture.ext,
+        height: picture.height,
+        name: picture.name,
+        size: picture.size,
+        width: picture.width,
       })),
     };
     return record;

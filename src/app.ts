@@ -51,7 +51,7 @@ app.register(cors, {
 });
 app.register(staticy, {
   root: path.join(__dirname, '..', 'tmp'),
-  prefix: '/photos',
+  prefix: '/pictures',
 });
 app.register(multipart);
 app.register(autoload, {

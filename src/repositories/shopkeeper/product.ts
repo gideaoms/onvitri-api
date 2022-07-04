@@ -5,7 +5,7 @@ import { ProductRepository } from '@/types/repositories/shopkeeper/product';
 import { Product } from '@/types/product';
 import { StoreRecord } from '@/types/records/store';
 import { ProductRecord } from '@/types/records/product';
-import { PhotoRecord } from '@/types/records/photo';
+import { PictureRecord } from '@/types/records/picture';
 import { ProductModel } from '@/models/product';
 import { ProductMapper } from '@/mappers/product';
 import { StoreMapper } from '@/mappers/store';
@@ -50,7 +50,7 @@ export function ProductRepository(): ProductRepository {
         ...productMapper.fromRecord({
           ...product,
           status: product.status as ProductRecord.Status,
-          photos: product.photos as PhotoRecord[],
+          pictures: product.pictures as PictureRecord[],
         }),
         store: {
           ...storeMapper.fromRecord({
@@ -80,7 +80,7 @@ export function ProductRepository(): ProductRepository {
       ...productMapper.fromRecord({
         ...created,
         status: created.status as ProductRecord.Status,
-        photos: created.photos as PhotoRecord[],
+        pictures: created.pictures as PictureRecord[],
       }),
       store: {
         ...storeMapper.fromRecord({
@@ -107,7 +107,7 @@ export function ProductRepository(): ProductRepository {
       productMapper.fromRecord({
         ...product,
         status: product.status as ProductRecord.Status,
-        photos: product.photos as PhotoRecord[],
+        pictures: product.pictures as PictureRecord[],
       }),
     );
   }
@@ -130,7 +130,7 @@ export function ProductRepository(): ProductRepository {
       ...productMapper.fromRecord({
         ...updated,
         status: updated.status as ProductRecord.Status,
-        photos: updated.photos as PhotoRecord[],
+        pictures: updated.pictures as PictureRecord[],
       }),
       store: {
         ...storeMapper.fromRecord({
@@ -164,7 +164,7 @@ export function ProductRepository(): ProductRepository {
       ...productMapper.fromRecord({
         ...product,
         status: product.status as ProductRecord.Status,
-        photos: product.photos as PhotoRecord[],
+        pictures: product.pictures as PictureRecord[],
       }),
       store: {
         ...storeMapper.fromRecord({

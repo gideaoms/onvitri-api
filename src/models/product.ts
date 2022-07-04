@@ -1,12 +1,12 @@
 import { Product } from '@/types/product';
-import { Photo } from '@/types/photo';
+import { Picture } from '@/types/picture';
 import { ProductRepository } from '@/types/repositories/shopkeeper/product';
 
 export function ProductModel(productRepository: ProductRepository) {
-  function addPhotos(product: Product, photos: Photo[]) {
+  function addPictures(product: Product, pictures: Picture[]) {
     const newProduct: Product = {
       ...product,
-      photos: [...product.photos, ...photos],
+      pictures: [...product.pictures, ...pictures],
     };
     return newProduct;
   }
@@ -23,8 +23,8 @@ export function ProductModel(productRepository: ProductRepository) {
     return product.status === 'active';
   }
 
-  function hasPhotos(product: Product) {
-    return product.photos.length > 0;
+  function hasPictures(product: Product) {
+    return product.pictures.length > 0;
   }
 
   async function reachedMaximumActiveByStore(storeId: string, ownerId: string) {
@@ -33,10 +33,10 @@ export function ProductModel(productRepository: ProductRepository) {
   }
 
   return {
-    addPhotos: addPhotos,
+    addPictures: addPictures,
     updateStatus: updateStatus,
     isActive: isActive,
-    hasPhotos: hasPhotos,
+    hasPictures: hasPictures,
     reachedMaximumActiveByStore: reachedMaximumActiveByStore,
   };
 }

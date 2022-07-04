@@ -3,7 +3,7 @@ import { Prisma } from '@prisma/client';
 import { prisma } from '@/libs/prisma';
 import { ProductRepository } from '@/types/repositories/product';
 import { ProductRecord } from '@/types/records/product';
-import { PhotoRecord } from '@/types/records/photo';
+import { PictureRecord } from '@/types/records/picture';
 import { StoreRecord } from '@/types/records/store';
 import { ProductModel } from '@/models/product';
 import { ProductMapper } from '@/mappers/product';
@@ -45,7 +45,7 @@ export function ProductRepository(): ProductRepository {
         ...productMapper.fromRecord({
           ...record,
           status: record.status as ProductRecord.Status,
-          photos: record.photos as PhotoRecord[],
+          pictures: record.pictures as PictureRecord[],
         }),
         store: storeMapper.fromRecord({
           ...record.store,
@@ -75,7 +75,7 @@ export function ProductRepository(): ProductRepository {
       ...productMapper.fromRecord({
         ...product,
         status: product.status as ProductRecord.Status,
-        photos: product.photos as PhotoRecord[],
+        pictures: product.pictures as PictureRecord[],
       }),
       store: storeMapper.fromRecord({
         ...product.store,
@@ -113,7 +113,7 @@ export function ProductRepository(): ProductRepository {
         productMapper.fromRecord({
           ...product,
           status: product.status as ProductRecord.Status,
-          photos: product.photos as PhotoRecord[],
+          pictures: product.pictures as PictureRecord[],
         }),
       ),
       hasMore: Boolean(hasMore),
