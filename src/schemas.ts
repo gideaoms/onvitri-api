@@ -73,11 +73,31 @@ export const schemas = {
           id: {
             type: 'string',
           },
-          url: {
-            type: 'string',
-          },
-          thumbnail_url: {
-            type: 'string',
+          variants: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                url: {
+                  type: 'string',
+                },
+                ext: {
+                  type: 'string',
+                },
+                name: {
+                  type: 'string',
+                },
+                size: {
+                  type: 'string',
+                },
+                width: {
+                  type: 'integer',
+                },
+                height: {
+                  type: 'integer',
+                },
+              },
+            },
           },
         },
       },
