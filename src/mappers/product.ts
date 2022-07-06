@@ -1,8 +1,11 @@
 import { ProductRecord } from '@/types/records/product';
 import { Product } from '@/types/product';
 import { ProductObject } from '@/types/objects/product';
+import { PictureMapper } from '@/mappers/picture';
 
 export function ProductMapper() {
+  const pictureMapper = PictureMapper();
+
   function fromRecord(record: ProductRecord) {
     const product: Product = {
       id: record.id,
@@ -11,15 +14,7 @@ export function ProductMapper() {
       description: record.description,
       price: record.price,
       status: record.status,
-      pictures: record.pictures.map((picture) => ({
-        id: picture.id,
-        url: picture.url,
-        ext: picture.ext,
-        height: picture.height,
-        name: picture.name,
-        size: picture.size,
-        width: picture.width,
-      })),
+      pictures: record.pictures.map(pictureMapper.fromObject),
     };
     return product;
   }
@@ -32,15 +27,7 @@ export function ProductMapper() {
       description: product.description,
       price: product.price,
       status: product.status,
-      pictures: product.pictures.map((picture) => ({
-        id: picture.id,
-        url: picture.url,
-        ext: picture.ext,
-        height: picture.height,
-        name: picture.name,
-        size: picture.size,
-        width: picture.width,
-      })),
+      pictures: product.pictures.map(pictureMapper.toObject),
     };
     return object;
   }
@@ -53,15 +40,7 @@ export function ProductMapper() {
       description: product.description,
       price: product.price,
       status: product.status,
-      pictures: product.pictures.map((picture) => ({
-        id: picture.id,
-        url: picture.url,
-        ext: picture.ext,
-        height: picture.height,
-        name: picture.name,
-        size: picture.size,
-        width: picture.width,
-      })),
+      pictures: product.pictures.map(pictureMapper.toRecord),
     };
     return record;
   }
