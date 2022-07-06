@@ -17,18 +17,25 @@ export function MultipartProvider(): MultipartProvider {
 
   async function create(picture: Picture) {
     const folder = format(new Date(), 'yyyy-MM-dd');
-    await s3
-      .putObject({
-        Bucket: `${config.AWS_S3_NAME}/${folder}`,
-        Key: picture.name,
-        ACL: 'public-read',
-        Body: fs.createReadStream(picture.url),
-        ContentType: 'image/webp',
-      })
-      .promise();
+    await Promise.all(
+      picture.variants.map((variant) =>
+        s3
+          .putObject({
+            Bucket: `${config.AWS_S3_NAME}/${folder}`,
+            Key: variant.name,
+            ACL: 'public-read',
+            Body: fs.createReadStream(variant.url),
+            ContentType: 'image/webp',
+          })
+          .promise(),
+      ),
+    );
     const newPicture: Picture = {
       ...picture,
-      url: `https://${config.AWS_S3_NAME}.${config.AWS_S3_ENDPOINT}/${folder}/${picture.name}`,
+      variants: picture.variants.map((variant) => ({
+        ...variant,
+        url: `https://${config.AWS_S3_NAME}.${config.AWS_S3_ENDPOINT}/${folder}/${variant.name}`,
+      })),
     };
     return newPicture;
   }

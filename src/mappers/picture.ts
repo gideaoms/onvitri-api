@@ -5,12 +5,14 @@ export function PictureMapper() {
   function toObject(picture: Picture) {
     const object: PictureObject = {
       id: picture.id,
-      url: picture.url,
-      ext: picture.ext,
-      height: picture.height,
-      name: picture.name,
-      size: picture.size,
-      width: picture.width,
+      variants: picture.variants.map((variant) => ({
+        url: variant.url,
+        ext: variant.ext,
+        height: variant.height,
+        name: variant.name,
+        size: variant.size,
+        width: variant.width,
+      })),
     };
     return object;
   }
@@ -18,12 +20,14 @@ export function PictureMapper() {
   function fromObject(object: PictureObject) {
     const picture: Picture = {
       id: object.id,
-      url: object.url,
-      ext: object.ext,
-      height: object.height,
-      name: object.name,
-      size: object.size,
-      width: object.width,
+      variants: object.variants.map((variant) => ({
+        url: variant.url,
+        ext: variant.ext,
+        height: variant.height,
+        name: variant.name,
+        size: variant.size,
+        width: variant.width,
+      })),
     };
     return picture;
   }

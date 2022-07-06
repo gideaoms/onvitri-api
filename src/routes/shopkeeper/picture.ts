@@ -36,38 +36,39 @@ async function Picture(fastify: FastifyInstance) {
       }
       const transformer = sharp({ failOnError: false }).resize({ width: 1000, withoutEnlargement: true }).webp();
       const data = await request.file();
-      const pictureName1 = `${crypto.randomBytes(30).toString('hex')}.webp`;
-      const pictureUrl1 = path.join(os.tmpdir(), pictureName1);
-      await stream.pipeline(data.file, transformer, fs.createWriteStream(pictureUrl1));
-      const metadata1 = await sharp(pictureUrl1).metadata();
-      const picture1: Picture = {
+      const pictureNameMD = `${crypto.randomBytes(30).toString('hex')}.webp`;
+      const pictureUrlMD = path.join(os.tmpdir(), pictureNameMD);
+      await stream.pipeline(data.file, transformer, fs.createWriteStream(pictureUrlMD));
+      const metadataMD = await sharp(pictureUrlMD).metadata();
+      const pictureNameSM = `${crypto.randomBytes(30).toString('hex')}.webp`;
+      const pictureUrlSM = path.join(os.tmpdir(), pictureNameSM);
+      await sharp(pictureUrlMD, { failOnError: false }).resize({ width: 250, height: 250 }).webp().toFile(pictureUrlSM);
+      const metadataSM = await sharp(pictureUrlSM).metadata();
+      const picture: Picture = {
         id: crypto.randomUUID(),
-        url: pictureUrl1,
-        name: pictureName1,
-        ext: metadata1.format!,
-        width: metadata1.width!,
-        height: metadata1.height!,
-        size: 'md',
+        variants: [
+          {
+            size: 'md',
+            name: pictureNameMD,
+            url: pictureUrlMD,
+            ext: metadataMD.format!,
+            width: metadataMD.width!,
+            height: metadataMD.height!,
+          },
+          {
+            size: 'sm',
+            name: pictureNameSM,
+            url: pictureUrlSM,
+            ext: metadataSM.format!,
+            width: metadataSM.width!,
+            height: metadataSM.height!,
+          },
+        ],
       };
-      const uploadedPicture1 = await multipartProvider.create(picture1);
-      const pictureName2 = `${crypto.randomBytes(30).toString('hex')}.webp`;
-      const pictureUrl2 = path.join(os.tmpdir(), pictureName2);
-      await sharp(picture1.url, { failOnError: false }).resize({ width: 250, height: 250 }).webp().toFile(pictureUrl2);
-      const metadata2 = await sharp(pictureUrl2).metadata();
-      const picture2: Picture = {
-        id: crypto.randomUUID(),
-        url: pictureUrl2,
-        name: pictureName2,
-        ext: metadata2.format!,
-        width: metadata2.width!,
-        height: metadata2.height!,
-        size: 'sm',
-      };
-      const uploadedPicture2 = await multipartProvider.create(picture2);
-      const pictures = [pictureMapper.toObject(uploadedPicture1), pictureMapper.toObject(uploadedPicture2)];
-      await fs.promises.unlink(pictureUrl1);
-      await fs.promises.unlink(pictureUrl2);
-      return replay.send(pictures);
+      const result = await multipartProvider.create(picture);
+      await fs.promises.unlink(pictureUrlMD);
+      await fs.promises.unlink(pictureUrlSM);
+      return replay.send(pictureMapper.toObject(result));
     },
   });
 }

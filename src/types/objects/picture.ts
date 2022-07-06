@@ -1,9 +1,13 @@
-export type PictureObject = {
-  id: string;
+export type VariantObject = {
   url: string;
   name: string;
   ext: string;
   width: number;
   height: number;
-  size: 'sm' | 'md' | 'lg';
+  size: 'sm' | 'md';
+};
+
+export type PictureObject = {
+  id: string;
+  variants: VariantObject[];
 };

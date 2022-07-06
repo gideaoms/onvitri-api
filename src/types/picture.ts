@@ -1,9 +1,13 @@
-export type Picture = {
-  id: string;
+export type Variant = {
   url: string;
   name: string;
   ext: string;
   width: number;
   height: number;
-  size: 'sm' | 'md' | 'lg';
+  size: 'sm' | 'md';
+};
+
+export type Picture = {
+  id: string;
+  variants: Variant[];
 };
