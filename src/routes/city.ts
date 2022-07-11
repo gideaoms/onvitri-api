@@ -9,10 +9,23 @@ const cityMapper = CityMapper();
 const cityService = CityService(cityRepository);
 
 async function City(fastify: FastifyInstance) {
-  fastify.route({
+  fastify.route<{
+    Querystring: {
+      page: number;
+    };
+  }>({
     url: '/cities',
     method: 'GET',
     schema: {
+      querystring: {
+        type: 'object',
+        properties: {
+          page: {
+            type: 'number',
+          },
+        },
+        required: ['page'],
+      },
       response: {
         200: {
           type: 'array',
@@ -23,9 +36,10 @@ async function City(fastify: FastifyInstance) {
         },
       },
     },
-    async handler(_request, replay) {
-      const cities = await cityService.findAll();
-      return replay.send(cities.map(cityMapper.toObject));
+    async handler(request, replay) {
+      const page = request.query.page;
+      const cities = await cityService.findMany(page);
+      return replay.header('x-has-more', cities.hasMore).send(cities.data.map(cityMapper.toObject));
     },
   });
 }
