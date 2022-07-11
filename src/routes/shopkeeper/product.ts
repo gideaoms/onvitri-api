@@ -114,6 +114,7 @@ async function Product(fastify: FastifyInstance) {
           },
           price: {
             type: 'integer',
+            minimum: 1,
           },
           pictures: {
             type: 'array',
@@ -282,6 +283,7 @@ async function Product(fastify: FastifyInstance) {
           },
           price: {
             type: 'integer',
+            minimum: 1,
           },
           pictures: {
             type: 'array',

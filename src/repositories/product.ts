@@ -24,11 +24,12 @@ export function ProductRepository(): ProductRepository {
         city_id: cityId,
       },
     };
+    const orderBy: Prisma.ProductOrderByWithRelationInput = {
+      created_at: 'desc',
+    };
     const products = await prisma.product.findMany({
       where: where,
-      orderBy: {
-        created_at: 'desc',
-      },
+      orderBy: orderBy,
       take: limit,
       skip: offset,
       include: {
@@ -37,6 +38,7 @@ export function ProductRepository(): ProductRepository {
     });
     const hasMore = await prisma.product.count({
       where: where,
+      orderBy: orderBy,
       take: limit,
       skip: limit * page,
     });
@@ -95,16 +97,18 @@ export function ProductRepository(): ProductRepository {
         status: 'active',
       },
     };
+    const orderBy: Prisma.ProductOrderByWithRelationInput = {
+      created_at: 'desc',
+    };
     const products = await prisma.product.findMany({
       where: where,
-      orderBy: {
-        created_at: 'desc',
-      },
+      orderBy: orderBy,
       take: limit,
       skip: offset,
     });
     const hasMore = await prisma.product.count({
       where: where,
+      orderBy: orderBy,
       take: limit,
       skip: limit * page,
     });

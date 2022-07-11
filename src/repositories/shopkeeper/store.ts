@@ -35,8 +35,12 @@ export function StoreRepository(): StoreRepository {
     const where: Prisma.StoreWhereInput = {
       owner_id: ownerId,
     };
+    const orderBy: Prisma.StoreOrderByWithRelationInput = {
+      created_at: 'desc',
+    };
     const stores = await prisma.store.findMany({
       where: where,
+      orderBy: orderBy,
       take: limit,
       skip: offset,
       include: {
@@ -45,6 +49,7 @@ export function StoreRepository(): StoreRepository {
     });
     const hasMore = await prisma.store.count({
       where: where,
+      orderBy: orderBy,
       take: limit,
       skip: limit * page,
     });

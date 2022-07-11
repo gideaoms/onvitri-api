@@ -1,11 +1,11 @@
 import { CityRepository } from '@/types/repositories/city';
 
 export function CityService(cityRepository: CityRepository) {
-  function findAll() {
-    return cityRepository.findAll();
+  function findMany(page: number) {
+    return cityRepository.findMany(page);
   }
 
   return {
-    findAll: findAll,
+    findMany: findMany,
   };
 }

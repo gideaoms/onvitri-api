@@ -61,6 +61,7 @@ export const schemas = {
     },
     price: {
       type: 'integer',
+      minimum: 1,
     },
     status: {
       type: 'string',

@@ -22,8 +22,12 @@ export function StoreRepository(): StoreRepository {
       id: storeId,
       status: 'active',
     };
+    const orderBy: Prisma.StoreOrderByWithRelationInput = {
+      created_at: 'desc',
+    };
     const store = await prisma.store.findFirst({
       where: where,
+      orderBy: orderBy,
       include: {
         city: true,
         products: {
@@ -41,6 +45,7 @@ export function StoreRepository(): StoreRepository {
     const page = 1;
     const hasMore = await prisma.product.count({
       where: where,
+      orderBy: orderBy,
       take: limit,
       skip: limit * page,
     });
@@ -71,11 +76,12 @@ export function StoreRepository(): StoreRepository {
       status: 'active',
       city_id: cityId,
     };
+    const orderBy: Prisma.StoreOrderByWithRelationInput = {
+      created_at: 'desc',
+    };
     const stores = await prisma.store.findMany({
       where: where,
-      orderBy: {
-        created_at: 'desc',
-      },
+      orderBy: orderBy,
       take: limit,
       skip: offset,
       include: {
@@ -84,6 +90,7 @@ export function StoreRepository(): StoreRepository {
     });
     const hasMore = await prisma.store.count({
       where: where,
+      orderBy: orderBy,
       take: limit,
       skip: limit * page,
     });
