@@ -1,5 +1,5 @@
 import jsonwebtoken from 'jsonwebtoken';
-import { left, right } from 'fp-either';
+import { failure, success } from '@/either';
 import { TokenProvider } from '@/types/providers/token';
 import { UnauthorizedError } from '@/errors/unauthorized';
 import { config } from '@/config';
@@ -14,9 +14,9 @@ export function TokenProvider(): TokenProvider {
   function verify(token: string) {
     try {
       const decoded = jsonwebtoken.verify(token, config.TOKEN_SECRET);
-      return right(String(decoded.sub));
+      return success(String(decoded.sub));
     } catch (err) {
-      return left(new UnauthorizedError('Invalid token'));
+      return failure(new UnauthorizedError('Invalid token'));
     }
   }
 

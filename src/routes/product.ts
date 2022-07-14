@@ -1,5 +1,5 @@
 import { FastifyInstance } from 'fastify';
-import { isLeft } from 'fp-either';
+import { isFailure } from '@/either';
 import { findCodeByError } from '@/utils';
 import { ProductRepository } from '@/repositories/product';
 import { StoreRepository } from '@/repositories/store';
@@ -72,13 +72,13 @@ async function Product(fastify: FastifyInstance) {
       const cityId = request.query.city_id;
       if (storeId) {
         const products = await productService.findManyByStore(storeId, page);
-        if (isLeft(products)) {
-          const httpStatus = findCodeByError(products.left);
-          return replay.code(httpStatus).send({ message: products.left.message });
+        if (isFailure(products)) {
+          const httpStatus = findCodeByError(products.failure);
+          return replay.code(httpStatus).send({ message: products.failure.message });
         }
         return replay
-          .header('x-has-more', products.right.hasMore)
-          .send(products.right.data.map(productMapper.toObject));
+          .header('x-has-more', products.success.hasMore)
+          .send(products.success.data.map(productMapper.toObject));
       }
       const products = await productService.findManyByCity(cityId, page);
       return replay.header('x-has-more', products.hasMore).send(
@@ -124,13 +124,13 @@ async function Product(fastify: FastifyInstance) {
     async handler(request, replay) {
       const productId = request.params.product_id;
       const product = await productService.findOne(productId);
-      if (isLeft(product)) {
-        const httpStatus = findCodeByError(product.left);
-        return replay.code(httpStatus).send({ message: product.left.message });
+      if (isFailure(product)) {
+        const httpStatus = findCodeByError(product.failure);
+        return replay.code(httpStatus).send({ message: product.failure.message });
       }
       return replay.send({
-        ...productMapper.toObject(product.right),
-        store: storeMapper.toObject(product.right.store),
+        ...productMapper.toObject(product.success),
+        store: storeMapper.toObject(product.success.store),
       });
     },
   });

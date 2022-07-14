@@ -1,5 +1,5 @@
-import { left, right } from 'fp-either';
 import { Prisma } from '@prisma/client';
+import { failure, success } from '@/either';
 import { prisma } from '@/libs/prisma';
 import { ProductRepository } from '@/types/repositories/product';
 import { ProductRecord } from '@/types/records/product';
@@ -72,8 +72,8 @@ export function ProductRepository(): ProductRepository {
         store: true,
       },
     });
-    if (!product) return left(new NotFoundError('Product not found'));
-    return right({
+    if (!product) return failure(new NotFoundError('Product not found'));
+    return success({
       ...productMapper.fromRecord({
         ...product,
         status: product.status as ProductRecord.Status,

@@ -1,4 +1,4 @@
-import { Either } from 'fp-either';
+import { Either } from '@/either';
 import { Store } from '@/types/store';
 import { City } from '@/types/city';
 import { Product } from '@/types/product';

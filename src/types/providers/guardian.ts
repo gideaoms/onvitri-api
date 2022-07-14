@@ -1,4 +1,4 @@
-import { Either } from 'fp-either';
+import { Either } from '@/either';
 import { User } from '@/types/user';
 
 export type GuardianProvider = {

@@ -5,7 +5,7 @@ import stream from 'stream/promises';
 import sharp from 'sharp';
 import crypto from 'crypto';
 import { FastifyInstance } from 'fastify';
-import { isLeft } from 'fp-either';
+import { isFailure } from '@/either';
 import { findCodeByError } from '@/utils';
 import { TokenProvider } from '@/providers/token';
 import { UserRepository } from '@/repositories/shopkeeper/user';
@@ -30,9 +30,9 @@ async function Picture(fastify: FastifyInstance) {
     async handler(request, replay) {
       const token = request.headers.authorization;
       const user = await guardianProvider.passThrough('shopkeeper', token);
-      if (isLeft(user)) {
-        const code = findCodeByError(user.left);
-        return replay.code(code).send({ message: user.left.message });
+      if (isFailure(user)) {
+        const code = findCodeByError(user.failure);
+        return replay.code(code).send({ message: user.failure.message });
       }
       const transformer = sharp({ failOnError: false }).resize({ width: 1000, withoutEnlargement: true }).webp();
       const data = await request.file();

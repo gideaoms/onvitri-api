@@ -1,5 +1,5 @@
-import { left, right } from 'fp-either';
 import { Prisma } from '@prisma/client';
+import { failure, success } from '@/either';
 import { prisma } from '@/libs/prisma';
 import { StoreRepository } from '@/types/repositories/shopkeeper/store';
 import { StoreRecord } from '@/types/records/store';
@@ -19,8 +19,8 @@ export function StoreRepository(): StoreRepository {
         owner_id: ownerId,
       },
     });
-    if (!store) return left(new NotFoundError('Store not found'));
-    return right(
+    if (!store) return failure(new NotFoundError('Store not found'));
+    return success(
       storeMapper.fromRecord({
         ...store,
         phone: store.phone as StoreRecord.Phone,

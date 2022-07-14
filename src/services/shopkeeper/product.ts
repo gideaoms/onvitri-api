@@ -1,4 +1,4 @@
-import { isLeft, left, right } from 'fp-either';
+import { isFailure, failure, success } from '@/either';
 import { ProductRepository } from '@/types/repositories/shopkeeper/product';
 import { StoreRepository } from '@/types/repositories/shopkeeper/store';
 import { Product } from '@/types/product';
@@ -26,7 +26,7 @@ export function ProductService(productRepository: ProductRepository, storeReposi
   ) {
     const ownerId = user.id;
     const store = await storeRepository.exists(storeId, ownerId);
-    if (isLeft(store)) return left(store.left);
+    if (isFailure(store)) return failure(store.failure);
     const product: Product = {
       id: undefined!,
       storeId: storeId,
@@ -37,20 +37,20 @@ export function ProductService(productRepository: ProductRepository, storeReposi
       status: status,
     };
     if (productModel.isActive(product) && !productModel.hasPictures(product))
-      return left(new BadRequestError('Você não pode publicar um produto sem foto'));
+      return failure(new BadRequestError('Você não pode publicar um produto sem foto'));
     const reachedMaximumAmountOfActiveProducts = await productModel.reachedMaximumActiveByStore(storeId, ownerId);
     if (productModel.isActive(product) && reachedMaximumAmountOfActiveProducts) {
       const message = `Você não pode ter mais que ${ProductModel.MAXIMUM_ACTIVE_BY_STORE} produtos publicados na mesma loja`;
-      return left(new BadRequestError(message));
+      return failure(new BadRequestError(message));
     }
-    return right(await productRepository.create(product));
+    return success(await productRepository.create(product));
   }
 
   async function findOne(productId: string, user: User) {
     const ownerId = user.id;
     const found = await productRepository.findOne(productId, ownerId);
-    if (isLeft(found)) return left(found.left);
-    return right(found.right);
+    if (isFailure(found)) return failure(found.failure);
+    return success(found.success);
   }
 
   async function update(
@@ -64,8 +64,8 @@ export function ProductService(productRepository: ProductRepository, storeReposi
   ) {
     const ownerId = user.id;
     const foundProduct = await productRepository.exists(productId, ownerId);
-    if (isLeft(foundProduct)) return left(foundProduct.left);
-    const storeId = foundProduct.right.storeId;
+    if (isFailure(foundProduct)) return failure(foundProduct.failure);
+    const storeId = foundProduct.success.storeId;
     const product: Product = {
       id: productId,
       storeId: storeId,
@@ -76,21 +76,21 @@ export function ProductService(productRepository: ProductRepository, storeReposi
       status: status,
     };
     if (productModel.isActive(product) && !productModel.hasPictures(product))
-      return left(new BadRequestError('Você não pode publicar um produto sem foto'));
+      return failure(new BadRequestError('Você não pode publicar um produto sem foto'));
     const reachedMaximumAmountOfActiveProducts = await productModel.reachedMaximumActiveByStore(storeId, ownerId);
     if (productModel.isActive(product) && reachedMaximumAmountOfActiveProducts) {
       const message = `Você não pode ter mais que ${ProductModel.MAXIMUM_ACTIVE_BY_STORE} produtos publicados na mesma loja`;
-      return left(new BadRequestError(message));
+      return failure(new BadRequestError(message));
     }
-    return right(await productRepository.update(product));
+    return success(await productRepository.update(product));
   }
 
   async function remove(productId: string, user: User) {
     const ownerId = user.id;
     const found = await productRepository.exists(productId, ownerId);
-    if (isLeft(found)) return left(found.left);
+    if (isFailure(found)) return failure(found.failure);
     await productRepository.remove(productId);
-    return right(found);
+    return success(found);
   }
 
   return {

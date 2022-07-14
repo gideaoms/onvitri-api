@@ -1,5 +1,5 @@
-import { left, right } from 'fp-either';
 import { Prisma } from '@prisma/client';
+import { failure, success } from '@/either';
 import { StoreRepository } from '@/types/repositories/store';
 import { ProductRecord } from '@/types/records/product';
 import { PictureRecord } from '@/types/records/picture';
@@ -41,7 +41,7 @@ export function StoreRepository(): StoreRepository {
         },
       },
     });
-    if (!store) return left(new NotFoundError('Store not found'));
+    if (!store) return failure(new NotFoundError('Store not found'));
     const page = 1;
     const hasMore = await prisma.product.count({
       where: where,
@@ -49,7 +49,7 @@ export function StoreRepository(): StoreRepository {
       take: limit,
       skip: limit * page,
     });
-    return right({
+    return success({
       ...storeMapper.fromRecord({
         ...store,
         phone: store.phone as StoreRecord.Phone,

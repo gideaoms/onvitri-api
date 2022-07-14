@@ -1,4 +1,4 @@
-import { isLeft, left, right } from 'fp-either';
+import { isFailure, failure, success } from '@/either';
 import { TokenProvider } from '@/types/providers/token';
 import { UserRepository } from '@/types/repositories/shopkeeper/user';
 import { CryptoProvider } from '@/types/providers/crypto';
@@ -15,17 +15,17 @@ export function GuardianProvider(
   const userModel = UserModel(cryptoProvider);
 
   async function passThrough(role: User.Role, token?: string) {
-    if (!token) return left(new UnauthorizedError('Unauthorized'));
+    if (!token) return failure(new UnauthorizedError('Unauthorized'));
     const [, rawToken] = token.split(' ');
-    if (!rawToken) return left(new UnauthorizedError('Unauthorized'));
+    if (!rawToken) return failure(new UnauthorizedError('Unauthorized'));
     const sub = tokenProvider.verify(rawToken);
-    if (isLeft(sub)) return left(new UnauthorizedError('Unauthorized'));
-    const user = await userRepository.findOneById(sub.right);
-    if (isLeft(user)) return left(new UnauthorizedError('Unauthorized'));
-    if (!userModel.isActive(user.right))
-      return left(new UnauthorizedError('O seu perfil não está ativo na plataforma'));
-    if (!userModel.hasRole(user.right, role)) return left(new UnauthorizedError('Unauthorized'));
-    return right({ ...user.right, token: rawToken });
+    if (isFailure(sub)) return failure(new UnauthorizedError('Unauthorized'));
+    const user = await userRepository.findOneById(sub.success);
+    if (isFailure(user)) return failure(new UnauthorizedError('Unauthorized'));
+    if (!userModel.isActive(user.success))
+      return failure(new UnauthorizedError('O seu perfil não está ativo na plataforma'));
+    if (!userModel.hasRole(user.success, role)) return failure(new UnauthorizedError('Unauthorized'));
+    return success({ ...user.success, token: rawToken });
   }
 
   return {

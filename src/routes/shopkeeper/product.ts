@@ -1,5 +1,5 @@
 import { FastifyInstance } from 'fastify';
-import { isLeft } from 'fp-either';
+import { isFailure } from '@/either';
 import { findCodeByError } from '@/utils';
 import { Product } from '@/types/product';
 import { ProductObject } from '@/types/objects/product';
@@ -72,11 +72,11 @@ async function Product(fastify: FastifyInstance) {
       const page = request.query.page;
       const token = request.headers.authorization;
       const user = await guardianProvider.passThrough('shopkeeper', token);
-      if (isLeft(user)) {
-        const httpStatus = findCodeByError(user.left);
-        return replay.code(httpStatus).send({ message: user.left.message });
+      if (isFailure(user)) {
+        const httpStatus = findCodeByError(user.failure);
+        return replay.code(httpStatus).send({ message: user.failure.message });
       }
-      const products = await productService.findMany(page, user.right);
+      const products = await productService.findMany(page, user.success);
       return replay.header('x-has-more', products.hasMore).send(
         products.data.map((product) => ({
           ...productMapper.toObject(product),
@@ -104,12 +104,10 @@ async function Product(fastify: FastifyInstance) {
           },
           title: {
             type: 'string',
-            trim: true,
             minLength: 1,
           },
           description: {
             type: 'string',
-            trim: true,
             minLength: 1,
           },
           price: {
@@ -164,9 +162,9 @@ async function Product(fastify: FastifyInstance) {
     async handler(request, replay) {
       const token = request.headers.authorization;
       const user = await guardianProvider.passThrough('shopkeeper', token);
-      if (isLeft(user)) {
-        const httpStatus = findCodeByError(user.left);
-        return replay.code(httpStatus).send({ message: user.left.message });
+      if (isFailure(user)) {
+        const httpStatus = findCodeByError(user.failure);
+        return replay.code(httpStatus).send({ message: user.failure.message });
       }
       const storeId = request.body.store_id;
       const title = request.body.title;
@@ -174,16 +172,16 @@ async function Product(fastify: FastifyInstance) {
       const price = request.body.price;
       const pictures = request.body.pictures.map(pictureMapper.fromObject);
       const status = request.body.status;
-      const product = await productService.create(storeId, title, description, price, pictures, status, user.right);
-      if (isLeft(product)) {
-        const httpStatus = findCodeByError(product.left);
-        return replay.code(httpStatus).send({ message: product.left.message });
+      const product = await productService.create(storeId, title, description, price, pictures, status, user.success);
+      if (isFailure(product)) {
+        const httpStatus = findCodeByError(product.failure);
+        return replay.code(httpStatus).send({ message: product.failure.message });
       }
       return replay.send({
-        ...productMapper.toObject(product.right),
+        ...productMapper.toObject(product.success),
         store: {
-          ...storeMapper.toObject(product.right.store),
-          city: cityMapper.toObject(product.right.store.city),
+          ...storeMapper.toObject(product.success.store),
+          city: cityMapper.toObject(product.success.store.city),
         },
       });
     },
@@ -230,20 +228,20 @@ async function Product(fastify: FastifyInstance) {
       const productId = request.params.product_id;
       const token = request.headers.authorization;
       const user = await guardianProvider.passThrough('shopkeeper', token);
-      if (isLeft(user)) {
-        const httpStatus = findCodeByError(user.left);
-        return replay.code(httpStatus).send({ message: user.left.message });
+      if (isFailure(user)) {
+        const httpStatus = findCodeByError(user.failure);
+        return replay.code(httpStatus).send({ message: user.failure.message });
       }
-      const product = await productService.findOne(productId, user.right);
-      if (isLeft(product)) {
-        const httpStatus = findCodeByError(product.left);
-        return replay.code(httpStatus).send({ message: product.left.message });
+      const product = await productService.findOne(productId, user.success);
+      if (isFailure(product)) {
+        const httpStatus = findCodeByError(product.failure);
+        return replay.code(httpStatus).send({ message: product.failure.message });
       }
       return replay.send({
-        ...productMapper.toObject(product.right),
+        ...productMapper.toObject(product.success),
         store: {
-          ...storeMapper.toObject(product.right.store),
-          city: cityMapper.toObject(product.right.store.city),
+          ...storeMapper.toObject(product.success.store),
+          city: cityMapper.toObject(product.success.store.city),
         },
       });
     },
@@ -274,12 +272,10 @@ async function Product(fastify: FastifyInstance) {
           title: {
             type: 'string',
             minLength: 1,
-            trim: true,
           },
           description: {
             type: 'string',
             minLength: 1,
-            trim: true,
           },
           price: {
             type: 'integer',
@@ -333,9 +329,9 @@ async function Product(fastify: FastifyInstance) {
     async handler(request, replay) {
       const token = request.headers.authorization;
       const user = await guardianProvider.passThrough('shopkeeper', token);
-      if (isLeft(user)) {
-        const code = findCodeByError(user.left);
-        return replay.code(code).send({ message: user.left.message });
+      if (isFailure(user)) {
+        const code = findCodeByError(user.failure);
+        return replay.code(code).send({ message: user.failure.message });
       }
       const productId = request.params.product_id;
       const title = request.body.title;
@@ -343,16 +339,16 @@ async function Product(fastify: FastifyInstance) {
       const price = request.body.price;
       const pictures = request.body.pictures.map(pictureMapper.fromObject);
       const status = request.body.status;
-      const updated = await productService.update(productId, title, description, price, pictures, status, user.right);
-      if (isLeft(updated)) {
-        const code = findCodeByError(updated.left);
-        return replay.code(code).send({ message: updated.left.message });
+      const updated = await productService.update(productId, title, description, price, pictures, status, user.success);
+      if (isFailure(updated)) {
+        const code = findCodeByError(updated.failure);
+        return replay.code(code).send({ message: updated.failure.message });
       }
       return replay.send({
-        ...productMapper.toObject(updated.right),
+        ...productMapper.toObject(updated.success),
         store: {
-          ...storeMapper.toObject(updated.right.store),
-          city: cityMapper.toObject(updated.right.store.city),
+          ...storeMapper.toObject(updated.success.store),
+          city: cityMapper.toObject(updated.success.store.city),
         },
       });
     },
@@ -380,15 +376,15 @@ async function Product(fastify: FastifyInstance) {
     async handler(request, replay) {
       const token = request.headers.authorization;
       const user = await guardianProvider.passThrough('shopkeeper', token);
-      if (isLeft(user)) {
-        const code = findCodeByError(user.left);
-        return replay.code(code).send({ message: user.left.message });
+      if (isFailure(user)) {
+        const code = findCodeByError(user.failure);
+        return replay.code(code).send({ message: user.failure.message });
       }
       const productId = request.params.product_id;
-      const removed = await productService.remove(productId, user.right);
-      if (isLeft(removed)) {
-        const code = findCodeByError(removed.left);
-        return replay.code(code).send({ message: removed.left.message });
+      const removed = await productService.remove(productId, user.success);
+      if (isFailure(removed)) {
+        const code = findCodeByError(removed.failure);
+        return replay.code(code).send({ message: removed.failure.message });
       }
       return replay.send();
     },

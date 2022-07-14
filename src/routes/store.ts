@@ -1,5 +1,5 @@
 import { FastifyInstance } from 'fastify';
-import { isLeft } from 'fp-either';
+import { isFailure } from '@/either';
 import { findCodeByError } from '@/utils';
 import { StoreRepository } from '@/repositories/store';
 import { StoreService } from '@/services/store';
@@ -56,14 +56,14 @@ async function Store(fastify: FastifyInstance) {
     async handler(request, replay) {
       const storeId = request.params.store_id;
       const store = await storeService.findOne(storeId);
-      if (isLeft(store)) {
-        const code = findCodeByError(store.left);
-        return replay.code(code).send({ message: store.left.message });
+      if (isFailure(store)) {
+        const code = findCodeByError(store.failure);
+        return replay.code(code).send({ message: store.failure.message });
       }
-      return replay.header('x-has-more', store.right.products.hasMore).send({
-        ...storeMapper.toObject(store.right),
-        city: cityMapper.toObject(store.right.city),
-        products: store.right.products.data.map(productMapper.toObject),
+      return replay.header('x-has-more', store.success.products.hasMore).send({
+        ...storeMapper.toObject(store.success),
+        city: cityMapper.toObject(store.success.city),
+        products: store.success.products.data.map(productMapper.toObject),
       });
     },
   });

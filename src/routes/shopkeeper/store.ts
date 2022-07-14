@@ -1,5 +1,5 @@
 import { FastifyInstance } from 'fastify';
-import { isLeft } from 'fp-either';
+import { isFailure } from '@/either';
 import { findCodeByError } from '@/utils';
 import { StoreService } from '@/services/shopkeeper/store';
 import { StoreMapper } from '@/mappers/store';
@@ -58,11 +58,11 @@ async function Store(fastify: FastifyInstance) {
       const page = request.query.page;
       const token = request.headers.authorization;
       const user = await guardianProvider.passThrough('shopkeeper', token);
-      if (isLeft(user)) {
-        const httpStatus = findCodeByError(user.left);
-        return replay.code(httpStatus).send({ message: user.left.message });
+      if (isFailure(user)) {
+        const httpStatus = findCodeByError(user.failure);
+        return replay.code(httpStatus).send({ message: user.failure.message });
       }
-      const stores = await storeService.findMany(page, user.right);
+      const stores = await storeService.findMany(page, user.success);
       return replay.header('x-has-more', stores.hasMore).send(
         stores.data.map((store) => ({
           ...storeMapper.toObject(store),

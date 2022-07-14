@@ -1,4 +1,4 @@
-import { left, right } from 'fp-either';
+import { failure, success } from '@/either';
 import { prisma } from '@/libs/prisma';
 import { UserRepository } from '@/types/repositories/shopkeeper/user';
 import { UserRecord } from '@/types/records/user';
@@ -15,8 +15,8 @@ export function UserRepository(): UserRepository {
         email: email,
       },
     });
-    if (!user) return left(new NotFoundError('User not found'));
-    return right(
+    if (!user) return failure(new NotFoundError('User not found'));
+    return success(
       userMapper.fromRecord({
         ...user,
         roles: user.roles as UserRecord.Role[],
@@ -31,8 +31,8 @@ export function UserRepository(): UserRepository {
         id: userId,
       },
     });
-    if (!user) return left(new NotFoundError('User not found'));
-    return right(
+    if (!user) return failure(new NotFoundError('User not found'));
+    return success(
       userMapper.fromRecord({
         ...user,
         roles: user.roles as UserRecord.Role[],

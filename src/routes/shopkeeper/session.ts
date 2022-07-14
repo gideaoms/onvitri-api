@@ -1,5 +1,5 @@
 import { FastifyInstance } from 'fastify';
-import { isLeft } from 'fp-either';
+import { isFailure } from '@/either';
 import { findCodeByError } from '@/utils';
 import { UserRepository } from '@/repositories/shopkeeper/user';
 import { CryptoProvider } from '@/providers/crypto';
@@ -48,9 +48,9 @@ async function Session(fastify: FastifyInstance) {
     async handler(request, replay) {
       const email = request.body.email;
       const session = await sessionService.create(email);
-      if (isLeft(session)) {
-        const httpStatus = findCodeByError(session.left);
-        return replay.code(httpStatus).send({ message: session.left.message });
+      if (isFailure(session)) {
+        const httpStatus = findCodeByError(session.failure);
+        return replay.code(httpStatus).send({ message: session.failure.message });
       }
       return replay.send();
     },
@@ -88,11 +88,11 @@ async function Session(fastify: FastifyInstance) {
       const email = request.body.email;
       const emailCode = request.body.email_code;
       const session = await sessionService.activate(email, emailCode);
-      if (isLeft(session)) {
-        const httpStatus = findCodeByError(session.left);
-        return replay.code(httpStatus).send({ message: session.left.message });
+      if (isFailure(session)) {
+        const httpStatus = findCodeByError(session.failure);
+        return replay.code(httpStatus).send({ message: session.failure.message });
       }
-      return replay.send(userMapper.toObject(session.right));
+      return replay.send(userMapper.toObject(session.success));
     },
   });
 
@@ -110,11 +110,11 @@ async function Session(fastify: FastifyInstance) {
     async handler(request, replay) {
       const token = request.headers.authorization;
       const session = await guardianProvider.passThrough('shopkeeper', token);
-      if (isLeft(session)) {
-        const httpStatus = findCodeByError(session.left);
-        return replay.code(httpStatus).send({ message: session.left.message });
+      if (isFailure(session)) {
+        const httpStatus = findCodeByError(session.failure);
+        return replay.code(httpStatus).send({ message: session.failure.message });
       }
-      return replay.send(userMapper.toObject(session.right));
+      return replay.send(userMapper.toObject(session.success));
     },
   });
 }
