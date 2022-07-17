@@ -53,6 +53,9 @@ export const schemas = {
     id: {
       type: 'string',
     },
+    store_id: {
+      type: 'string',
+    },
     title: {
       type: 'string',
     },
