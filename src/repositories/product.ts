@@ -1,8 +1,9 @@
-import { left, right } from 'fp-either';
-import prisma from '@/libs/prisma';
+import { Prisma } from '@prisma/client';
+import { failure, success } from '@/either';
+import { prisma } from '@/libs/prisma';
 import { ProductRepository } from '@/types/repositories/product';
 import { ProductRecord } from '@/types/records/product';
-import { PhotoRecord } from '@/types/records/photo';
+import { PictureRecord } from '@/types/records/picture';
 import { StoreRecord } from '@/types/records/store';
 import { ProductModel } from '@/models/product';
 import { ProductMapper } from '@/mappers/product';
@@ -13,19 +14,22 @@ export function ProductRepository(): ProductRepository {
   const productMapper = ProductMapper();
   const storeMapper = StoreMapper();
 
-  async function findMany(page: number) {
-    const limit = ProductModel.itemsByPage;
+  async function findManyByCity(cityId: string, page: number) {
+    const limit = ProductModel.ITEMS_BY_PAGE;
     const offset = limit * (page - 1);
-    const products = await prisma.product.findMany({
-      where: {
+    const where: Prisma.ProductWhereInput = {
+      status: 'active',
+      store: {
         status: 'active',
-        store: {
-          status: 'active',
-        },
+        city_id: cityId,
       },
-      orderBy: {
-        created_at: 'desc',
-      },
+    };
+    const orderBy: Prisma.ProductOrderByWithRelationInput = {
+      created_at: 'desc',
+    };
+    const products = await prisma.product.findMany({
+      where: where,
+      orderBy: orderBy,
       take: limit,
       skip: offset,
       include: {
@@ -33,12 +37,8 @@ export function ProductRepository(): ProductRepository {
       },
     });
     const hasMore = await prisma.product.count({
-      where: {
-        status: 'active',
-        store: {
-          status: 'active',
-        },
-      },
+      where: where,
+      orderBy: orderBy,
       take: limit,
       skip: limit * page,
     });
@@ -47,7 +47,7 @@ export function ProductRepository(): ProductRepository {
         ...productMapper.fromRecord({
           ...record,
           status: record.status as ProductRecord.Status,
-          photos: record.photos as PhotoRecord[],
+          pictures: record.pictures as PictureRecord[],
         }),
         store: storeMapper.fromRecord({
           ...record.store,
@@ -72,12 +72,12 @@ export function ProductRepository(): ProductRepository {
         store: true,
       },
     });
-    if (!product) return left(new NotFoundError('Product not found'));
-    return right({
+    if (!product) return failure(new NotFoundError('Product not found'));
+    return success({
       ...productMapper.fromRecord({
         ...product,
         status: product.status as ProductRecord.Status,
-        photos: product.photos as PhotoRecord[],
+        pictures: product.pictures as PictureRecord[],
       }),
       store: storeMapper.fromRecord({
         ...product.store,
@@ -88,30 +88,27 @@ export function ProductRepository(): ProductRepository {
   }
 
   async function findManyByStore(storeId: string, page: number) {
-    const limit = ProductModel.itemsByPage;
+    const limit = ProductModel.ITEMS_BY_PAGE;
     const offset = limit * (page - 1);
-    const products = await prisma.product.findMany({
-      where: {
+    const where: Prisma.ProductWhereInput = {
+      status: 'active',
+      store: {
+        id: storeId,
         status: 'active',
-        store: {
-          id: storeId,
-          status: 'active',
-        },
       },
-      orderBy: {
-        created_at: 'desc',
-      },
+    };
+    const orderBy: Prisma.ProductOrderByWithRelationInput = {
+      created_at: 'desc',
+    };
+    const products = await prisma.product.findMany({
+      where: where,
+      orderBy: orderBy,
       take: limit,
       skip: offset,
     });
     const hasMore = await prisma.product.count({
-      where: {
-        status: 'active',
-        store: {
-          id: storeId,
-          status: 'active',
-        },
-      },
+      where: where,
+      orderBy: orderBy,
       take: limit,
       skip: limit * page,
     });
@@ -120,7 +117,7 @@ export function ProductRepository(): ProductRepository {
         productMapper.fromRecord({
           ...product,
           status: product.status as ProductRecord.Status,
-          photos: product.photos as PhotoRecord[],
+          pictures: product.pictures as PictureRecord[],
         }),
       ),
       hasMore: Boolean(hasMore),
@@ -128,7 +125,7 @@ export function ProductRepository(): ProductRepository {
   }
 
   return {
-    findMany: findMany,
+    findManyByCity: findManyByCity,
     findOne: findOne,
     findManyByStore: findManyByStore,
   };

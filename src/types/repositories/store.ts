@@ -1,11 +1,10 @@
-import { Either } from 'fp-either';
+import { Either } from '@/either';
 import { Store } from '@/types/store';
 import { City } from '@/types/city';
 import { Product } from '@/types/product';
+import { ListOf } from '@/utils';
 
 export type StoreRepository = {
-  findOne(
-    storeId: string,
-  ): Promise<Either<Error, { data: Store & { city: City; products: Product[] }; hasMore: boolean }>>;
-  exists(storeId: string, status: Store.Status): Promise<Either<Error, Store>>;
+  findOne(storeId: string): Promise<Either<Error, Store & { city: City; products: ListOf<Product> }>>;
+  findManyByCity(cityId: string, page: number): Promise<ListOf<Store & { city: City }>>;
 };

@@ -1,25 +1,25 @@
-import { isLeft, left, right } from 'fp-either';
+import { isFailure, failure, success } from '@/either';
 import { ProductRepository } from '@/types/repositories/product';
 import { StoreRepository } from '@/types/repositories/store';
 
 export function ProductService(productRepository: ProductRepository, storeRepository: StoreRepository) {
-  async function findMany(page: number) {
-    return productRepository.findMany(page);
+  function findManyByCity(cityId: string, page: number) {
+    return productRepository.findManyByCity(cityId, page);
   }
 
-  async function findOne(productId: string) {
+  function findOne(productId: string) {
     return productRepository.findOne(productId);
   }
 
   async function findManyByStore(storeId: string, page: number) {
     const store = await storeRepository.findOne(storeId);
-    if (isLeft(store)) return left(store.left);
+    if (isFailure(store)) return failure(store.failure);
     const products = await productRepository.findManyByStore(storeId, page);
-    return right(products);
+    return success(products);
   }
 
   return {
-    findMany: findMany,
+    findManyByCity: findManyByCity,
     findOne: findOne,
     findManyByStore: findManyByStore,
   };

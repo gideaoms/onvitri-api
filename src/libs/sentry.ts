@@ -1,5 +1,5 @@
 import * as sentry from '@sentry/node';
-import config from '@/config';
+import { config } from '@/config';
 import '@sentry/tracing';
 
 sentry.init({
@@ -7,4 +7,4 @@ sentry.init({
   tracesSampleRate: config.APP_ENV === 'production' ? 0.2 : 1,
 });
 
-export default sentry;
+export { sentry };

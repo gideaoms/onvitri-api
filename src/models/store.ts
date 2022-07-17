@@ -10,4 +10,4 @@ export function StoreModel() {
   };
 }
 
-StoreModel.itemsByPage = 12;
+StoreModel.ITEMS_BY_PAGE = 12;

@@ -1,8 +1,6 @@
-import prisma from '@/libs/prisma';
-import { CryptoProvider } from '@/providers/crypto';
+import { prisma } from '@/libs/prisma';
 
 async function main() {
-  const cryptoProvider = CryptoProvider();
   const city = await prisma.city.create({
     data: {
       id: 'b9bd02e7-7315-4df6-81b8-c3e150666c61',
@@ -14,10 +12,9 @@ async function main() {
     data: {
       id: '14028895-0d43-416a-8c8e-30b0cde42460',
       name: 'Shopkeeper 1',
-      email: 'store1@mail.com',
+      email: 'shopkeeper1@mail.com',
       roles: ['shopkeeper'],
       status: 'active',
-      password: await cryptoProvider.hash('123456'),
     },
   });
   await prisma.store.create({
@@ -31,9 +28,9 @@ async function main() {
         area_code: '44',
         number: '333333333',
       },
-      neighborhood: 'Center',
+      neighborhood: 'Any neighborhood',
       number: '546',
-      street: 'Any Street',
+      street: 'Any street',
       zip_code: '87265000',
       status: 'active',
     },

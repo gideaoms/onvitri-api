@@ -1,6 +1,6 @@
 import Bull, { Job } from 'bull';
-import sentry from '@/libs/sentry';
-import config from '@/config';
+import { sentry } from '@/libs/sentry';
+import { config } from '@/config';
 
 export function makeBull<TemplateVars>(name: string) {
   return new Bull<TemplateVars>(name, {

@@ -1,4 +1,4 @@
-import { Either } from 'fp-either';
+import { Either } from '@/either';
 
 export type TokenProvider = {
   generate(sub: string): string;
