@@ -6,7 +6,7 @@ import sharp from 'sharp';
 import crypto from 'crypto';
 import { FastifyInstance } from 'fastify';
 import { isFailure } from '@/either';
-import { findCodeByError } from '@/utils';
+import { findHttpStatusByError } from '@/utils';
 import { TokenProvider } from '@/providers/token';
 import { UserRepository } from '@/repositories/shopkeeper/user';
 import { CryptoProvider } from '@/providers/crypto';
@@ -31,7 +31,7 @@ async function Picture(fastify: FastifyInstance) {
       const token = request.headers.authorization;
       const user = await guardianProvider.passThrough('shopkeeper', token);
       if (isFailure(user)) {
-        const code = findCodeByError(user.failure);
+        const code = findHttpStatusByError(user.failure);
         return replay.code(code).send({ message: user.failure.message });
       }
       const transformer = sharp({ failOnError: false }).resize({ width: 1000, withoutEnlargement: true }).webp();

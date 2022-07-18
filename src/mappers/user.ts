@@ -11,7 +11,7 @@ export function UserMapper() {
       roles: record.roles,
       status: record.status,
       token: '',
-      emailCode: record.email_code,
+      validationCode: record.validation_code,
     };
     return user;
   }
@@ -35,7 +35,7 @@ export function UserMapper() {
       email: user.email,
       roles: user.roles,
       status: user.status,
-      email_code: user.emailCode,
+      validation_code: user.validationCode,
     };
     return record;
   }

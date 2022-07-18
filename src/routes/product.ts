@@ -1,6 +1,6 @@
 import { FastifyInstance } from 'fastify';
 import { isFailure } from '@/either';
-import { findCodeByError } from '@/utils';
+import { findHttpStatusByError } from '@/utils';
 import { ProductRepository } from '@/repositories/product';
 import { StoreRepository } from '@/repositories/store';
 import { ProductService } from '@/services/product';
@@ -73,7 +73,7 @@ async function Product(fastify: FastifyInstance) {
       if (storeId) {
         const products = await productService.findManyByStore(storeId, page);
         if (isFailure(products)) {
-          const httpStatus = findCodeByError(products.failure);
+          const httpStatus = findHttpStatusByError(products.failure);
           return replay.code(httpStatus).send({ message: products.failure.message });
         }
         return replay
@@ -125,7 +125,7 @@ async function Product(fastify: FastifyInstance) {
       const productId = request.params.product_id;
       const product = await productService.findOne(productId);
       if (isFailure(product)) {
-        const httpStatus = findCodeByError(product.failure);
+        const httpStatus = findHttpStatusByError(product.failure);
         return replay.code(httpStatus).send({ message: product.failure.message });
       }
       return replay.send({

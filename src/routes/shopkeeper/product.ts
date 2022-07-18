@@ -1,6 +1,6 @@
 import { FastifyInstance } from 'fastify';
 import { isFailure } from '@/either';
-import { findCodeByError } from '@/utils';
+import { findHttpStatusByError } from '@/utils';
 import { Product } from '@/types/product';
 import { ProductObject } from '@/types/objects/product';
 import { ProductRepository } from '@/repositories/shopkeeper/product';
@@ -73,7 +73,7 @@ async function Product(fastify: FastifyInstance) {
       const token = request.headers.authorization;
       const user = await guardianProvider.passThrough('shopkeeper', token);
       if (isFailure(user)) {
-        const httpStatus = findCodeByError(user.failure);
+        const httpStatus = findHttpStatusByError(user.failure);
         return replay.code(httpStatus).send({ message: user.failure.message });
       }
       const products = await productService.findMany(page, user.success);
@@ -163,7 +163,7 @@ async function Product(fastify: FastifyInstance) {
       const token = request.headers.authorization;
       const user = await guardianProvider.passThrough('shopkeeper', token);
       if (isFailure(user)) {
-        const httpStatus = findCodeByError(user.failure);
+        const httpStatus = findHttpStatusByError(user.failure);
         return replay.code(httpStatus).send({ message: user.failure.message });
       }
       const storeId = request.body.store_id;
@@ -174,7 +174,7 @@ async function Product(fastify: FastifyInstance) {
       const status = request.body.status;
       const product = await productService.create(storeId, title, description, price, pictures, status, user.success);
       if (isFailure(product)) {
-        const httpStatus = findCodeByError(product.failure);
+        const httpStatus = findHttpStatusByError(product.failure);
         return replay.code(httpStatus).send({ message: product.failure.message });
       }
       return replay.send({
@@ -229,12 +229,12 @@ async function Product(fastify: FastifyInstance) {
       const token = request.headers.authorization;
       const user = await guardianProvider.passThrough('shopkeeper', token);
       if (isFailure(user)) {
-        const httpStatus = findCodeByError(user.failure);
+        const httpStatus = findHttpStatusByError(user.failure);
         return replay.code(httpStatus).send({ message: user.failure.message });
       }
       const product = await productService.findOne(productId, user.success);
       if (isFailure(product)) {
-        const httpStatus = findCodeByError(product.failure);
+        const httpStatus = findHttpStatusByError(product.failure);
         return replay.code(httpStatus).send({ message: product.failure.message });
       }
       return replay.send({
@@ -330,7 +330,7 @@ async function Product(fastify: FastifyInstance) {
       const token = request.headers.authorization;
       const user = await guardianProvider.passThrough('shopkeeper', token);
       if (isFailure(user)) {
-        const code = findCodeByError(user.failure);
+        const code = findHttpStatusByError(user.failure);
         return replay.code(code).send({ message: user.failure.message });
       }
       const productId = request.params.product_id;
@@ -341,7 +341,7 @@ async function Product(fastify: FastifyInstance) {
       const status = request.body.status;
       const updated = await productService.update(productId, title, description, price, pictures, status, user.success);
       if (isFailure(updated)) {
-        const code = findCodeByError(updated.failure);
+        const code = findHttpStatusByError(updated.failure);
         return replay.code(code).send({ message: updated.failure.message });
       }
       return replay.send({
@@ -377,13 +377,13 @@ async function Product(fastify: FastifyInstance) {
       const token = request.headers.authorization;
       const user = await guardianProvider.passThrough('shopkeeper', token);
       if (isFailure(user)) {
-        const code = findCodeByError(user.failure);
+        const code = findHttpStatusByError(user.failure);
         return replay.code(code).send({ message: user.failure.message });
       }
       const productId = request.params.product_id;
       const removed = await productService.remove(productId, user.success);
       if (isFailure(removed)) {
-        const code = findCodeByError(removed.failure);
+        const code = findHttpStatusByError(removed.failure);
         return replay.code(code).send({ message: removed.failure.message });
       }
       return replay.send();

@@ -9,5 +9,5 @@ export type UserRecord = {
   email: string;
   roles: UserRecord.Role[];
   status: UserRecord.Status;
-  email_code: string | null;
+  validation_code: string | null;
 };

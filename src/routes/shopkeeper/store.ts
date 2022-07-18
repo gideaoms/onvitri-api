@@ -1,6 +1,6 @@
 import { FastifyInstance } from 'fastify';
 import { isFailure } from '@/either';
-import { findCodeByError } from '@/utils';
+import { findHttpStatusByError } from '@/utils';
 import { StoreService } from '@/services/shopkeeper/store';
 import { StoreMapper } from '@/mappers/store';
 import { CityMapper } from '@/mappers/city';
@@ -59,7 +59,7 @@ async function Store(fastify: FastifyInstance) {
       const token = request.headers.authorization;
       const user = await guardianProvider.passThrough('shopkeeper', token);
       if (isFailure(user)) {
-        const httpStatus = findCodeByError(user.failure);
+        const httpStatus = findHttpStatusByError(user.failure);
         return replay.code(httpStatus).send({ message: user.failure.message });
       }
       const stores = await storeService.findMany(page, user.success);

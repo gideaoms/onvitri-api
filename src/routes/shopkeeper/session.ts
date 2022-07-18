@@ -1,6 +1,6 @@
 import { FastifyInstance } from 'fastify';
 import { isFailure } from '@/either';
-import { findCodeByError } from '@/utils';
+import { findHttpStatusByError } from '@/utils';
 import { UserRepository } from '@/repositories/shopkeeper/user';
 import { CryptoProvider } from '@/providers/crypto';
 import { TokenProvider } from '@/providers/token';
@@ -49,7 +49,7 @@ async function Session(fastify: FastifyInstance) {
       const email = request.body.email;
       const session = await sessionService.create(email);
       if (isFailure(session)) {
-        const httpStatus = findCodeByError(session.failure);
+        const httpStatus = findHttpStatusByError(session.failure);
         return replay.code(httpStatus).send({ message: session.failure.message });
       }
       return replay.send();
@@ -59,7 +59,7 @@ async function Session(fastify: FastifyInstance) {
   fastify.route<{
     Body: {
       email: string;
-      email_code: string;
+      validation_code: string;
     };
   }>({
     url: '/sessions/activate',
@@ -71,11 +71,11 @@ async function Session(fastify: FastifyInstance) {
           email: {
             type: 'string',
           },
-          email_code: {
+          validation_code: {
             type: 'string',
           },
         },
-        required: ['email', 'email_code'],
+        required: ['email', 'validation_code'],
       },
       response: {
         200: {
@@ -86,10 +86,10 @@ async function Session(fastify: FastifyInstance) {
     },
     async handler(request, replay) {
       const email = request.body.email;
-      const emailCode = request.body.email_code;
-      const session = await sessionService.activate(email, emailCode);
+      const validationCode = request.body.validation_code;
+      const session = await sessionService.activate(email, validationCode);
       if (isFailure(session)) {
-        const httpStatus = findCodeByError(session.failure);
+        const httpStatus = findHttpStatusByError(session.failure);
         return replay.code(httpStatus).send({ message: session.failure.message });
       }
       return replay.send(userMapper.toObject(session.success));
@@ -111,7 +111,7 @@ async function Session(fastify: FastifyInstance) {
       const token = request.headers.authorization;
       const session = await guardianProvider.passThrough('shopkeeper', token);
       if (isFailure(session)) {
-        const httpStatus = findCodeByError(session.failure);
+        const httpStatus = findHttpStatusByError(session.failure);
         return replay.code(httpStatus).send({ message: session.failure.message });
       }
       return replay.send(userMapper.toObject(session.success));

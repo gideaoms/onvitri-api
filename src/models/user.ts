@@ -18,8 +18,8 @@ export function UserModel(cryptoProvider: CryptoProvider) {
     return user.status === 'awaiting';
   }
 
-  function isEmailCodeValid(user: User, emailCode: string) {
-    return user.emailCode === emailCode;
+  function isValidationCodeValid(user: User, validationCode: string) {
+    return user.validationCode === validationCode;
   }
 
   return {
@@ -27,6 +27,6 @@ export function UserModel(cryptoProvider: CryptoProvider) {
     isActive: isActive,
     hasRole: hasRole,
     isAwaiting: isAwaiting,
-    isEmailCodeValid: isEmailCodeValid,
+    isValidationCodeValid: isValidationCodeValid,
   };
 }

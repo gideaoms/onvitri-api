@@ -1,17 +1,18 @@
 import { NewSessionMailer } from '@/types/mailers/new-session';
-import { makeMailer } from '@/libs/mailer';
+import { buildMailer } from '@/libs/mailer';
 
 export function NewSessionMailer(): NewSessionMailer {
-  const mailer = makeMailer<{ name: string; email: string; code: string }>();
+  const mailer = buildMailer<{ name: string; email: string; validationCode: string }>();
 
-  function send(name: string, email: string, code: string) {
+  function send(name: string, email: string, validationCode: string) {
     return mailer.send({
       locals: {
         name: name,
         email: email,
-        code: code,
+        validationCode: validationCode,
       },
       message: {
+        from: `Onvitri <no-replay@onvitri.com.br>`,
         to: `${name} <${email}>`,
       },
       template: 'new-session',

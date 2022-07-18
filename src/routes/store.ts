@@ -1,6 +1,6 @@
 import { FastifyInstance } from 'fastify';
 import { isFailure } from '@/either';
-import { findCodeByError } from '@/utils';
+import { findHttpStatusByError } from '@/utils';
 import { StoreRepository } from '@/repositories/store';
 import { StoreService } from '@/services/store';
 import { StoreMapper } from '@/mappers/store';
@@ -57,7 +57,7 @@ async function Store(fastify: FastifyInstance) {
       const storeId = request.params.store_id;
       const store = await storeService.findOne(storeId);
       if (isFailure(store)) {
-        const code = findCodeByError(store.failure);
+        const code = findHttpStatusByError(store.failure);
         return replay.code(code).send({ message: store.failure.message });
       }
       return replay.header('x-has-more', store.success.products.hasMore).send({

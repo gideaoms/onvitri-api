@@ -38,7 +38,7 @@ model User {
   email      String     @unique
   roles      String[]
   status     UserStatus
-  email_code String?
+  validation_code String?
 
   stores Store[]
 

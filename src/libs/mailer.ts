@@ -2,7 +2,7 @@ import path from 'path';
 import Email from 'email-templates';
 import { config } from '@/config';
 
-export function makeMailer<TemplateVars>() {
+export function buildMailer<TemplateVars>() {
   return new Email<TemplateVars>({
     views: {
       root: path.resolve(__dirname, '..', 'email-templates'),
@@ -12,9 +12,6 @@ export function makeMailer<TemplateVars>() {
           njk: 'nunjucks',
         },
       },
-    },
-    message: {
-      from: 'no-replay@onvitri.com.br',
     },
     transport: {
       host: config.MAIL_HOST,
