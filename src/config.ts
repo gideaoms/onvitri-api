@@ -1,5 +1,3 @@
-import { isNil } from '@/utils';
-
 export const config = {
   APP_ENV: process.env.APP_ENV,
   APP_PORT: Number(process.env.APP_PORT),
@@ -24,7 +22,3 @@ export const config = {
   REDIS_PASS: process.env.REDIS_PASS,
   REDIS_PORT: Number(process.env.REDIS_PORT),
 };
-
-Object.entries(config).forEach(([key, value]) => {
-  if (isNil(value)) throw new Error(`Env ${key} is not defined`);
-});
