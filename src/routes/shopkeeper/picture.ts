@@ -11,7 +11,6 @@ import { TokenProvider } from '@/providers/token';
 import { UserRepository } from '@/repositories/shopkeeper/user';
 import { CryptoProvider } from '@/providers/crypto';
 import { GuardianProvider } from '@/providers/guardian';
-import { config } from '@/config';
 import { Picture } from '@/types/picture';
 import { PictureMapper } from '@/mappers/picture';
 import { MultipartProvider } from '@/providers/multipart';
@@ -20,7 +19,7 @@ const userRepository = UserRepository();
 const tokenProvider = TokenProvider();
 const cryptoProvider = CryptoProvider();
 const guardianProvider = GuardianProvider(tokenProvider, userRepository, cryptoProvider);
-const multipartProvider = config.APP_ENV === 'production' ? undefined! : MultipartProvider();
+const multipartProvider = MultipartProvider();
 const pictureMapper = PictureMapper();
 
 async function Picture(fastify: FastifyInstance) {
