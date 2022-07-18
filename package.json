@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "Onvitri API",
   "scripts": {
-    "build": "npx tsc && npx tsc-alias",
+    "copy-files": "npx copyfiles --up 2 src/email-templates/**/* dist/email-templates",
+    "build": "npx tsc && npx tsc-alias && npm run copy-files",
     "start": "node dist/server.js",
     "worker": "node dist/worker.js",
     "dev:server": "npx prisma generate && npx nodemon src/server.ts",
@@ -30,6 +31,7 @@
     "@types/sharp": "0.30.2",
     "@typescript-eslint/eslint-plugin": "5.8.0",
     "@typescript-eslint/parser": "5.8.0",
+    "copyfiles": "2.4.1",
     "eslint": "8.5.0",
     "eslint-config-airbnb-base": "15.0.0",
     "eslint-config-airbnb-typescript": "16.1.0",

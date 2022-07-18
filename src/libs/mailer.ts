@@ -1,9 +1,9 @@
 import path from 'path';
-import Email from 'email-templates';
+import EmailTemplates from 'email-templates';
 import { config } from '@/config';
 
-export function buildMailer<TemplateVars>() {
-  return new Email<TemplateVars>({
+export function buildMailer<T>() {
+  return new EmailTemplates<T>({
     views: {
       root: path.resolve(__dirname, '..', 'email-templates'),
       options: {
