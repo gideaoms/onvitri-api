@@ -4,15 +4,15 @@ import { CryptoProvider } from '@/types/providers/crypto';
 import { UserModel } from '@/models/user';
 import { BadRequestError } from '@/errors/bad-request';
 import { User } from '@/types/user';
-import { NewSessionJob } from '@/types/jobs/new-session';
 import { TokenProvider } from '@/types/providers/token';
 import { not } from '@/utils';
+import { NewSessionMailer } from '@/types/mailers/new-session';
 
 export function SessionService(
   userRepository: UserRepository,
   cryptoProvider: CryptoProvider,
   tokenProvider: TokenProvider,
-  newSessionJob: NewSessionJob,
+  newSessionMailer: NewSessionMailer,
 ) {
   const userModel = UserModel(cryptoProvider);
 
@@ -23,8 +23,8 @@ export function SessionService(
         return failure(new BadRequestError('O email informado não está ativo em nossa plataforma'));
       const validationCode = cryptoProvider.randomDigits();
       const newUser: User = { ...user.success, validationCode: validationCode };
+      await newSessionMailer.send(newUser.name, newUser.email, validationCode);
       await userRepository.update(newUser);
-      newSessionJob.addToQueue(user.success.name, user.success.email, validationCode);
     }
     return success(undefined);
   }

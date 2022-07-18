@@ -7,7 +7,6 @@ import { TokenProvider } from '@/providers/token';
 import { UserMapper } from '@/mappers/user';
 import { SessionService } from '@/services/shopkeeper/session';
 import { schemas } from '@/schemas';
-import { NewSessionJob } from '@/jobs/new-session';
 import { NewSessionMailer } from '@/mailers/new-session';
 import { GuardianProvider } from '@/providers/guardian';
 
@@ -16,9 +15,8 @@ const cryptoProvider = CryptoProvider();
 const tokenProvider = TokenProvider();
 const userMapper = UserMapper();
 const newSessionMailer = NewSessionMailer();
-const newSessionJob = NewSessionJob(newSessionMailer);
 const guardianProvider = GuardianProvider(tokenProvider, userRepository, cryptoProvider);
-const sessionService = SessionService(userRepository, cryptoProvider, tokenProvider, newSessionJob);
+const sessionService = SessionService(userRepository, cryptoProvider, tokenProvider, newSessionMailer);
 
 async function Session(fastify: FastifyInstance) {
   fastify.route<{
