@@ -12,14 +12,10 @@ export const app = fastify({
   logger: config.APP_ENV === 'development',
 });
 
-app.setErrorHandler(function cb(err, _request, replay) {
-  if (err.validation) {
-    replay.code(400).send({ statusCode: 400, message: err.message });
-    return;
-  }
+app.setErrorHandler(async (err) => {
   console.error(err);
   sentry.captureException(err);
-  replay.code(500).send({ statusCode: 500, message: 'Internal server error' });
+  throw err;
 });
 
 app.register(helmet);
