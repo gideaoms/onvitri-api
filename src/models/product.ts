@@ -32,12 +32,17 @@ export function ProductModel(productRepository: ProductRepository) {
     return activeProductsByStore >= ProductModel.MAXIMUM_ACTIVE_BY_STORE;
   }
 
+  function isValidPrice(product: Product) {
+    return product.price > 1; // cents
+  }
+
   return {
     addPictures: addPictures,
     updateStatus: updateStatus,
     isActive: isActive,
     hasPictures: hasPictures,
     reachedMaximumActiveByStore: reachedMaximumActiveByStore,
+    isValidPrice: isValidPrice,
   };
 }
 

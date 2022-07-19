@@ -36,6 +36,8 @@ export function ProductService(productRepository: ProductRepository, storeReposi
       pictures: pictures,
       status: status,
     };
+    if (productModel.isActive(product) && !productModel.isValidPrice(product))
+      return failure(new BadRequestError('Você não pode publicar um produto sem preço'));
     if (productModel.isActive(product) && !productModel.hasPictures(product))
       return failure(new BadRequestError('Você não pode publicar um produto sem foto'));
     const reachedMaximumAmountOfActiveProducts = await productModel.reachedMaximumActiveByStore(storeId, ownerId);
@@ -75,6 +77,8 @@ export function ProductService(productRepository: ProductRepository, storeReposi
       pictures: pictures,
       status: status,
     };
+    if (productModel.isActive(product) && !productModel.isValidPrice(product))
+      return failure(new BadRequestError('Você não pode publicar um produto sem preço'));
     if (productModel.isActive(product) && !productModel.hasPictures(product))
       return failure(new BadRequestError('Você não pode publicar um produto sem foto'));
     const reachedMaximumAmountOfActiveProducts = await productModel.reachedMaximumActiveByStore(storeId, ownerId);

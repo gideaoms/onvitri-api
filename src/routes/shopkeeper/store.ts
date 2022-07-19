@@ -1,4 +1,6 @@
 import { FastifyInstance } from 'fastify';
+import { Type } from '@sinclair/typebox';
+import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 import { isFailure } from '@/either';
 import { findHttpStatusByError } from '@/utils';
 import { StoreService } from '@/services/shopkeeper/store';
@@ -9,7 +11,7 @@ import { UserRepository } from '@/repositories/shopkeeper/user';
 import { TokenProvider } from '@/providers/token';
 import { GuardianProvider } from '@/providers/guardian';
 import { StoreRepository } from '@/repositories/shopkeeper/store';
-import { schemas } from '@/schemas';
+import { CitySchema, StoreSchema } from '@/schemas';
 
 const cryptoProvider = CryptoProvider();
 const userRepository = UserRepository();
@@ -20,38 +22,17 @@ const storeService = StoreService(storeRepository);
 const storeMapper = StoreMapper();
 const cityMapper = CityMapper();
 
-async function Store(fastify: FastifyInstance) {
-  fastify.route<{
-    Querystring: {
-      page: number;
-    };
-  }>({
+export default async function Store(fastify: FastifyInstance) {
+  fastify.withTypeProvider<TypeBoxTypeProvider>().route({
     url: '/stores',
     method: 'GET',
     schema: {
-      querystring: {
-        type: 'object',
-        properties: {
-          page: {
-            type: 'number',
-          },
-        },
-        required: ['page'],
-      },
+      querystring: Type.Object({
+        page: Type.Number(),
+      }),
       response: {
-        200: {
-          type: 'array',
-          items: {
-            type: 'object',
-            properties: {
-              ...schemas.store,
-              city: {
-                type: 'object',
-                properties: schemas.city,
-              },
-            },
-          },
-        },
+        200: Type.Array(Type.Intersect([StoreSchema, Type.Object({ city: CitySchema })])),
+        '4xx': Type.Object({ message: Type.String() }),
       },
     },
     async handler(request, replay) {
@@ -72,5 +53,3 @@ async function Store(fastify: FastifyInstance) {
     },
   });
 }
-
-export default Store;

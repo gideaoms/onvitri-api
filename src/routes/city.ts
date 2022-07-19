@@ -1,39 +1,25 @@
 import { FastifyInstance } from 'fastify';
+import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
+import { Type } from '@sinclair/typebox';
 import { CityRepository } from '@/repositories/city';
 import { CityService } from '@/services/city';
 import { CityMapper } from '@/mappers/city';
-import { schemas } from '@/schemas';
+import { CitySchema } from '@/schemas';
 
 const cityRepository = CityRepository();
 const cityMapper = CityMapper();
 const cityService = CityService(cityRepository);
 
-async function City(fastify: FastifyInstance) {
-  fastify.route<{
-    Querystring: {
-      page: number;
-    };
-  }>({
+export default async function City(fastify: FastifyInstance) {
+  fastify.withTypeProvider<TypeBoxTypeProvider>().route({
     url: '/cities',
     method: 'GET',
     schema: {
-      querystring: {
-        type: 'object',
-        properties: {
-          page: {
-            type: 'number',
-          },
-        },
-        required: ['page'],
-      },
+      querystring: Type.Object({
+        page: Type.Number(),
+      }),
       response: {
-        200: {
-          type: 'array',
-          items: {
-            type: 'object',
-            properties: schemas.city,
-          },
-        },
+        200: Type.Array(CitySchema),
       },
     },
     async handler(request, replay) {
@@ -43,5 +29,3 @@ async function City(fastify: FastifyInstance) {
     },
   });
 }
-
-export default City;

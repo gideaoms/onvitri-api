@@ -1,4 +1,6 @@
 import { FastifyInstance } from 'fastify';
+import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
+import { Type } from '@sinclair/typebox';
 import { isFailure } from '@/either';
 import { findHttpStatusByError } from '@/utils';
 import { StoreRepository } from '@/repositories/store';
@@ -6,7 +8,7 @@ import { StoreService } from '@/services/store';
 import { StoreMapper } from '@/mappers/store';
 import { ProductMapper } from '@/mappers/product';
 import { CityMapper } from '@/mappers/city';
-import { schemas } from '@/schemas';
+import { CitySchema, ProductSchema, StoreSchema } from '@/schemas';
 
 const storeRepository = StoreRepository();
 const storeService = StoreService(storeRepository);
@@ -14,51 +16,25 @@ const storeMapper = StoreMapper();
 const productMapper = ProductMapper();
 const cityMapper = CityMapper();
 
-async function Store(fastify: FastifyInstance) {
-  fastify.route<{
-    Params: {
-      store_id: string;
-    };
-  }>({
+export default async function Store(fastify: FastifyInstance) {
+  fastify.withTypeProvider<TypeBoxTypeProvider>().route({
     url: '/stores/:store_id',
     method: 'GET',
     schema: {
-      params: {
-        type: 'object',
-        properties: {
-          store_id: {
-            type: 'string',
-            format: 'uuid',
-          },
-        },
-        required: ['store_id'],
-      },
+      params: Type.Object({
+        store_id: Type.String({ format: 'uuid' }),
+      }),
       response: {
-        200: {
-          type: 'object',
-          properties: {
-            ...schemas.store,
-            city: {
-              type: 'object',
-              properties: schemas.city,
-            },
-            products: {
-              type: 'array',
-              items: {
-                type: 'object',
-                properties: schemas.product,
-              },
-            },
-          },
-        },
+        200: Type.Intersect([StoreSchema, Type.Object({ city: CitySchema, products: Type.Array(ProductSchema) })]),
+        '4xx': Type.Object({ message: Type.String() }),
       },
     },
     async handler(request, replay) {
       const storeId = request.params.store_id;
       const store = await storeService.findOne(storeId);
       if (isFailure(store)) {
-        const code = findHttpStatusByError(store.failure);
-        return replay.code(code).send({ message: store.failure.message });
+        const httpStatus = findHttpStatusByError(store.failure);
+        return replay.code(httpStatus).send({ message: store.failure.message });
       }
       return replay.header('x-has-more', store.success.products.hasMore).send({
         ...storeMapper.toObject(store.success),
@@ -68,42 +44,16 @@ async function Store(fastify: FastifyInstance) {
     },
   });
 
-  fastify.route<{
-    Querystring: {
-      page: number;
-      city_id: string;
-    };
-  }>({
+  fastify.withTypeProvider<TypeBoxTypeProvider>().route({
     url: '/stores',
     method: 'GET',
     schema: {
-      querystring: {
-        type: 'object',
-        properties: {
-          city_id: {
-            type: 'string',
-            format: 'uuid',
-          },
-          page: {
-            type: 'number',
-          },
-        },
-        required: ['city_id', 'page'],
-      },
+      querystring: Type.Object({
+        city_id: Type.String({ format: 'uuid' }),
+        page: Type.Number(),
+      }),
       response: {
-        200: {
-          type: 'array',
-          items: {
-            type: 'object',
-            properties: {
-              ...schemas.store,
-              city: {
-                type: 'object',
-                properties: schemas.city,
-              },
-            },
-          },
-        },
+        200: Type.Array(Type.Intersect([StoreSchema, Type.Object({ city: CitySchema })])),
       },
     },
     async handler(request, replay) {
@@ -119,5 +69,3 @@ async function Store(fastify: FastifyInstance) {
     },
   });
 }
-
-export default Store;

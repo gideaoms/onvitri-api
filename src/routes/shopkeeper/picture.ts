@@ -22,7 +22,7 @@ const guardianProvider = GuardianProvider(tokenProvider, userRepository, cryptoP
 const multipartProvider = MultipartProvider();
 const pictureMapper = PictureMapper();
 
-async function Picture(fastify: FastifyInstance) {
+export default async function Picture(fastify: FastifyInstance) {
   fastify.route({
     url: '/pictures',
     method: 'POST',
@@ -30,8 +30,8 @@ async function Picture(fastify: FastifyInstance) {
       const token = request.headers.authorization;
       const user = await guardianProvider.passThrough('shopkeeper', token);
       if (isFailure(user)) {
-        const code = findHttpStatusByError(user.failure);
-        return replay.code(code).send({ message: user.failure.message });
+        const httpStatus = findHttpStatusByError(user.failure);
+        return replay.code(httpStatus).send({ message: user.failure.message });
       }
       const transformer = sharp({ failOnError: false }).resize({ width: 1000, withoutEnlargement: true }).webp();
       const data = await request.file();
@@ -71,5 +71,3 @@ async function Picture(fastify: FastifyInstance) {
     },
   });
 }
-
-export default Picture;

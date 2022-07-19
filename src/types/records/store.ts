@@ -13,6 +13,7 @@ export type StoreRecord = {
   street: string;
   number: string;
   neighborhood: string;
+  zip_code: string;
   phone: StoreRecord.Phone;
   status: StoreRecord.Status;
 };

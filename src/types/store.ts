@@ -13,6 +13,7 @@ export type Store = {
   street: string;
   number: string;
   neighborhood: string;
+  zipCode: string;
   phone: Store.Phone;
   status: Store.Status;
 };

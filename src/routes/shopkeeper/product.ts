@@ -1,8 +1,9 @@
 import { FastifyInstance } from 'fastify';
+import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
+import { Type } from '@sinclair/typebox';
 import { isFailure } from '@/either';
 import { findHttpStatusByError } from '@/utils';
 import { Product } from '@/types/product';
-import { ProductObject } from '@/types/objects/product';
 import { ProductRepository } from '@/repositories/shopkeeper/product';
 import { ProductService } from '@/services/shopkeeper/product';
 import { UserRepository } from '@/repositories/shopkeeper/user';
@@ -14,7 +15,7 @@ import { StoreMapper } from '@/mappers/store';
 import { CityMapper } from '@/mappers/city';
 import { PictureMapper } from '@/mappers/picture';
 import { StoreRepository } from '@/repositories/shopkeeper/store';
-import { schemas } from '@/schemas';
+import { CitySchema, ProductSchema, StoreSchema } from '@/schemas';
 
 const userRepository = UserRepository();
 const productRepository = ProductRepository();
@@ -28,44 +29,22 @@ const pictureMapper = PictureMapper();
 const cityMapper = CityMapper();
 const productService = ProductService(productRepository, storeRepository);
 
-async function Product(fastify: FastifyInstance) {
-  fastify.route<{
-    Querystring: {
-      page: number;
-    };
-  }>({
+export default async function Product(fastify: FastifyInstance) {
+  fastify.withTypeProvider<TypeBoxTypeProvider>().route({
     url: '/products',
     method: 'GET',
     schema: {
-      querystring: {
-        type: 'object',
-        properties: {
-          page: {
-            type: 'number',
-          },
-        },
-        required: ['page'],
-      },
+      querystring: Type.Object({
+        page: Type.Number(),
+      }),
       response: {
-        200: {
-          type: 'array',
-          items: {
-            type: 'object',
-            properties: {
-              ...schemas.product,
-              store: {
-                type: 'object',
-                properties: {
-                  ...schemas.store,
-                  city: {
-                    type: 'object',
-                    properties: schemas.city,
-                  },
-                },
-              },
-            },
-          },
-        },
+        200: Type.Array(
+          Type.Intersect([
+            ProductSchema,
+            Type.Object({ store: Type.Intersect([StoreSchema, Type.Object({ city: CitySchema })]) }),
+          ]),
+        ),
+        '4xx': Type.Object({ message: Type.String() }),
       },
     },
     async handler(request, replay) {
@@ -89,74 +68,38 @@ async function Product(fastify: FastifyInstance) {
     },
   });
 
-  fastify.route<{
-    Body: ProductObject;
-  }>({
+  fastify.withTypeProvider<TypeBoxTypeProvider>().route({
     url: '/products',
     method: 'POST',
     schema: {
-      body: {
-        type: 'object',
-        properties: {
-          store_id: {
-            type: 'string',
-            format: 'uuid',
-          },
-          title: {
-            type: 'string',
-            minLength: 1,
-          },
-          description: {
-            type: 'string',
-            minLength: 1,
-          },
-          price: {
-            type: 'integer',
-            minimum: 1,
-          },
-          pictures: {
-            type: 'array',
-            maxItems: 6,
-            items: {
-              type: 'object',
-              properties: {
-                id: {
-                  type: 'string',
-                  format: 'uuid',
-                },
-                url: {
-                  type: 'string',
-                },
-                thumbnail_url: {
-                  type: 'string',
-                },
-              },
-            },
-          },
-          status: {
-            type: 'string',
-            enum: ['active', 'inactive'],
-          },
-        },
-        required: ['store_id', 'title', 'description', 'price', 'pictures', 'status'],
-      },
+      body: Type.Object({
+        store_id: Type.String({ format: 'uuid' }),
+        title: Type.String(),
+        description: Type.String(),
+        price: Type.Integer(),
+        status: Type.Enum({ active: 'active' as const, inactive: 'inactive' as const }),
+        pictures: Type.Array(
+          Type.Object({
+            id: Type.String({ format: 'uuid' }),
+            variants: Type.Array(
+              Type.Object({
+                url: Type.String(),
+                ext: Type.String(),
+                name: Type.String(),
+                size: Type.Enum({ sm: 'sm' as const, md: 'md' as const }),
+                width: Type.Integer(),
+                height: Type.Integer(),
+              }),
+            ),
+          }),
+        ),
+      }),
       response: {
-        200: {
-          type: 'object',
-          properties: {
-            ...schemas.product,
-            store: {
-              type: 'object',
-              properties: {
-                ...schemas.store,
-                city: {
-                  type: 'object',
-                  properties: schemas.city,
-                },
-              },
-            },
-          },
-        },
+        200: Type.Intersect([
+          ProductSchema,
+          Type.Object({ store: Type.Intersect([StoreSchema, Type.Object({ city: CitySchema })]) }),
+        ]),
+        '4xx': Type.Object({ message: Type.String() }),
       },
     },
     async handler(request, replay) {
@@ -187,41 +130,19 @@ async function Product(fastify: FastifyInstance) {
     },
   });
 
-  fastify.route<{
-    Params: {
-      product_id: string;
-    };
-  }>({
+  fastify.withTypeProvider<TypeBoxTypeProvider>().route({
     url: '/products/:product_id',
     method: 'GET',
     schema: {
-      params: {
-        type: 'object',
-        properties: {
-          product_id: {
-            type: 'string',
-            format: 'uuid',
-          },
-        },
-        required: ['product_id'],
-      },
+      params: Type.Object({
+        product_id: Type.String({ format: 'uuid' }),
+      }),
       response: {
-        200: {
-          type: 'object',
-          properties: {
-            ...schemas.product,
-            store: {
-              type: 'object',
-              properties: {
-                ...schemas.store,
-                city: {
-                  type: 'object',
-                  properties: schemas.city,
-                },
-              },
-            },
-          },
-        },
+        200: Type.Intersect([
+          ProductSchema,
+          Type.Object({ store: Type.Intersect([StoreSchema, Type.Object({ city: CitySchema })]) }),
+        ]),
+        '4xx': Type.Object({ message: Type.String() }),
       },
     },
     async handler(request, replay) {
@@ -247,91 +168,48 @@ async function Product(fastify: FastifyInstance) {
     },
   });
 
-  fastify.route<{
-    Params: {
-      product_id: string;
-    };
-    Body: ProductObject;
-  }>({
+  fastify.withTypeProvider<TypeBoxTypeProvider>().route({
     url: '/products/:product_id',
     method: 'PUT',
     schema: {
-      params: {
-        type: 'object',
-        properties: {
-          product_id: {
-            type: 'string',
-            format: 'uuid',
-          },
-        },
-        required: ['product_id'],
-      },
-      body: {
-        type: 'object',
-        properties: {
-          title: {
-            type: 'string',
-            minLength: 1,
-          },
-          description: {
-            type: 'string',
-            minLength: 1,
-          },
-          price: {
-            type: 'integer',
-            minimum: 1,
-          },
-          pictures: {
-            type: 'array',
-            maxItems: 6,
-            items: {
-              type: 'object',
-              properties: {
-                id: {
-                  type: 'string',
-                  format: 'uuid',
-                },
-                url: {
-                  type: 'string',
-                },
-                thumbnail_url: {
-                  type: 'string',
-                },
-              },
-            },
-          },
-          status: {
-            type: 'string',
-            enum: ['active', 'inactive'],
-          },
-        },
-        required: ['title', 'description', 'price', 'pictures', 'status'],
-      },
+      params: Type.Object({
+        product_id: Type.String({ format: 'uuid' }),
+      }),
+      body: Type.Object({
+        title: Type.String(),
+        description: Type.String(),
+        price: Type.Integer(),
+        status: Type.Enum({ active: 'active' as const, inactive: 'inactive' as const }),
+        pictures: Type.Array(
+          Type.Object({
+            id: Type.String({ format: 'uuid' }),
+            variants: Type.Array(
+              Type.Object({
+                url: Type.String(),
+                ext: Type.String(),
+                name: Type.String(),
+                size: Type.Enum({ sm: 'sm' as const, md: 'md' as const }),
+                width: Type.Integer(),
+                height: Type.Integer(),
+              }),
+            ),
+          }),
+        ),
+      }),
       response: {
-        200: {
-          type: 'object',
-          properties: {
-            ...schemas.product,
-            store: {
-              type: 'object',
-              properties: {
-                ...schemas.store,
-                city: {
-                  type: 'object',
-                  properties: schemas.city,
-                },
-              },
-            },
-          },
-        },
+        200: Type.Intersect([
+          ProductSchema,
+          Type.Object({ store: Type.Intersect([StoreSchema, Type.Object({ city: CitySchema })]) }),
+        ]),
+        '4xx': Type.Object({ message: Type.String() }),
       },
     },
     async handler(request, replay) {
       const token = request.headers.authorization;
       const user = await guardianProvider.passThrough('shopkeeper', token);
       if (isFailure(user)) {
-        const code = findHttpStatusByError(user.failure);
-        return replay.code(code).send({ message: user.failure.message });
+        const httpStatus = findHttpStatusByError(user.failure);
+        return replay.code(httpStatus).send({ message: user.failure.message });
       }
       const productId = request.params.product_id;
       const title = request.body.title;
@@ -341,8 +219,8 @@ async function Product(fastify: FastifyInstance) {
       const status = request.body.status;
       const updated = await productService.update(productId, title, description, price, pictures, status, user.success);
       if (isFailure(updated)) {
-        const code = findHttpStatusByError(updated.failure);
-        return replay.code(code).send({ message: updated.failure.message });
+        const httpStatus = findHttpStatusByError(updated.failure);
+        return replay.code(httpStatus).send({ message: updated.failure.message });
       }
       return replay.send({
         ...productMapper.toObject(updated.success),
@@ -354,41 +232,31 @@ async function Product(fastify: FastifyInstance) {
     },
   });
 
-  fastify.route<{
-    Params: {
-      product_id: string;
-    };
-  }>({
+  fastify.withTypeProvider<TypeBoxTypeProvider>().route({
     url: '/products/:product_id',
     method: 'DELETE',
     schema: {
-      params: {
-        type: 'object',
-        properties: {
-          product_id: {
-            type: 'string',
-            format: 'uuid',
-          },
-        },
-        required: ['product_id'],
+      params: Type.Object({
+        product_id: Type.String({ format: 'uuid' }),
+      }),
+      response: {
+        '4xx': Type.Object({ message: Type.String() }),
       },
     },
     async handler(request, replay) {
       const token = request.headers.authorization;
       const user = await guardianProvider.passThrough('shopkeeper', token);
       if (isFailure(user)) {
-        const code = findHttpStatusByError(user.failure);
-        return replay.code(code).send({ message: user.failure.message });
+        const httpStatus = findHttpStatusByError(user.failure);
+        return replay.code(httpStatus).send({ message: user.failure.message });
       }
       const productId = request.params.product_id;
       const removed = await productService.remove(productId, user.success);
       if (isFailure(removed)) {
-        const code = findHttpStatusByError(removed.failure);
-        return replay.code(code).send({ message: removed.failure.message });
+        const httpStatus = findHttpStatusByError(removed.failure);
+        return replay.code(httpStatus).send({ message: removed.failure.message });
       }
       return replay.send();
     },
   });
 }
-
-export default Product;

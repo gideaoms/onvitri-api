@@ -1,132 +1,55 @@
-export const schemas = {
-  city: {
-    id: {
-      type: 'string',
-    },
-    name: {
-      type: 'string',
-    },
-    initials: {
-      type: 'string',
-    },
-  },
+import { Type } from '@sinclair/typebox';
 
-  store: {
-    id: {
-      type: 'string',
-    },
-    fantasy_name: {
-      type: 'string',
-    },
-    street: {
-      type: 'string',
-    },
-    number: {
-      type: 'number',
-    },
-    neighborhood: {
-      type: 'string',
-    },
-    phone: {
-      type: 'object',
-      properties: {
-        country_code: {
-          type: 'string',
-        },
-        area_code: {
-          type: 'string',
-        },
-        number: {
-          type: 'string',
-        },
-      },
-    },
-    zip_code: {
-      type: 'string',
-    },
-    status: {
-      type: 'string',
-    },
-  },
+export const CitySchema = Type.Object({
+  id: Type.String({ format: 'uuid' }),
+  name: Type.String(),
+  initials: Type.String(),
+});
 
-  product: {
-    id: {
-      type: 'string',
-    },
-    store_id: {
-      type: 'string',
-    },
-    title: {
-      type: 'string',
-    },
-    description: {
-      type: 'string',
-    },
-    price: {
-      type: 'integer',
-      minimum: 1,
-    },
-    status: {
-      type: 'string',
-    },
-    pictures: {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          id: {
-            type: 'string',
-          },
-          variants: {
-            type: 'array',
-            items: {
-              type: 'object',
-              properties: {
-                url: {
-                  type: 'string',
-                },
-                ext: {
-                  type: 'string',
-                },
-                name: {
-                  type: 'string',
-                },
-                size: {
-                  type: 'string',
-                },
-                width: {
-                  type: 'integer',
-                },
-                height: {
-                  type: 'integer',
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-  },
+export const StoreSchema = Type.Object({
+  id: Type.String({ format: 'uuid' }),
+  fantasy_name: Type.String(),
+  street: Type.String(),
+  number: Type.String(),
+  neighborhood: Type.String(),
+  phone: Type.Object({
+    country_code: Type.String(),
+    area_code: Type.String(),
+    number: Type.String(),
+  }),
+  zip_code: Type.String(),
+  status: Type.String(),
+});
 
-  user: {
-    id: {
-      type: 'string',
-    },
-    name: {
-      type: 'string',
-    },
-    email: {
-      type: 'string',
-    },
-    roles: {
-      type: 'array',
-      format: 'string',
-    },
-    status: {
-      type: 'string',
-    },
-    token: {
-      type: 'string',
-    },
-  },
-};
+export const ProductSchema = Type.Object({
+  id: Type.String(),
+  store_id: Type.String({ format: 'uuid' }),
+  title: Type.String(),
+  description: Type.String(),
+  price: Type.Integer(),
+  status: Type.Enum({ active: 'active' as const, inactive: 'inactive' as const }),
+  pictures: Type.Array(
+    Type.Object({
+      id: Type.String({ format: 'uuid' }),
+      variants: Type.Array(
+        Type.Object({
+          url: Type.String(),
+          ext: Type.String(),
+          name: Type.String(),
+          size: Type.Enum({ sm: 'sm' as const, md: 'md' as const }),
+          width: Type.Integer(),
+          height: Type.Integer(),
+        }),
+      ),
+    }),
+  ),
+});
+
+export const UserSchema = Type.Object({
+  id: Type.String({ format: 'uuid' }),
+  name: Type.String(),
+  email: Type.String(),
+  roles: Type.Array(Type.String()),
+  status: Type.String(),
+  token: Type.String(),
+});

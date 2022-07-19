@@ -5,7 +5,6 @@ import { UserModel } from '@/models/user';
 import { BadRequestError } from '@/errors/bad-request';
 import { User } from '@/types/user';
 import { TokenProvider } from '@/types/providers/token';
-import { not } from '@/utils';
 import { NewSessionMailer } from '@/types/mailers/new-session';
 
 export function SessionService(
@@ -19,7 +18,7 @@ export function SessionService(
   async function create(email: string) {
     const user = await userRepository.findOneByEmail(email);
     if (isSuccess(user) && userModel.hasRole(user.success, 'shopkeeper')) {
-      if (not(userModel.isActive(user.success)))
+      if (!userModel.isActive(user.success))
         return failure(new BadRequestError('O email informado não está ativo em nossa plataforma'));
       const validationCode = cryptoProvider.randomDigits();
       const newUser: User = { ...user.success, validationCode: validationCode };
@@ -33,8 +32,7 @@ export function SessionService(
     const message = 'Email e/ou código inválidos';
     const user = await userRepository.findOneByEmail(email);
     if (isFailure(user)) return failure(new BadRequestError(message));
-    if (not(userModel.isValidationCodeValid(user.success, validationCode)))
-      return failure(new BadRequestError(message));
+    if (!userModel.isValidationCodeValid(user.success, validationCode)) return failure(new BadRequestError(message));
     const userToUpdate: User = { ...user.success, validationCode: null };
     const updatedUser = await userRepository.update(userToUpdate);
     const sub = updatedUser.id;
