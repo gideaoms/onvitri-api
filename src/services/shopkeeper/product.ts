@@ -40,8 +40,8 @@ export function ProductService(productRepository: ProductRepository, storeReposi
       return failure(new BadRequestError('Você não pode publicar um produto sem preço'));
     if (productModel.isActive(product) && !productModel.hasPictures(product))
       return failure(new BadRequestError('Você não pode publicar um produto sem foto'));
-    const reachedMaximumAmountOfActiveProducts = await productModel.reachedMaximumActiveByStore(storeId, ownerId);
-    if (productModel.isActive(product) && reachedMaximumAmountOfActiveProducts) {
+    const canPublishToStore = await productModel.canPublishToStore(storeId, ownerId);
+    if (productModel.isActive(product) && !canPublishToStore) {
       const message = `Você não pode ter mais que ${ProductModel.MAXIMUM_ACTIVE_BY_STORE} produtos publicados na mesma loja`;
       return failure(new BadRequestError(message));
     }
@@ -81,8 +81,8 @@ export function ProductService(productRepository: ProductRepository, storeReposi
       return failure(new BadRequestError('Você não pode publicar um produto sem preço'));
     if (productModel.isActive(product) && !productModel.hasPictures(product))
       return failure(new BadRequestError('Você não pode publicar um produto sem foto'));
-    const reachedMaximumAmountOfActiveProducts = await productModel.reachedMaximumActiveByStore(storeId, ownerId);
-    if (productModel.isActive(product) && reachedMaximumAmountOfActiveProducts) {
+    const canPublishToStore = await productModel.canPublishToStore(storeId, ownerId);
+    if (productModel.isActive(product) && !canPublishToStore) {
       const message = `Você não pode ter mais que ${ProductModel.MAXIMUM_ACTIVE_BY_STORE} produtos publicados na mesma loja`;
       return failure(new BadRequestError(message));
     }

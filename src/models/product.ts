@@ -27,9 +27,9 @@ export function ProductModel(productRepository: ProductRepository) {
     return product.pictures.length > 0;
   }
 
-  async function reachedMaximumActiveByStore(storeId: string, ownerId: string) {
-    const activeProductsByStore = await productRepository.countActiveByStore(storeId, ownerId);
-    return activeProductsByStore >= ProductModel.MAXIMUM_ACTIVE_BY_STORE;
+  async function canPublishToStore(storeId: string, ownerId: string) {
+    const amountActiveProductsByStore = await productRepository.countActiveByStore(storeId, ownerId);
+    return amountActiveProductsByStore >= ProductModel.MAXIMUM_ACTIVE_BY_STORE;
   }
 
   function isValidPrice(product: Product) {
@@ -41,7 +41,7 @@ export function ProductModel(productRepository: ProductRepository) {
     updateStatus: updateStatus,
     isActive: isActive,
     hasPictures: hasPictures,
-    reachedMaximumActiveByStore: reachedMaximumActiveByStore,
+    canPublishToStore: canPublishToStore,
     isValidPrice: isValidPrice,
   };
 }
