@@ -4,7 +4,7 @@ import '@sentry/tracing';
 
 sentry.init({
   dsn: config.SENTRY_DSN,
-  tracesSampleRate: config.APP_ENV === 'production' ? 0.2 : 1,
+  tracesSampleRate: config.NODE_ENV === 'production' ? 0.2 : 1,
 });
 
 export { sentry };

@@ -13,7 +13,7 @@ export function makeBull<TemplateVars>(name: string) {
 }
 
 export function handleFailure(job: Job, err: Error) {
-  if (config.APP_ENV === 'production') {
+  if (config.NODE_ENV === 'production') {
     sentry.captureException({ job: job, err: err });
   } else {
     console.error(job, err);

@@ -9,7 +9,7 @@ import { config } from '@/config';
 import { sentry } from '@/libs/sentry';
 
 export const app = fastify({
-  logger: config.APP_ENV === 'development',
+  logger: config.NODE_ENV === 'development',
 });
 
 app.setErrorHandler(async (err) => {
