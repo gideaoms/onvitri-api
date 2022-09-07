@@ -29,11 +29,11 @@ export function ProductModel(productRepository: ProductRepository) {
 
   async function canPublishToStore(storeId: string, ownerId: string) {
     const amountActiveProductsByStore = await productRepository.countActiveByStore(storeId, ownerId);
-    return amountActiveProductsByStore >= ProductModel.MAXIMUM_ACTIVE_BY_STORE;
+    return ProductModel.MAXIMUM_ACTIVE_BY_STORE > amountActiveProductsByStore;
   }
 
   function isValidPrice(product: Product) {
-    return product.price > 1; // cents
+    return product.price >= 1; // cents
   }
 
   return {

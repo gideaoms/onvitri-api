@@ -1,3 +1,4 @@
+import { captureException } from '@sentry/node';
 import { isFailure, isSuccess, failure, success } from '@/either';
 import { UserRepository } from '@/types/repositories/shopkeeper/user';
 import { CryptoProvider } from '@/types/providers/crypto';
@@ -6,6 +7,7 @@ import { BadRequestError } from '@/errors/bad-request';
 import { User } from '@/types/user';
 import { TokenProvider } from '@/types/providers/token';
 import { NewSessionMailer } from '@/types/mailers/new-session';
+import { config } from '@/config';
 
 export function SessionService(
   userRepository: UserRepository,
@@ -22,7 +24,11 @@ export function SessionService(
         return failure(new BadRequestError('O email informado não está ativo em nossa plataforma'));
       const validationCode = cryptoProvider.randomDigits();
       const newUser: User = { ...user.success, validationCode: validationCode };
-      await newSessionMailer.send(newUser.name, newUser.email, validationCode);
+      newSessionMailer.send(newUser.name, newUser.email, validationCode).catch((err) => {
+        if (config.NODE_ENV === 'production') {
+          captureException(err);
+        }
+      });
       await userRepository.update(newUser);
     }
     return success(undefined);

@@ -10,9 +10,9 @@ import { BadRequestError } from '@/errors/bad-request';
 export function ProductService(productRepository: ProductRepository, storeRepository: StoreRepository) {
   const productModel = ProductModel(productRepository);
 
-  function findMany(page: number, user: User) {
+  function findMany(page: number, storeId: string, user: User) {
     const ownerId = user.id;
-    return productRepository.findMany(ownerId, page);
+    return productRepository.findMany(ownerId, page, storeId);
   }
 
   async function create(

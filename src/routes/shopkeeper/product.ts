@@ -36,6 +36,7 @@ export default async function Product(fastify: FastifyInstance) {
     schema: {
       querystring: Type.Object({
         page: Type.Number(),
+        store_id: Type.String({ format: 'uuid' }),
       }),
       response: {
         200: Type.Array(
@@ -49,13 +50,14 @@ export default async function Product(fastify: FastifyInstance) {
     },
     async handler(request, replay) {
       const page = request.query.page;
+      const storeId = request.query.store_id;
       const token = request.headers.authorization;
       const user = await guardianProvider.passThrough('shopkeeper', token);
       if (isFailure(user)) {
         const httpStatus = findHttpStatusByError(user.failure);
         return replay.code(httpStatus).send({ message: user.failure.message });
       }
-      const products = await productService.findMany(page, user.success);
+      const products = await productService.findMany(page, storeId, user.success);
       return replay.header('x-has-more', products.hasMore).send(
         products.data.map((product) => ({
           ...productMapper.toObject(product),

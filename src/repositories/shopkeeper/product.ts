@@ -17,11 +17,12 @@ export function ProductRepository(): ProductRepository {
   const storeMapper = StoreMapper();
   const cityMapper = CityMapper();
 
-  async function findMany(ownerId: string, page: number) {
+  async function findMany(ownerId: string, page: number, storeId: string) {
     const limit = ProductModel.ITEMS_BY_PAGE;
     const offset = limit * (page - 1);
     const where: Prisma.ProductWhereInput = {
       store: {
+        id: storeId,
         owner_id: ownerId,
       },
     };

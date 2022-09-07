@@ -1,5 +1,5 @@
 export const config = {
-  APP_ENV: process.env.APP_ENV,
+  NODE_ENV: process.env.NODE_ENV as 'development' | 'test' | 'production',
   APP_PORT: Number(process.env.APP_PORT),
   APP_HOST: process.env.APP_HOST,
   DATABASE_NAME: process.env.DATABASE_NAME,
