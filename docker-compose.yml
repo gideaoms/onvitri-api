@@ -7,7 +7,7 @@ volumes:
 services:
   onvitri_api:
     container_name: onvitri_api
-    image: bitnami/node:16.13.1
+    image: bitnami/node:16.17.0
     env_file:
       - .env
     command: npm run dev:start
@@ -29,7 +29,7 @@ services:
 
   onvitri_worker:
     container_name: onvitri_worker
-    image: bitnami/node:16.13.1
+    image: bitnami/node:16.17.0
     env_file:
       - .env
     command: npm run dev:worker

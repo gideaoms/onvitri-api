@@ -29,5 +29,4 @@ app.register(staticy, {
 app.register(multipart);
 app.register(autoload, {
   dir: path.join(__dirname, 'routes'),
-  options: { prefix: '/v1' },
 });
