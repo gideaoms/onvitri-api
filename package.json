@@ -7,17 +7,14 @@
     "build": "npx tsc && npx tsc-alias && npm run copy-files",
     "start": "node dist/server.js",
     "worker": "node dist/worker.js",
-    "dev:server": "npx prisma generate && npx nodemon src/server.ts",
-    "dev:compose": "docker-compose -f docker-compose.dev.yml",
-    "dev:migrate": "npm run dev:compose exec onvitri_api npx prisma migrate dev",
-    "dev": "npm run dev:compose up -- --remove-orphans",
+    "dev:start": "npx prisma generate && npx nodemon src/server.ts",
     "dev:worker": "npx nodemon src/worker.ts"
   },
   "prisma": {
     "seed": "node --require ts-node/register/transpile-only --require tsconfig-paths/register src/seeder.ts"
   },
   "engines": {
-    "node": ">=16.13.1"
+    "node": "^16.17.0"
   },
   "keywords": [],
   "author": "Gideão",
