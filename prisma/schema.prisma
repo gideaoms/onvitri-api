@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["interactiveTransactions"]
 }
 
 datasource db {
@@ -31,13 +32,13 @@ enum UserStatus {
 }
 
 model User {
-  id         String     @id @default(uuid()) @db.Uuid
-  created_at DateTime   @default(now())
-  updated_at DateTime   @updatedAt
-  name       String
-  email      String     @unique
-  roles      String[]
-  status     UserStatus
+  id              String     @id @default(uuid()) @db.Uuid
+  created_at      DateTime   @default(now())
+  updated_at      DateTime   @updatedAt
+  name            String
+  email           String     @unique
+  roles           String[]
+  status          UserStatus
   validation_code String?
 
   stores Store[]
@@ -46,18 +47,19 @@ model User {
 }
 
 model Store {
-  id           String   @id @default(uuid()) @db.Uuid
-  created_at   DateTime @default(now())
-  updated_at   DateTime @updatedAt
-  city_id      String   @db.Uuid
-  owner_id     String   @db.Uuid
-  fantasy_name String
-  street       String
-  number       String
-  neighborhood String
-  phone        Json
-  zip_code     String
-  status       Status
+  id                     String   @id @default(uuid()) @db.Uuid
+  created_at             DateTime @default(now())
+  updated_at             DateTime @updatedAt
+  city_id                String   @db.Uuid
+  owner_id               String   @db.Uuid
+  fantasy_name           String
+  street                 String
+  number                 String
+  neighborhood           String
+  phone                  Json
+  zip_code               String
+  amount_active_products Int      @default(0)
+  status                 Status
 
   city     City      @relation(fields: [city_id], references: [id])
   owner    User      @relation(fields: [owner_id], references: [id])

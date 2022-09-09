@@ -15,5 +15,6 @@ export type Store = {
   neighborhood: string;
   zipCode: string;
   phone: Store.Phone;
+  amountActiveProducts: number;
   status: Store.Status;
 };

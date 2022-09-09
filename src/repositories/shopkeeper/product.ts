@@ -11,6 +11,7 @@ import { ProductMapper } from '@/mappers/product';
 import { StoreMapper } from '@/mappers/store';
 import { CityMapper } from '@/mappers/city';
 import { NotFoundError } from '@/errors/not-found';
+import { Store } from '@/types/store';
 
 export function ProductRepository(): ProductRepository {
   const productMapper = ProductMapper();
@@ -69,16 +70,28 @@ export function ProductRepository(): ProductRepository {
   }
 
   async function create(product: Product) {
-    const created = await prisma.product.create({
-      data: productMapper.toRecord(product),
-      include: {
-        store: {
-          include: {
-            city: true,
+    const [created] = await prisma.$transaction([
+      prisma.product.create({
+        data: productMapper.toRecord(product),
+        include: {
+          store: {
+            include: {
+              city: true,
+            },
           },
         },
-      },
-    });
+      }),
+      prisma.store.update({
+        where: {
+          id: product.storeId,
+        },
+        data: {
+          amount_active_products: {
+            increment: 1,
+          },
+        },
+      }),
+    ]);
     return {
       ...productMapper.fromRecord({
         ...created,
@@ -115,20 +128,30 @@ export function ProductRepository(): ProductRepository {
     );
   }
 
-  async function update(product: Product) {
-    const updated = await prisma.product.update({
-      data: productMapper.toRecord(product),
-      where: {
-        id: product.id,
-      },
-      include: {
-        store: {
-          include: {
-            city: true,
+  async function update(product: Product, store: Store) {
+    const [updated] = await prisma.$transaction([
+      prisma.product.update({
+        data: productMapper.toRecord(product),
+        where: {
+          id: product.id,
+        },
+        include: {
+          store: {
+            include: {
+              city: true,
+            },
           },
         },
-      },
-    });
+      }),
+      prisma.store.update({
+        where: {
+          id: product.storeId,
+        },
+        data: {
+          amount_active_products: store.amountActiveProducts,
+        },
+      }),
+    ]);
     return {
       ...productMapper.fromRecord({
         ...updated,
@@ -180,12 +203,24 @@ export function ProductRepository(): ProductRepository {
     });
   }
 
-  async function remove(productId: string) {
-    await prisma.product.delete({
-      where: {
-        id: productId,
-      },
-    });
+  async function remove(product: Product) {
+    await prisma.$transaction([
+      prisma.product.delete({
+        where: {
+          id: product.id,
+        },
+      }),
+      prisma.store.update({
+        where: {
+          id: product.storeId,
+        },
+        data: {
+          amount_active_products: {
+            decrement: 1,
+          },
+        },
+      }),
+    ]);
   }
 
   function countActiveByStore(storeId: string, ownerId: string) {

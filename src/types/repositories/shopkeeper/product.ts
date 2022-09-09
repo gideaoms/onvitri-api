@@ -12,8 +12,11 @@ export type ProductRepository = {
   ): Promise<ListOf<Product & { store: Store & { city: City } }>>;
   create(product: Product): Promise<Product & { store: Store & { city: City } }>;
   exists(productId: string, ownerId: string): Promise<Either<Error, Product>>;
-  update(product: Product): Promise<Product & { store: Store & { city: City } }>;
-  findOne(productId: string, ownerId: string): Promise<Either<Error, Product & { store: Store & { city: City } }>>;
-  remove(productId: string): Promise<void>;
+  update(product: Product, store: Store): Promise<Product & { store: Store & { city: City } }>;
+  findOne(
+    productId: string,
+    ownerId: string,
+  ): Promise<Either<Error, Product & { store: Store & { city: City } }>>;
+  remove(product: Product): Promise<void>;
   countActiveByStore(storeId: string, ownerId: string): Promise<number>;
 };

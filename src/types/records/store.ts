@@ -15,5 +15,6 @@ export type StoreRecord = {
   neighborhood: string;
   zip_code: string;
   phone: StoreRecord.Phone;
+  amount_active_products: number;
   status: StoreRecord.Status;
 };

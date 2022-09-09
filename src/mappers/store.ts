@@ -16,6 +16,7 @@ export function StoreMapper() {
         number: record.phone.number,
       },
       zipCode: record.zip_code,
+      amountActiveProducts: record.amount_active_products,
       status: record.status,
     };
     return store;
@@ -34,6 +35,7 @@ export function StoreMapper() {
         number: store.phone.number,
       },
       zip_code: store.zipCode,
+      amount_active_products: store.amountActiveProducts,
       status: store.status,
     };
     return object;

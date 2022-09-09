@@ -1,8 +1,7 @@
 import { Product } from '@/types/product';
 import { Picture } from '@/types/picture';
-import { ProductRepository } from '@/types/repositories/shopkeeper/product';
 
-export function ProductModel(productRepository: ProductRepository) {
+export function ProductModel() {
   function addPictures(product: Product, pictures: Picture[]) {
     const newProduct: Product = {
       ...product,
@@ -27,11 +26,6 @@ export function ProductModel(productRepository: ProductRepository) {
     return product.pictures.length > 0;
   }
 
-  async function canPublishToStore(storeId: string, ownerId: string) {
-    const amountActiveProductsByStore = await productRepository.countActiveByStore(storeId, ownerId);
-    return ProductModel.MAXIMUM_ACTIVE_BY_STORE > amountActiveProductsByStore;
-  }
-
   function isValidPrice(product: Product) {
     return product.price >= 1; // cents
   }
@@ -41,11 +35,8 @@ export function ProductModel(productRepository: ProductRepository) {
     updateStatus: updateStatus,
     isActive: isActive,
     hasPictures: hasPictures,
-    canPublishToStore: canPublishToStore,
     isValidPrice: isValidPrice,
   };
 }
-
-ProductModel.MAXIMUM_ACTIVE_BY_STORE = 25;
 
 ProductModel.ITEMS_BY_PAGE = 12;
