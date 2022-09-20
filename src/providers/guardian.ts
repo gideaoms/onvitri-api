@@ -24,7 +24,8 @@ export function GuardianProvider(
     if (isFailure(user)) return failure(new UnauthorizedError('Unauthorized'));
     if (!userModel.isActive(user.success))
       return failure(new UnauthorizedError('O seu perfil não está ativo na plataforma'));
-    if (!userModel.hasRole(user.success, role)) return failure(new UnauthorizedError('Unauthorized'));
+    if (!userModel.hasRole(user.success, role))
+      return failure(new UnauthorizedError('Unauthorized'));
     return success({ ...user.success, token: rawToken });
   }
 

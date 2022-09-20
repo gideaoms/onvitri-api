@@ -33,40 +33,45 @@ export default async function Picture(fastify: FastifyInstance) {
         const httpStatus = findHttpStatusByError(user.failure);
         return replay.code(httpStatus).send({ message: user.failure.message });
       }
-      const transformer = sharp({ failOnError: false }).resize({ width: 1000, withoutEnlargement: true }).webp();
+      const transformer = sharp({ failOnError: false })
+        .resize({ width: 800, withoutEnlargement: true })
+        .webp();
       const data = await request.file();
-      const pictureNameMD = `${crypto.randomBytes(30).toString('hex')}.webp`;
-      const pictureUrlMD = path.join(os.tmpdir(), pictureNameMD);
-      await stream.pipeline(data.file, transformer, fs.createWriteStream(pictureUrlMD));
-      const metadataMD = await sharp(pictureUrlMD).metadata();
-      const pictureNameSM = `${crypto.randomBytes(30).toString('hex')}.webp`;
-      const pictureUrlSM = path.join(os.tmpdir(), pictureNameSM);
-      await sharp(pictureUrlMD, { failOnError: false }).resize({ width: 250, height: 250 }).webp().toFile(pictureUrlSM);
-      const metadataSM = await sharp(pictureUrlSM).metadata();
+      const mdPictureName = `${crypto.randomBytes(30).toString('hex')}.webp`;
+      const mdPictureUrl = path.join(os.tmpdir(), mdPictureName);
+      await stream.pipeline(data.file, transformer, fs.createWriteStream(mdPictureUrl));
+      const mdMetadata = await sharp(mdPictureUrl).metadata();
+      const smPictureName = `${crypto.randomBytes(30).toString('hex')}.webp`;
+      const smPictureUrl = path.join(os.tmpdir(), smPictureName);
+      await sharp(mdPictureUrl, { failOnError: false })
+        .resize({ width: 150, height: 150 })
+        .webp()
+        .toFile(smPictureUrl);
+      const smMetadata = await sharp(smPictureUrl).metadata();
       const picture: Picture = {
         id: crypto.randomUUID(),
         variants: [
           {
             size: 'md',
-            name: pictureNameMD,
-            url: pictureUrlMD,
-            ext: metadataMD.format!,
-            width: metadataMD.width!,
-            height: metadataMD.height!,
+            name: mdPictureName,
+            url: mdPictureUrl,
+            ext: mdMetadata.format!,
+            width: mdMetadata.width!,
+            height: mdMetadata.height!,
           },
           {
             size: 'sm',
-            name: pictureNameSM,
-            url: pictureUrlSM,
-            ext: metadataSM.format!,
-            width: metadataSM.width!,
-            height: metadataSM.height!,
+            name: smPictureName,
+            url: smPictureUrl,
+            ext: smMetadata.format!,
+            width: smMetadata.width!,
+            height: smMetadata.height!,
           },
         ],
       };
       const result = await multipartProvider.create(picture);
-      await fs.promises.unlink(pictureUrlMD);
-      await fs.promises.unlink(pictureUrlSM);
+      await fs.promises.unlink(mdPictureUrl);
+      await fs.promises.unlink(smPictureUrl);
       return replay.send(pictureMapper.toObject(result));
     },
   });

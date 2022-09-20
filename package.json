@@ -7,7 +7,7 @@
     "build": "npx tsc && npx tsc-alias && npm run copy-files",
     "start": "node dist/server.js",
     "worker": "node dist/worker.js",
-    "dev:start": "npx prisma generate && npx nodemon src/server.ts",
+    "dev:start": "npx nodemon src/server.ts",
     "dev:worker": "npx nodemon src/worker.ts"
   },
   "prisma": {
