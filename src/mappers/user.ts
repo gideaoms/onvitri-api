@@ -12,7 +12,7 @@ export function UserMapper() {
       status: record.status,
       token: '',
       validationCode: record.validation_code,
-      password: record.password!,
+      password: record.password,
     };
     return user;
   }

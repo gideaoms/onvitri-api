@@ -15,6 +15,9 @@ export function SessionService(
     if (isFailure(user)) {
       return failure(new BadRequestError(message));
     }
+    if (!user.success.password) {
+      return failure(new BadRequestError('Você ainda não definiu nenhuma senha'));
+    }
     const hashedPassword = user.success.password;
     const isPasswordCorrect = await cryptoProvider.compare(plainPassword, hashedPassword);
     if (!isPasswordCorrect) {
