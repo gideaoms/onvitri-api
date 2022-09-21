@@ -1,6 +1,6 @@
 import { isFailure, failure, success } from '@/either';
-import { ProductRepository } from '@/types/repositories/shopkeeper/product';
-import { StoreRepository } from '@/types/repositories/shopkeeper/store';
+import { IProductRepository } from '@/types/repositories/shopkeeper/product';
+import { IStoreRepository } from '@/types/repositories/shopkeeper/store';
 import { Product } from '@/types/product';
 import { Picture } from '@/types/picture';
 import { ProductModel } from '@/models/product';
@@ -10,8 +10,8 @@ import { StoreModel } from '@/models/store';
 import { Store } from '@/types/store';
 
 export function ProductService(
-  productRepository: ProductRepository,
-  storeRepository: StoreRepository,
+  productRepository: IProductRepository,
+  storeRepository: IStoreRepository,
 ) {
   const productModel = ProductModel();
   const storeModel = StoreModel();

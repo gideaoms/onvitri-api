@@ -1,11 +1,6 @@
 import { User } from '@/types/user';
-import { CryptoProvider } from '@/types/providers/crypto';
 
-export function UserModel(cryptoProvider: CryptoProvider) {
-  function isPasswordCorrect(plainPassword: string, hashedPassword: string) {
-    return cryptoProvider.compare(plainPassword, hashedPassword);
-  }
-
+export function UserModel() {
   function isActive(user: User) {
     return user.status === 'active';
   }
@@ -23,7 +18,6 @@ export function UserModel(cryptoProvider: CryptoProvider) {
   }
 
   return {
-    isPasswordCorrect: isPasswordCorrect,
     isActive: isActive,
     hasRole: hasRole,
     isAwaiting: isAwaiting,

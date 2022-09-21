@@ -1,7 +1,7 @@
 import { Prisma } from '@prisma/client';
 import { failure, success } from '@/either';
 import { prisma } from '@/libs/prisma';
-import { ProductRepository } from '@/types/repositories/shopkeeper/product';
+import { IProductRepository } from '@/types/repositories/shopkeeper/product';
 import { Product } from '@/types/product';
 import { StoreRecord } from '@/types/records/store';
 import { ProductRecord } from '@/types/records/product';
@@ -13,7 +13,7 @@ import { CityMapper } from '@/mappers/city';
 import { NotFoundError } from '@/errors/not-found';
 import { Store } from '@/types/store';
 
-export function ProductRepository(): ProductRepository {
+export function ProductRepository(): IProductRepository {
   const productMapper = ProductMapper();
   const storeMapper = StoreMapper();
   const cityMapper = CityMapper();

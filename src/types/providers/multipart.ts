@@ -1,5 +1,5 @@
 import { Picture } from '@/types/picture';
 
-export type MultipartProvider = {
+export type IMultipartProvider = {
   create(picture: Picture): Promise<Picture>;
 };

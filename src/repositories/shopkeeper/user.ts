@@ -1,12 +1,12 @@
 import { failure, success } from '@/either';
 import { prisma } from '@/libs/prisma';
-import { UserRepository } from '@/types/repositories/shopkeeper/user';
+import { IUserRepository } from '@/types/repositories/shopkeeper/user';
 import { UserRecord } from '@/types/records/user';
 import { UserMapper } from '@/mappers/user';
 import { NotFoundError } from '@/errors/not-found';
 import { User } from '@/types/user';
 
-export function UserRepository(): UserRepository {
+export function UserRepository(): IUserRepository {
   const userMapper = UserMapper();
 
   async function findOneByEmail(email: string) {

@@ -3,7 +3,7 @@ import { Store } from '@/types/store';
 import { City } from '@/types/city';
 import { ListOf } from '@/utils';
 
-export type StoreRepository = {
+export type IStoreRepository = {
   exists(storeId: string, ownerId: string): Promise<Either<Error, Store>>;
   findMany(page: number, ownerId: string): Promise<ListOf<Store & { city: City }>>;
 };

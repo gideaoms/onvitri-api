@@ -1,14 +1,14 @@
 import { Prisma } from '@prisma/client';
 import { failure, success } from '@/either';
 import { prisma } from '@/libs/prisma';
-import { StoreRepository } from '@/types/repositories/shopkeeper/store';
+import { IStoreRepository } from '@/types/repositories/shopkeeper/store';
 import { StoreRecord } from '@/types/records/store';
 import { StoreMapper } from '@/mappers/store';
 import { CityMapper } from '@/mappers/city';
 import { NotFoundError } from '@/errors/not-found';
 import { StoreModel } from '@/models/store';
 
-export function StoreRepository(): StoreRepository {
+export function StoreRepository(): IStoreRepository {
   const storeMapper = StoreMapper();
   const cityMapper = CityMapper();
 

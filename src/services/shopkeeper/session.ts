@@ -1,53 +1,31 @@
-import { captureException } from '@sentry/node';
-import { isFailure, isSuccess, failure, success } from '@/either';
-import { UserRepository } from '@/types/repositories/shopkeeper/user';
-import { CryptoProvider } from '@/types/providers/crypto';
-import { UserModel } from '@/models/user';
+import { isFailure, failure, success } from '@/either';
+import { IUserRepository } from '@/types/repositories/shopkeeper/user';
+import { ICryptoProvider } from '@/types/providers/crypto';
 import { BadRequestError } from '@/errors/bad-request';
-import { User } from '@/types/user';
-import { TokenProvider } from '@/types/providers/token';
-import { NewSessionMailer } from '@/types/mailers/new-session';
-import { config } from '@/config';
+import { ITokenProvider } from '@/types/providers/token';
 
 export function SessionService(
-  userRepository: UserRepository,
-  cryptoProvider: CryptoProvider,
-  tokenProvider: TokenProvider,
-  newSessionMailer: NewSessionMailer,
+  userRepository: IUserRepository,
+  cryptoProvider: ICryptoProvider,
+  tokenProvider: ITokenProvider,
 ) {
-  const userModel = UserModel(cryptoProvider);
-
-  async function create(email: string) {
+  async function create(email: string, plainPassword: string) {
+    const message = 'Email e/ou senha incorretos';
     const user = await userRepository.findOneByEmail(email);
-    if (isSuccess(user) && userModel.hasRole(user.success, 'shopkeeper')) {
-      if (!userModel.isActive(user.success))
-        return failure(new BadRequestError('O email informado não está ativo em nossa plataforma'));
-      const validationCode = cryptoProvider.randomDigits();
-      const newUser: User = { ...user.success, validationCode: validationCode };
-      newSessionMailer.send(newUser.name, newUser.email, validationCode).catch((err) => {
-        if (config.NODE_ENV === 'production') {
-          captureException(err);
-        }
-      });
-      await userRepository.update(newUser);
+    if (isFailure(user)) {
+      return failure(new BadRequestError(message));
     }
-    return success(undefined);
-  }
-
-  async function activate(email: string, validationCode: string) {
-    const message = 'Email e/ou código inválidos';
-    const user = await userRepository.findOneByEmail(email);
-    if (isFailure(user)) return failure(new BadRequestError(message));
-    if (!userModel.isValidationCodeValid(user.success, validationCode)) return failure(new BadRequestError(message));
-    const userToUpdate: User = { ...user.success, validationCode: null };
-    const updatedUser = await userRepository.update(userToUpdate);
-    const sub = updatedUser.id;
+    const hashedPassword = user.success.password;
+    const isPasswordCorrect = await cryptoProvider.compare(plainPassword, hashedPassword);
+    if (!isPasswordCorrect) {
+      return failure(new BadRequestError(message));
+    }
+    const sub = user.success.id;
     const token = tokenProvider.generate(sub);
-    return success({ ...updatedUser, token: token });
+    return success({ ...user.success, token: token });
   }
 
   return {
     create: create,
-    activate: activate,
   };
 }

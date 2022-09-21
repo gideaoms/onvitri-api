@@ -4,7 +4,7 @@ import { Store } from '@/types/store';
 import { City } from '@/types/city';
 import { ListOf } from '@/utils';
 
-export type ProductRepository = {
+export type IProductRepository = {
   findMany(
     ownerId: string,
     page: number,

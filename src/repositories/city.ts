@@ -2,9 +2,9 @@ import { Prisma } from '@prisma/client';
 import { prisma } from '@/libs/prisma';
 import { CityMapper } from '@/mappers/city';
 import { CityModel } from '@/models/city';
-import { CityRepository } from '@/types/repositories/city';
+import { ICityRepository } from '@/types/repositories/city';
 
-export function CityRepository(): CityRepository {
+export function CityRepository(): ICityRepository {
   const cityMapper = CityMapper();
 
   async function findMany(page: number) {

@@ -1,8 +1,11 @@
 import { isFailure, failure, success } from '@/either';
-import { ProductRepository } from '@/types/repositories/product';
-import { StoreRepository } from '@/types/repositories/store';
+import { IProductRepository } from '@/types/repositories/product';
+import { IStoreRepository } from '@/types/repositories/store';
 
-export function ProductService(productRepository: ProductRepository, storeRepository: StoreRepository) {
+export function ProductService(
+  productRepository: IProductRepository,
+  storeRepository: IStoreRepository,
+) {
   function findManyByCity(cityId: string, page: number) {
     return productRepository.findManyByCity(cityId, page);
   }

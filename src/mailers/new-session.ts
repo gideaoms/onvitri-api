@@ -1,7 +1,7 @@
-import { NewSessionMailer } from '@/types/mailers/new-session';
+import { INewSessionMailer } from '@/types/mailers/new-session';
 import { buildMailer } from '@/libs/mailer';
 
-export function NewSessionMailer(): NewSessionMailer {
+export function NewSessionMailer(): INewSessionMailer {
   const mailer = buildMailer<{ name: string; email: string; validationCode: string }>();
 
   function send(name: string, email: string, validationCode: string) {

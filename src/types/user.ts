@@ -8,6 +8,7 @@ export type User = {
   name: string;
   email: string;
   validationCode: string | null;
+  password: string;
   token: string;
   roles: User.Role[];
   status: User.Status;

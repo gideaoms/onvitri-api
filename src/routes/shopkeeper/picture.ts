@@ -9,7 +9,6 @@ import { isFailure } from '@/either';
 import { findHttpStatusByError } from '@/utils';
 import { TokenProvider } from '@/providers/token';
 import { UserRepository } from '@/repositories/shopkeeper/user';
-import { CryptoProvider } from '@/providers/crypto';
 import { GuardianProvider } from '@/providers/guardian';
 import { Picture } from '@/types/picture';
 import { PictureMapper } from '@/mappers/picture';
@@ -17,8 +16,7 @@ import { MultipartProvider } from '@/providers/multipart';
 
 const userRepository = UserRepository();
 const tokenProvider = TokenProvider();
-const cryptoProvider = CryptoProvider();
-const guardianProvider = GuardianProvider(tokenProvider, userRepository, cryptoProvider);
+const guardianProvider = GuardianProvider(tokenProvider, userRepository);
 const multipartProvider = MultipartProvider();
 const pictureMapper = PictureMapper();
 

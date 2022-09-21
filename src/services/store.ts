@@ -1,6 +1,6 @@
-import { StoreRepository } from '@/types/repositories/store';
+import { IStoreRepository } from '@/types/repositories/store';
 
-export function StoreService(storeRepository: StoreRepository) {
+export function StoreService(storeRepository: IStoreRepository) {
   function findOne(storeId: string) {
     return storeRepository.findOne(storeId);
   }

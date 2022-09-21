@@ -6,17 +6,15 @@ import { findHttpStatusByError } from '@/utils';
 import { StoreService } from '@/services/shopkeeper/store';
 import { StoreMapper } from '@/mappers/store';
 import { CityMapper } from '@/mappers/city';
-import { CryptoProvider } from '@/providers/crypto';
 import { UserRepository } from '@/repositories/shopkeeper/user';
 import { TokenProvider } from '@/providers/token';
 import { GuardianProvider } from '@/providers/guardian';
 import { StoreRepository } from '@/repositories/shopkeeper/store';
 import { CitySchema, StoreSchema } from '@/schemas';
 
-const cryptoProvider = CryptoProvider();
 const userRepository = UserRepository();
 const tokenProvider = TokenProvider();
-const guardianProvider = GuardianProvider(tokenProvider, userRepository, cryptoProvider);
+const guardianProvider = GuardianProvider(tokenProvider, userRepository);
 const storeRepository = StoreRepository();
 const storeService = StoreService(storeRepository);
 const storeMapper = StoreMapper();

@@ -1,8 +1,8 @@
-import { NewSessionJob } from '@/types/jobs/new-session';
+import { INewSessionJob } from '@/types/jobs/new-session';
 import { makeBull, handleFailure } from '@/libs/bull';
-import { NewSessionMailer } from '@/types/mailers/new-session';
+import { INewSessionMailer } from '@/types/mailers/new-session';
 
-export function NewSessionJob(newSessionMailer: NewSessionMailer): NewSessionJob {
+export function NewSessionJob(newSessionMailer: INewSessionMailer): INewSessionJob {
   const bull = makeBull<{ name: string; email: string; validationCode: string }>('new-session');
 
   function prepare() {

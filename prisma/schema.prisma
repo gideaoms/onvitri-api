@@ -40,6 +40,7 @@ model User {
   roles           String[]
   status          UserStatus
   validation_code String?
+  password        String?
 
   stores Store[]
 

@@ -12,6 +12,7 @@ export function UserMapper() {
       status: record.status,
       token: '',
       validationCode: record.validation_code,
+      password: record.password!,
     };
     return user;
   }
@@ -36,6 +37,7 @@ export function UserMapper() {
       roles: user.roles,
       status: user.status,
       validation_code: user.validationCode,
+      password: user.password,
     };
     return record;
   }

@@ -1,6 +1,6 @@
 import { City } from '@/types/city';
 import { ListOf } from '@/utils';
 
-export type CityRepository = {
+export type ICityRepository = {
   findMany(page: number): Promise<ListOf<City>>;
 };

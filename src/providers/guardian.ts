@@ -1,18 +1,16 @@
 import { isFailure, failure, success } from '@/either';
-import { TokenProvider } from '@/types/providers/token';
-import { UserRepository } from '@/types/repositories/shopkeeper/user';
-import { CryptoProvider } from '@/types/providers/crypto';
-import { GuardianProvider } from '@/types/providers/guardian';
+import { ITokenProvider } from '@/types/providers/token';
+import { IUserRepository } from '@/types/repositories/shopkeeper/user';
+import { IGuardianProvider } from '@/types/providers/guardian';
 import { User } from '@/types/user';
 import { UserModel } from '@/models/user';
 import { UnauthorizedError } from '@/errors/unauthorized';
 
 export function GuardianProvider(
-  tokenProvider: TokenProvider,
-  userRepository: UserRepository,
-  cryptoProvider: CryptoProvider,
-): GuardianProvider {
-  const userModel = UserModel(cryptoProvider);
+  tokenProvider: ITokenProvider,
+  userRepository: IUserRepository,
+): IGuardianProvider {
+  const userModel = UserModel();
 
   async function passThrough(role: User.Role, token?: string) {
     if (!token) return failure(new UnauthorizedError('Unauthorized'));

@@ -10,4 +10,5 @@ export type UserRecord = {
   roles: UserRecord.Role[];
   status: UserRecord.Status;
   validation_code: string | null;
+  password: string | null;
 };

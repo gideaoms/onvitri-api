@@ -7,7 +7,6 @@ import { Product } from '@/types/product';
 import { ProductRepository } from '@/repositories/shopkeeper/product';
 import { ProductService } from '@/services/shopkeeper/product';
 import { UserRepository } from '@/repositories/shopkeeper/user';
-import { CryptoProvider } from '@/providers/crypto';
 import { TokenProvider } from '@/providers/token';
 import { GuardianProvider } from '@/providers/guardian';
 import { ProductMapper } from '@/mappers/product';
@@ -20,9 +19,8 @@ import { CitySchema, ProductSchema, StoreSchema } from '@/schemas';
 const userRepository = UserRepository();
 const productRepository = ProductRepository();
 const storeRepository = StoreRepository();
-const cryptoProvider = CryptoProvider();
 const tokenProvider = TokenProvider();
-const guardianProvider = GuardianProvider(tokenProvider, userRepository, cryptoProvider);
+const guardianProvider = GuardianProvider(tokenProvider, userRepository);
 const productMapper = ProductMapper();
 const storeMapper = StoreMapper();
 const pictureMapper = PictureMapper();
@@ -42,7 +40,9 @@ export default async function Product(fastify: FastifyInstance) {
         200: Type.Array(
           Type.Intersect([
             ProductSchema,
-            Type.Object({ store: Type.Intersect([StoreSchema, Type.Object({ city: CitySchema })]) }),
+            Type.Object({
+              store: Type.Intersect([StoreSchema, Type.Object({ city: CitySchema })]),
+            }),
           ]),
         ),
         '4xx': Type.Object({ message: Type.String() }),
@@ -117,7 +117,15 @@ export default async function Product(fastify: FastifyInstance) {
       const price = request.body.price;
       const pictures = request.body.pictures.map(pictureMapper.fromObject);
       const status = request.body.status;
-      const product = await productService.create(storeId, title, description, price, pictures, status, user.success);
+      const product = await productService.create(
+        storeId,
+        title,
+        description,
+        price,
+        pictures,
+        status,
+        user.success,
+      );
       if (isFailure(product)) {
         const httpStatus = findHttpStatusByError(product.failure);
         return replay.code(httpStatus).send({ message: product.failure.message });
@@ -219,7 +227,15 @@ export default async function Product(fastify: FastifyInstance) {
       const price = request.body.price;
       const pictures = request.body.pictures.map(pictureMapper.fromObject);
       const status = request.body.status;
-      const updated = await productService.update(productId, title, description, price, pictures, status, user.success);
+      const updated = await productService.update(
+        productId,
+        title,
+        description,
+        price,
+        pictures,
+        status,
+        user.success,
+      );
       if (isFailure(updated)) {
         const httpStatus = findHttpStatusByError(updated.failure);
         return replay.code(httpStatus).send({ message: updated.failure.message });
