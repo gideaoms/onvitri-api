@@ -32,7 +32,7 @@ export default async function Picture(fastify: FastifyInstance) {
         return replay.code(httpStatus).send({ message: user.failure.message });
       }
       const transformer = sharp({ failOnError: false })
-        .resize({ width: 800, withoutEnlargement: true })
+        .resize({ width: 900, withoutEnlargement: true })
         .webp();
       const data = await request.file();
       const mdPictureName = `${crypto.randomBytes(30).toString('hex')}.webp`;
@@ -42,7 +42,7 @@ export default async function Picture(fastify: FastifyInstance) {
       const smPictureName = `${crypto.randomBytes(30).toString('hex')}.webp`;
       const smPictureUrl = path.join(os.tmpdir(), smPictureName);
       await sharp(mdPictureUrl, { failOnError: false })
-        .resize({ width: 150, height: 150 })
+        .resize({ width: 250, height: 250 })
         .webp()
         .toFile(smPictureUrl);
       const smMetadata = await sharp(smPictureUrl).metadata();
